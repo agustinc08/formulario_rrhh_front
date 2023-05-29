@@ -1,0 +1,38 @@
+/* 
+  Primary color de Material UI: #3F51B5; 
+  Textos: 16px;
+
+*/
+
+*{
+  scroll-behavior: smooth;
+  box-sizing: border-box;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  height: 100vh;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #3F51B5;
+    border-radius: 10px;
+  } 
+
+  @media screen and (max-width: 600px) {
+  ::-webkit-scrollbar {
+    height: 10px;
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #3F51B5;
+    border-radius: 10px;
+  }  
+}

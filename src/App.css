@@ -1,9 +1,19 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
 .App {
   text-align: center;
+  background-color: #F7F7F7; /* fondo de color claro */
+  font-family: Arial, sans-serif; /* fuente de letra elegante y legible */
 }
 
 .App-logo {
   height: 40vmin;
+  border: 1px solid #ccc; /* borde alrededor del logo */
   pointer-events: none;
 }
 
@@ -14,14 +24,42 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #E6E6E6; /* color de fondo más claro para el encabezado */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
+  color: #333; /* color de letra oscuro para contrastar con el fondo */
+}
+
+label {
+  border: 1px solid #ccc;
+  font-size: 1.2rem;
+}
+
+input.form-input,
+select.form-input {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+button.form-button {
+  background-color: #4CAF50; /* color verde para el botón */
   color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* efecto hover al botón */
+}
+
+button.form-button:hover {
+  background-color: #3e8e41; /* color más oscuro al pasar el cursor */
 }
 
 .App-link {
@@ -36,3 +74,9 @@
     transform: rotate(360deg);
   }
 }
+
+.pregunta {
+  font-size: 1.2rem;
+  border: 10px solid #3e8e41;
+}
+
