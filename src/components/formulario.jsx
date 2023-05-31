@@ -73,41 +73,9 @@ function Preguntas() {
   const [preguntasPorSeccion, setPreguntasPorSeccion] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [respuestas, setRespuestas] = useState({});
-  const [comentarios, setComentarios] = useState([]);
+  const [comentarios, setComentarios] = useState({});
 
-  async function enviarRespuestas(event) {
-    event.preventDefault();
   
-    try {
-      const respuestaObjects = preguntas.length > 0 ? preguntas.map((pregunta) => ({
-        preguntaId: pregunta.id,
-        dependenciaId: dependencia,
-        respuesta: respuestas[pregunta.id]?.respuesta || null,
-        comentario: comentarios[pregunta.id] || null,
-      })) : [];
-      console.log(respuestaObjects);
-  
-      const response = await axios.post("http://localhost:3000/respuestas", {
-        respuestas: respuestaObjects,
-        edad,
-        genero,
-      });
-  
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  function handleComentarioChange(event, preguntaId) {
-    const { value } = event.target;
-  
-    setComentarios((prevComentarios) => ({
-      ...prevComentarios,
-      [preguntaId]: value,
-    }));
-  }
-
   function handleEdadChange(event) {
     setEdad(event.target.value);
   }
@@ -119,17 +87,96 @@ function Preguntas() {
   function handleDependenciaChange(event) {
     setDependencia(event.target.value);
   }
+  
+  function handleComentarioChange(event, preguntaId) {
+    const { value } = event.target;
 
-  function handleRespuestaChange(event, preguntaId) {
-    const { name, value } = event.target;
+    setComentarios((prevComentarios) => ({
+      ...prevComentarios,
+      [preguntaId]: value,
+    }));
+  }
+
+  function handleExpresionChange(event, preguntaId) {
+    const { value } = event.target;
   
     setRespuestas((prevRespuestas) => ({
       ...prevRespuestas,
       [preguntaId]: {
-        ...(prevRespuestas[preguntaId] || {}),
-        [name]: value,
+        ...prevRespuestas[preguntaId],
+        expresion: value,
       },
     }));
+  }
+  
+  function handleCalificacionesChange(event, preguntaId) {
+    const { value } = event.target;
+  
+    setRespuestas((prevRespuestas) => ({
+      ...prevRespuestas,
+      [preguntaId]: {
+        ...prevRespuestas[preguntaId],
+        calificaciones: value,
+      },
+    }));
+  }
+  
+  function handleClasificacionesChange(event, preguntaId) {
+    const { value } = event.target;
+  
+    setRespuestas((prevRespuestas) => ({
+      ...prevRespuestas,
+      [preguntaId]: {
+        ...prevRespuestas[preguntaId],
+        clasificaciones: value,
+      },
+    }));
+  }
+  
+  function handleGradoChange(event, preguntaId) {
+    const { value } = event.target;
+  
+    setRespuestas((prevRespuestas) => ({
+      ...prevRespuestas,
+      [preguntaId]: {
+        ...prevRespuestas[preguntaId],
+        grado: value,
+      },
+    }));
+  }
+
+  async function enviarRespuestas(event) {
+    event.preventDefault();
+    const respuestasData = preguntas.map((pregunta) => {
+      const { id: preguntaId, tieneComentario } = pregunta;
+      const { expresion, calificaciones, clasificaciones, grado } =
+        respuestas[preguntaId] || {};
+  
+      return {
+        preguntaId,
+        dependenciaId: parseInt(dependencia),
+        respuestaText: expresion || calificaciones || clasificaciones || grado,
+        comentario: tieneComentario ? comentarios[preguntaId] || null : null,
+      };
+    });
+  
+    const createRespuestaDto = {
+      respuestas: respuestasData,
+      edad,
+      genero,
+    };
+  
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/respuestas",
+        createRespuestaDto
+      );
+      console.log(response.data);
+      // Realizar acciones adicionales después de enviar las respuestas
+    } catch (error) {
+      console.error(error);
+      // Manejar el error de alguna manera
+    }
   }
 
   useEffect(() => {
@@ -257,7 +304,7 @@ function Preguntas() {
         )}
         <Box height={50} />
         <Grid container spacing={2}>
-          {preguntasPorSeccion[seccionId]?.slice().map((pregunta) => (
+          {preguntasPorSeccion[seccionId]?.map((pregunta) => (
             <Grid item xs={12} sm={6} md={6} key={pregunta.id}>
               <ListItem>
                 <Box
@@ -284,10 +331,13 @@ function Preguntas() {
                             ¿Qué opinas?
                           </InputLabel>
                           <Select
-                            labelId={`respuesta-${pregunta.id}-label`}
                             name="expresion"
-                            value={respuestas[pregunta.id]?.respuesta}
-                            onChange={(event) => handleRespuestaChange(event, pregunta.id)}
+                            value={respuestas[pregunta.id]?.expresion || ""}
+                            onChange={(event) =>
+                              handleExpresionChange(event, pregunta.id)
+                            }
+                            label="expresion"
+                            required
                           >
                             <MenuItem value="SI">Sí</MenuItem>
                             <MenuItem value="NO">No</MenuItem>
@@ -303,18 +353,22 @@ function Preguntas() {
                             Calificacion
                           </InputLabel>
                           <Select
-                            labelId={`respuesta-${pregunta.id}-label`}
                             name="calificaciones"
-                            value={respuestas[pregunta.id]?.respuesta}
-                            onChange={(event) => handleRespuestaChange(event, pregunta.id)}
+                            value={respuestas[pregunta.id]?.calificaciones || ""}
+                            onChange={(event) =>
+                              handleCalificacionesChange(event, pregunta.id)
+                            }
+                            label="Calificaciones"
+                            required
                           >
-                            <MenuItem value="SIEMPRE">Siempre</MenuItem>
+                            <MenuItem value="">Seleccionar</MenuItem>
+                            <MenuItem value="SIEMPRE">SIEMPRE</MenuItem>
                             <MenuItem value="CASI_SIEMPRE">
-                              Casi Siempre
+                              CASI SIEMPRE
                             </MenuItem>
-                            <MenuItem value="A_VECES">A veces</MenuItem>
-                            <MenuItem value="CASI_NUNCA">Casi Nunca</MenuItem>
-                            <MenuItem value="NUNCA">Nunca</MenuItem>
+                            <MenuItem value="A_VECES">A VECES</MenuItem>
+                            <MenuItem value="CASI_NUNCA">CASI NUNCA</MenuItem>
+                            <MenuItem value="NUNCA">NUNCA</MenuItem>
                           </Select>
                         </FormControl>
                       </Grid>
@@ -323,13 +377,16 @@ function Preguntas() {
                       <Grid item xs={12}>
                         <FormControl fullWidth>
                           <InputLabel id={`respuesta-${pregunta.id}-label`}>
-                            Clasificacion
+                            Clasificaciones
                           </InputLabel>
                           <Select
-                            labelId={`respuesta-${pregunta.id}-label`}
                             name="clasificaciones"
-                            value={respuestas[pregunta.id].respuesta}
-                            onChange={(event) => handleRespuestaChange(event, pregunta.id)}
+                            value={respuestas[pregunta.id]?.clasificaciones || ""}
+                            onChange={(event) =>
+                              handleClasificacionesChange(event, pregunta.id)
+                            }
+                            label="clasificaciones"
+                            required
                           >
                             <MenuItem value="MUY_BUENO">Muy Bueno</MenuItem>
                             <MenuItem value="BUENO">Bueno</MenuItem>
@@ -347,14 +404,17 @@ function Preguntas() {
                             Grado
                           </InputLabel>
                           <Select
-                            labelId={`respuesta-${pregunta.id}-label`}
                             name="grado"
-                            value={respuestas[pregunta.id]?.respuesta}
-                            onChange={(event) => handleRespuestaChange(event, pregunta.id)}
+                            value={respuestas[pregunta.id]?.grado || ""}
+                            onChange={(event) =>
+                              handleGradoChange(event, pregunta.id)
+                            }
+                            label="grado"
+                            required
                           >
-                            <MenuItem value="ALTO">Alta</MenuItem>
-                            <MenuItem value="MEDIO">Media</MenuItem>
-                            <MenuItem value="BAJO">Baja</MenuItem>
+                            <MenuItem value="ALTA">Alta</MenuItem>
+                            <MenuItem value="MEDIA">Media</MenuItem>
+                            <MenuItem value="BAJA">Baja</MenuItem>
                           </Select>
                         </FormControl>
                       </Grid>
@@ -386,7 +446,6 @@ function Preguntas() {
               color="primary"
               type="submit"
               className={classes.enviarButton}
-             
             >
               Enviar
             </Button>
