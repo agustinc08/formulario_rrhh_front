@@ -147,18 +147,27 @@ function Preguntas() {
 
   async function enviarRespuestas(event) {
     event.preventDefault();
-    const respuestasData = preguntas.map((pregunta) => {
-      const { id: preguntaId, tieneComentario } = pregunta;
-      const { expresion, calificaciones, clasificaciones, grado } =
-        respuestas[preguntaId] || {};
+    const respuestasData = [];
   
-      return {
-        preguntaId,
-        dependenciaId: parseInt(dependencia),
-        respuestaText: expresion || calificaciones || clasificaciones || grado,
-        comentario: tieneComentario ? comentarios[preguntaId] || null : null,
-      };
-    });
+    // Iterar sobre preguntasPorSeccion
+    for (const seccionId in preguntasPorSeccion) {
+      const preguntas = preguntasPorSeccion[seccionId];
+      const respuestasSeccion = preguntas.map((pregunta) => {
+        const { id: preguntaId, tieneComentario } = pregunta;
+        const { expresion, calificaciones, clasificaciones, grado } =
+          respuestas[preguntaId] || {};
+  
+        return {
+          preguntaId,
+          dependenciaId: parseInt(dependencia),
+          respuestaText: expresion || calificaciones || clasificaciones || grado,
+          comentario: tieneComentario ? comentarios[preguntaId] || null : null,
+        };
+      });
+  
+      // Agregar respuestas de la sección actual a respuestasData
+      respuestasData.push(...respuestasSeccion);
+    }
   
     const createRespuestaDto = {
       respuestas: respuestasData,
