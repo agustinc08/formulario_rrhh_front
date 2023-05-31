@@ -268,8 +268,8 @@ function Preguntas() {
                     label="Edad"
                     required
                   >
-                    <MenuItem value="DESDE_15_A_45">Desde 15 a 45</MenuItem>
-                    <MenuItem value="MAS_45">Mas de 45</MenuItem>
+                    <MenuItem value="DESDE_18_A_45">Desde 18 a 45 Años</MenuItem>
+                    <MenuItem value="MAS_45">Mas de 45 Años</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
