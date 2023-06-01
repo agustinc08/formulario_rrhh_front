@@ -4,6 +4,7 @@ import Inicio from "./components/inicio.jsx";
 import Preguntas from "./components/formulario.jsx";
 import Login from "./components/login.jsx";
 import Buscador from "./components/buscador.jsx";
+import Estadisticas from "./components/estadisticas.jsx"
 import {
   BrowserRouter as Router,
   Route,
@@ -38,6 +39,9 @@ function App() {
         </Route>
         <Route exact path="/buscador">
           {isLoggedIn ? <Buscador /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/estadisticas">
+          {isLoggedIn ? <Estadisticas /> : <Redirect to="/login" />}
         </Route>
         <Route exact path="/login">
           {isLoggedIn ? <Redirect to="/inicio" /> : <Login onLogin={handleLogin} />}

@@ -10,6 +10,7 @@ import Login from "./components/login";
 import Preguntas from "./components/formulario.jsx";
 import Inicio from "./components/inicio.jsx";
 import Buscador from "./components/buscador.jsx"
+import Estadisticas from "./components/estadisticas.jsx"
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -76,6 +77,20 @@ function App() {
           <Route exact path="/buscador">
             {sessionStorage.getItem("isLoggedIn") === "true" ? (
               <Buscador />
+            ) : (
+              <Redirect to="/login" />
+            )}
+          </Route>
+          <Route exact path="/login">
+            {isLoggedIn ? (
+              <Redirect to="/estadisticas" />
+            ) : (
+              <Login onLogin={handleLogin} />
+            )}
+          </Route>
+          <Route exact path="/estadisticas">
+            {sessionStorage.getItem("isLoggedIn") === "true" ? (
+              <Estadisticas />
             ) : (
               <Redirect to="/login" />
             )}
