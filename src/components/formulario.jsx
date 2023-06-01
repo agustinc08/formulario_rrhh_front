@@ -11,9 +11,12 @@ import {
   Button,
   Box,
   Grid,
+  Divider,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Pagination from "@material-ui/lab/Pagination";
+import "../components/global.css";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,6 +38,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "2.7rem",
     textAlign: "center",
     marginBottom: "30px",
+  },
+  centrado: {
+    textAlign: "center",
+    
   },
   pregunta: {
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
@@ -248,18 +255,18 @@ function Preguntas() {
 
   return (
     <div className="contenedor-principal">
-      <Typography variant="h1">
+      <Typography variant="h4" className={classes.centrado}>
         {seccionId &&
           secciones.length > 0 &&
           secciones.find((seccion) => seccion.id === seccionId)?.descripcion}
       </Typography>
-      <hr />
+      <Divider/>
       <form onSubmit={enviarRespuestas}>
         {isFirstPage && (
           <>
             <Grid container spacing={3}>
               <Grid item xs={4}>
-                <FormControl variant="outlined" fullWidth>
+                <FormControl variant="outlined" fullWidth size="small">
                   <InputLabel>Edad</InputLabel>
                   <Select
                     name="edad"
@@ -274,7 +281,7 @@ function Preguntas() {
                 </FormControl>
               </Grid>
               <Grid item xs={4}>
-                <FormControl variant="outlined" fullWidth>
+                <FormControl variant="outlined" fullWidth size="small">
                   <InputLabel>Género</InputLabel>
                   <Select
                     name="genero"
@@ -290,7 +297,7 @@ function Preguntas() {
                 </FormControl>
               </Grid>
               <Grid item xs={4}>
-                <FormControl variant="outlined" fullWidth>
+                <FormControl variant="outlined" fullWidth size="small">
                   <InputLabel>Dependencia</InputLabel>
                   <Select
                     key={dependencia.id}
@@ -320,7 +327,7 @@ function Preguntas() {
                   className="pregunta"
                   display="flex"
                   flexDirection="column"
-                  border={1}
+                  boxShadow={6}
                   borderRadius={5}
                   p={2}
                   mb={2}
@@ -328,8 +335,10 @@ function Preguntas() {
                   height={"300px"}
                   value={pregunta.id}
                 >
-                  <Typography variant="h5" component="h3">
-                    {pregunta.descripcion}
+                  <Typography>
+                  <Box sx={{fontSize: 18, paddingTop:10}}>
+                      {pregunta.descripcion}
+                    </Box>
                   </Typography>
                   <br />
                   <Grid container spacing={2}>

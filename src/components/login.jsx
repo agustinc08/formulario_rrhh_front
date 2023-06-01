@@ -9,20 +9,44 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import backgroundImage from "../41-0.131209001550177303_B.jpg";
 import { withRouter } from "react-router-dom";
+import "./global.css";
+
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
+    backgroundColor: '#E8EAF6',
+  },
+  card: {
+    display: 'flex',
+    width: '80%',
+    maxWidth: 700,
+    height: "60%",
+    backgroundColor: '#fff',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
+    borderRadius: 10,
+  },
+  imagen: {
+    flex: 5,
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    borderTopLeftRadius: 10, 
+    borderBottomLeftRadius: 10,
+  },
+  login: {
+    flex: 5,
+    padding: 20,
+  },
   form: {
+    flex: 1,
+    height: "100%",
     display: "flex",
-    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    height: "100vh",
-    padding: "20px",
-    backgroundImage: `url(${backgroundImage})`,
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center",
-    backgroundAttachment: "fixed",
   },
   header: {
     fontSize: "24px",
@@ -30,17 +54,9 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "20px",
   },
   textFieldContainer: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    maxWidth: "350px",
-    padding: "10px",
-    border: "5px solid #ccc",
-    borderRadius: "10px",
-    boxShadow: "0 3px 5px rgba(0, 0, 0, 0.2)",
-    backgroundColor: "#eeeeee",
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing(2),
   },
   textField: {
     margin: "10px 0",
@@ -53,7 +69,6 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: "350px",
     height: "50px",
     fontSize: "16px",
-    fontWeight: "bold",
     borderRadius: "5px",
     boxShadow: "0 3px 5px rgba(0, 0, 0, 0.2)",
     textTransform: "uppercase",
@@ -137,52 +152,59 @@ function Login() {
   }, []);
 
   return (
-    <form className={classes.form} onSubmit={handleSubmit}>
-      <div className={classes.textFieldContainer}>
-          <TextField
-          label="Dependencia"
-          variant="outlined"
-          className={classes.textField}
-          value={username}
-          onChange={handleUsernameChange}
-        />
-        <TextField
-          label="Clave"
-          variant="outlined"
-          type="password"
-          className={classes.textField}
-          value={password}
-          onChange={handlePasswordChange}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          type="submit"
-        >
-          Iniciar sesión
-        </Button>
+    <div className={classes.container}>
+      <div className={classes.card}>
+        <div className={classes.imagen}></div>
+        <div className={classes.login}>
+          <form className={classes.form} onSubmit={handleSubmit}>
+            <div className={classes.textFieldContainer}>
+                <TextField
+                label="Dependencia"
+                variant="outlined"
+                className={classes.textField}
+                value={username}
+                onChange={handleUsernameChange}
+              />
+              <TextField
+                label="Clave"
+                variant="outlined"
+                type="password"
+                className={classes.textField}
+                value={password}
+                onChange={handlePasswordChange}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                type="submit"
+              >
+                Iniciar sesión
+              </Button>
+            </div>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+              <MuiAlert
+                elevation={6}
+                variant="filled"
+                severity="error"
+                action={
+                  <IconButton
+                    size="small"
+                    aria-label="Cerrar"
+                    color="inherit"
+                    onClick={handleClose}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                }
+              >
+                {errorMessage}
+              </MuiAlert>
+            </Snackbar>
+          </form>
+        </div>
       </div>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <MuiAlert
-          elevation={6}
-          variant="filled"
-          severity="error"
-          action={
-            <IconButton
-              size="small"
-              aria-label="Cerrar"
-              color="inherit"
-              onClick={handleClose}
-            >
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          }
-        >
-          {errorMessage}
-        </MuiAlert>
-      </Snackbar>
-    </form>
+    </div>
   );
 }
 

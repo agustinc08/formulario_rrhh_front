@@ -16,10 +16,6 @@ hr{
   padding: 20px;
 }
 
-.fondo-gris {
-  background-color:#eeeeee;
-}
-
 /* Estilos para los títulos principales */
 .titulo-principal {
   font-size: 2.7rem !important;
@@ -27,11 +23,6 @@ hr{
   margin-bottom: 30px;
 }
 
-/* Estilos para los subtítulos */
-.subtitulo {
-  font-size: 12px !important;
-  margin-bottom: 20px;
-  }
 
 /* Estilos para los párrafos */
 .parrafo {
@@ -46,6 +37,14 @@ hr{
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 30px;
+}
+
+.titulo-tabla{
+  font-size: 18px !important;
+}
+
+.texto-tabla{
+  font-size: 16px !important;
 }
 
 /* Estilos para las celdas de la tabla */
@@ -79,4 +78,9 @@ hr{
 .heading-divider {
   border-bottom: 1px solid #ccc;
   margin-bottom: 20px;
+}
+
+.botonContainer {
+  display: flex !important;
+  justify-content: center !important;
 }

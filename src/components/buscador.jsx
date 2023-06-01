@@ -20,10 +20,16 @@ import {
   TableCell,
   TableSortLabel,
 } from '@material-ui/core';
+import "../components/global.css";
+
 
 const useStyles = makeStyles((theme) => ({
   titulo: {
     marginTop: 20,
+  },
+  boton: {
+    display:"flex",
+    alignItems:"center"
   },
 }));
 
@@ -59,36 +65,34 @@ const Buscador = () => {
       }
     };
 
-    obtenerPreguntas();
-    obtenerDependencias();
+    obtenerPreguntas(); 
+    obtenerDependencias(); 
   }, []);
 
   const handleBuscarRespuestas = async () => {
-    if (selectedPregunta && selectedDependencia) {
-      try {
-        const preguntaId = parseInt(selectedPregunta);
-        const dependenciaId = parseInt(selectedDependencia);
+    try {
+      let url = 'http://localhost:3000/respuestas';
   
-        const params = new URLSearchParams();
-        params.append('preguntaId', preguntaId);
-        params.append('dependenciaId', dependenciaId);
+      const preguntaId = selectedPregunta !== undefined && selectedPregunta !== '' ? parseInt(selectedPregunta) : null;
+      const dependenciaId = selectedDependencia !== undefined && selectedDependencia !== '' ? parseInt(selectedDependencia) : null;
   
-        const url = `http://localhost:3000/respuestas/${preguntaId}/${dependenciaId}`;
-        const response = await fetch(url);
-        const data = await response.json();
-        setRespuestas(data);
-        console.log('Respuestas obtenidas:', data);
-      } catch (error) {
-        console.error('Error al buscar respuestas:', error);
+      if (preguntaId && dependenciaId) {
+        url += `/${preguntaId}/${dependenciaId}`;
+      } else if (preguntaId) {
+        url += `/pregunta/${preguntaId}`;
+      } else if (dependenciaId) {
+        url += `/dependencia/${dependenciaId}`;
       }
-    } else {
-      console.log(
-        'Debe seleccionar una pregunta y una dependencia antes de buscar respuestas'
-      );
+  
+      const response = await fetch(url);
+      const data = await response.json();
+      setRespuestas(data);
+      console.log('Respuestas obtenidas:', data);
+    } catch (error) {
+      console.error('Error al buscar respuestas:', error);
     }
   };
-
-
+  
   const handlePreguntaChange = (event) => {
     setSelectedPregunta(event.target.value);
     console.log('Pregunta seleccionada:', event.target.value);
@@ -107,200 +111,202 @@ const Buscador = () => {
     setSortConfig({ field, direction });
   };
 
-  const sortedRespuestas = respuestas.sort((a, b) => {
-    if (sortConfig.field) {
-      const aValue = a[sortConfig.field] || '';
-      const bValue = b[sortConfig.field] || '';
+  // Verificar si respuestas es un array antes de recorrerlo
+  const sortedRespuestas =
+  Array.isArray(respuestas) && respuestas.length > 0
+    ? respuestas.sort((a, b) => {
+        const aValue = a[sortConfig.field] || '';
+        const bValue = b[sortConfig.field] || '';
 
-      if (sortConfig.direction === 'asc') {
-        return aValue.toString().localeCompare(bValue.toString());
-      } else {
-        return bValue.toString().localeCompare(aValue.toString());
-      }
-    }
-    return 0;
-  });
+        if (sortConfig.direction === 'asc') {
+          return aValue.toString().localeCompare(bValue.toString());
+        } else {
+          return bValue.toString().localeCompare(aValue.toString());
+        }
+      })
+    : [];
 
   return (
-    <Container>
-      <Box sx={{ paddingTop: 20 }}>
-        <Typography variant="h3" align="center" gutterBottom sx={{ paddingTop: 40 }}>
-          Buscador de Respuestas
-        </Typography>
-      </Box>
-      <Divider></Divider>
-      <Grid container spacing={4}>
-        <Grid item xs={12} sm={4} lg={3}>
-          <FormControl variant="standard" fullWidth size="small">
-            <InputLabel>Pregunta</InputLabel>
-            <Select
-              value={selectedPregunta}
-              onChange={handlePreguntaChange}
-              variant="standard"
-              className={classes.select}
-              fullWidth
-            >
-              <MenuItem value="">Pregunta</MenuItem>
-              {preguntas.map((pregunta) => (
-                <MenuItem key={pregunta.id} value={pregunta.id}>
-                  {pregunta.descripcion}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={4} lg={3}>
-          <FormControl variant="standard" fullWidth size="small">
-            <InputLabel>Dependencia</InputLabel>
-            <Select
-              value={selectedDependencia}
-              onChange={handleDependenciaChange}
-              variant="standard"
-              className={classes.select}
-              fullWidth
-            >
-              <MenuItem value="">Dependencia</MenuItem>
-              {dependencias.map((dependencia) => (
-                <MenuItem key={dependencia.id} value={dependencia.id}>
-                  {dependencia.nombreDependencia}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={3} lg={2}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleBuscarRespuestas}
-            fullWidth
-            size="small"
-          >
-            Buscar
-          </Button>
-        </Grid>
-      </Grid>
-
-      <Typography variant="h5" gutterBottom className={classes.titulo}>
-        Respuestas encontradas:
-      </Typography>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>
-              <TableSortLabel
-                active={sortConfig.field === 'id'}
-                direction={sortConfig.field === 'id' ? sortConfig.direction : 'asc'}
-                onClick={() => handleSort('id')}
+    <div>
+      <Container>
+        <Box sx={{ paddingTop: 20 }}>
+          <Typography variant="h3" align="center" gutterBottom sx={{ paddingTop: 40 }}>
+            Buscador de Respuestas
+          </Typography>
+        </Box>
+        <Divider></Divider>
+        <Grid container spacing={4}>
+          <Grid item xs={12} sm={4} lg={3}>
+            <FormControl variant="standard" fullWidth size="small">
+              <InputLabel>Pregunta</InputLabel>
+              <Select
+                value={selectedPregunta}
+                onChange={handlePreguntaChange}
+                variant="standard"
+                className={classes.select}
+                fullWidth
               >
-                ID
-              </TableSortLabel>
-            </TableCell>
-            <TableCell>
-              <TableSortLabel
-                active={sortConfig.field === 'createdAt'}
-                direction={sortConfig.field === 'createdAt' ? sortConfig.direction : 'asc'}
-                onClick={() => handleSort('createdAt')}
-              >
-                Fecha
-              </TableSortLabel>
-            </TableCell>
-            <TableCell>
-              <TableSortLabel
-                active={sortConfig.field === 'dependenciaId'}
-                direction={sortConfig.field === 'dependenciaId' ? sortConfig.direction : 'asc'}
-                onClick={() => handleSort('dependenciaId')}
-              >
-                Dependencia
-              </TableSortLabel>
-            </TableCell>
-            <TableCell>
-              <TableSortLabel
-                active={sortConfig.field === 'edad'}
-                direction={sortConfig.field === 'edad' ? sortConfig.direction : 'asc'}
-                onClick={() => handleSort('edad')}
-              >
-                Edad
-              </TableSortLabel>
-            </TableCell>
-            <TableCell>
-              <TableSortLabel
-                active={sortConfig.field === 'genero'}
-                direction={sortConfig.field === 'genero' ? sortConfig.direction : 'asc'}
-                onClick={() => handleSort('genero')}
-              >
-                Género
-              </TableSortLabel>
-            </TableCell>
-            <TableCell>
-              <TableSortLabel
-                active={sortConfig.field === 'comentario'}
-                direction={sortConfig.field === 'comentario' ? sortConfig.direction : 'asc'}
-                onClick={() => handleSort('comentario')}
-              >
-                Comentarios
-              </TableSortLabel>
-              </TableCell>
-              <TableCell>
-              <TableSortLabel
-                active={sortConfig.field === 'expresion'}
-                direction={sortConfig.field === 'expresion' ? sortConfig.direction : 'asc'}
-                onClick={() => handleSort('expresion')}
-              >
-                Expresion
-              </TableSortLabel>
-              </TableCell>
-              <TableCell>
-              <TableSortLabel
-                active={sortConfig.field === 'calificaciones'}
-                direction={sortConfig.field === 'calificaciones' ? sortConfig.direction : 'asc'}
-                onClick={() => handleSort('calificaciones')}
-              >
-                Calificaciones
-              </TableSortLabel>
-              </TableCell>
-              <TableCell>
-              <TableSortLabel
-                active={sortConfig.field === 'clasificaciones'}
-                direction={sortConfig.field === 'clasificaciones' ? sortConfig.direction : 'asc'}
-                onClick={() => handleSort('clasificaciones')}
-              >
-                Clasificaciones
-              </TableSortLabel>
-              </TableCell>
-              <TableCell>
-              <TableSortLabel
-                active={sortConfig.field === 'grado'}
-                direction={sortConfig.field === 'grado' ? sortConfig.direction : 'asc'}
-                onClick={() => handleSort('grado')}
-              >
-                Grado
-              </TableSortLabel>
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {sortedRespuestas.map((respuesta) => (
-            <TableRow key={respuesta.id}>
-              <TableCell>{respuesta.id}</TableCell>
-              <TableCell>{respuesta.createdAt}</TableCell>
-              <TableCell>{respuesta.dependenciaId}</TableCell>
-              <TableCell>{respuesta.edad}</TableCell>
-              <TableCell>{respuesta.genero}</TableCell>
-              <TableCell>
-                {respuesta.comentarios.map((comentario) => (
-                  <div key={comentario.id}>{comentario.comentario}</div>
+                <MenuItem value="">Todas las preguntas</MenuItem>
+                {preguntas.length > 0 && preguntas.map((pregunta) => (
+                  <MenuItem key={pregunta.id} value={pregunta.id}>
+                    {pregunta.descripcion}
+                  </MenuItem>
                 ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4} lg={3}>
+            <FormControl variant="standard" fullWidth size="small">
+              <InputLabel>Dependencia</InputLabel>
+              <Select
+                value={selectedDependencia}
+                onChange={handleDependenciaChange}
+                variant="standard"
+                className={classes.select}
+                fullWidth
+              >
+                <MenuItem value="">Todas las dependencias</MenuItem>
+                {dependencias.length > 0 && dependencias.map((dependencia) => (
+                  <MenuItem key={dependencia.id} value={dependencia.id}>
+                    {dependencia.nombreDependencia}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={3} lg={2} className={classes.boton}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleBuscarRespuestas}
+              fullWidth
+              size="small"
+              
+            >
+              Buscar
+            </Button>
+          </Grid>
+        </Grid>
+        </Container>
+
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <TableSortLabel
+                  active={sortConfig.field === 'id'}
+                  direction={sortConfig.field === 'id' ? sortConfig.direction : 'asc'}
+                  onClick={() => handleSort('id')}
+                >
+                  ID
+                </TableSortLabel>
               </TableCell>
-              <TableCell>{respuesta.expresion}</TableCell>
-              <TableCell>{respuesta.calificaciones}</TableCell>
-              <TableCell>{respuesta.clasificaciones}</TableCell>
-              <TableCell>{respuesta.grado}</TableCell>          
+              <TableCell>
+                <TableSortLabel
+                  active={sortConfig.field === 'createdAt'}
+                  direction={sortConfig.field === 'createdAt' ? sortConfig.direction : 'asc'}
+                  onClick={() => handleSort('createdAt')}
+                >
+                  Fecha
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortConfig.field === 'dependenciaId'}
+                  direction={sortConfig.field === 'dependenciaId' ? sortConfig.direction : 'asc'}
+                  onClick={() => handleSort('dependenciaId')}
+                >
+                  Dependencia
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortConfig.field === 'edad'}
+                  direction={sortConfig.field === 'edad' ? sortConfig.direction : 'asc'}
+                  onClick={() => handleSort('edad')}
+                >
+                  Edad
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortConfig.field === 'genero'}
+                  direction={sortConfig.field === 'genero' ? sortConfig.direction : 'asc'}
+                  onClick={() => handleSort('genero')}
+                >
+                  Género
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortConfig.field === 'expresion'}
+                  direction={sortConfig.field === 'expresion' ? sortConfig.direction : 'asc'}
+                  onClick={() => handleSort('expresion')}
+                >
+                  Expresion
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortConfig.field === 'calificaciones'}
+                  direction={sortConfig.field === 'calificaciones' ? sortConfig.direction : 'asc'}
+                  onClick={() => handleSort('calificaciones')}
+                >
+                  Calificaciones
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortConfig.field === 'clasificaciones'}
+                  direction={sortConfig.field === 'clasificaciones' ? sortConfig.direction : 'asc'}
+                  onClick={() => handleSort('clasificaciones')}
+                >
+                  Clasificaciones
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortConfig.field === 'grado'}
+                  direction={sortConfig.field === 'grado' ? sortConfig.direction : 'asc'}
+                  onClick={() => handleSort('grado')}
+                >
+                  Grado
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortConfig.field === 'comentarios'}
+                  direction={sortConfig.field === 'comentarios' ? sortConfig.direction : 'asc'}
+                  onClick={() => handleSort('comentarios')}
+                >
+                  Comentarios
+                </TableSortLabel>
+              </TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Container>
+          </TableHead>
+          <TableBody>
+          {sortedRespuestas && sortedRespuestas.map((respuesta) => (
+  <TableRow key={respuesta.id}>
+    <TableCell>{respuesta.id}</TableCell>
+    <TableCell>{respuesta.createdAt}</TableCell>
+    <TableCell>{respuesta.dependenciaId}</TableCell>
+    <TableCell>{respuesta.edad}</TableCell>
+    <TableCell>{respuesta.genero}</TableCell>
+    <TableCell>{respuesta.expresion}</TableCell>
+    <TableCell>{respuesta.calificaciones}</TableCell>
+    <TableCell>{respuesta.clasificaciones}</TableCell>
+    <TableCell>{respuesta.grado}</TableCell>
+    <TableCell>
+      {respuesta.comentarios && respuesta.comentarios.map((comentario) => (
+        <div key={comentario.id}>{comentario.comentario}</div>
+      ))}
+    </TableCell>
+  </TableRow>
+))}
+          </TableBody>
+        </Table>
+    
+    </div>
   );
 };
 

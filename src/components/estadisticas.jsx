@@ -1,55 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
+import {
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Grid,
+  makeStyles,
+  Box,
+} from '@material-ui/core';
 import { Bar, Pie, Doughnut, PolarArea } from 'react-chartjs-2';
+import "../components/global.css";
+
+const useStyles = makeStyles((theme) => ({
+  titulo: {
+    marginTop: 20,
+  },
+}));
 
 const Estadisticas = () => {
+  const classes = useStyles();
+
   const [dependencias, setDependencias] = useState([]);
   const [preguntas, setPreguntas] = useState([]);
   const [selectedDependencia, setSelectedDependencia] = useState('');
   const [selectedPregunta, setSelectedPregunta] = useState('');
 
-  const [respuestaData, setRespuestaData] = useState(null);
-  const [edadData, setEdadData] = useState(null);
-  const [generoData, setGeneroData] = useState(null);
-  const [clasificacionData, setClasificacionData] = useState(null);
-  const [calificacionData, setCalificacionData] = useState(null);
+  const [respuestaData, setRespuestaData] = useState('');
+  const [edadData, setEdadData] = useState('');
+  const [generoData, setGeneroData] = useState('');
+  const [clasificacionData, setClasificacionData] = useState('');
+  const [calificacionData, setCalificacionData] = useState('');
 
-  useEffect(() => {
-    const fetchDependencias = async () => {
+   useEffect(() => {
+    const obtenerPreguntas = async () => {
       try {
-        const response = await fetch('/api/dependencias');
+        const response = await fetch('http://localhost:3000/preguntas');
         const data = await response.json();
-        setDependencias(data);
-      } catch (error) {
-        console.error('Error al obtener las dependencias:', error);
-      }
-    };
-
-    fetchDependencias();
-  }, []);
-
-  useEffect(() => {
-    const fetchPreguntas = async () => {
-      try {
-        if (selectedDependencia) {
-          const response = await fetch(`/api/preguntas?dependenciaId=${selectedDependencia}`);
-          const data = await response.json();
-          setPreguntas(data);
-        } else {
-          setPreguntas([]);
-        }
+        setPreguntas(data);
+        console.log('Preguntas obtenidas:', data);
       } catch (error) {
         console.error('Error al obtener las preguntas:', error);
       }
     };
 
-    fetchPreguntas();
-  }, [selectedDependencia]);
+    const obtenerDependencias = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/dependencias');
+        const data = await response.json();
+        setDependencias(data);
+        console.log('Dependencias obtenidas:', data);
+      } catch (error) {
+        console.error('Error al obtener las dependencias:', error);
+      }
+    };
+
+    obtenerPreguntas(); 
+    obtenerDependencias(); 
+  }, []);
 
   useEffect(() => {
     const fetchRespuestas = async () => {
       try {
-        const response = await fetch(`/api/respuestas?dependenciaId=${selectedDependencia}&preguntaId=${selectedPregunta}`);
+        const response = await fetch(`http://localhost:3000/respuestas?dependenciaId=${selectedDependencia}&preguntaId=${selectedPregunta}`);
         const data = await response.json();
 
         const respuestaCount = data.reduce((count, respuesta) => {
@@ -172,74 +185,118 @@ const Estadisticas = () => {
       setCalificacionData(null);
     }
   }, [selectedDependencia, selectedPregunta]);
+  
+  const handlePreguntaChange = (event) => {
+    setSelectedPregunta(event.target.value);
+    console.log('Pregunta seleccionada:', event.target.value);
+  };
 
   const handleDependenciaChange = (event) => {
     setSelectedDependencia(event.target.value);
-  };
-
-  const handlePreguntaChange = (event) => {
-    setSelectedPregunta(event.target.value);
+    console.log('Dependencia seleccionada:', event.target.value);
   };
 
   return (
-    <div>
-      <FormControl>
-        <InputLabel>Dependencia</InputLabel>
-        <Select value={selectedDependencia} onChange={handleDependenciaChange}>
-          {dependencias.map((dependencia) => (
-            <MenuItem key={dependencia.id} value={dependencia.id}>
-              {dependencia.nombreDependencia}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <br />
-      <FormControl>
-        <InputLabel>Pregunta</InputLabel>
-        <Select value={selectedPregunta} onChange={handlePreguntaChange}>
-          {preguntas.map((pregunta) => (
-            <MenuItem key={pregunta.id} value={pregunta.id}>
-              {pregunta.descripcion}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+    <Grid container justifyContent="center" alignItems="center">
+      <Grid item xs={12} sm={6}>
+        <Typography variant="h4" align="center" className={classes.titulo}>
+          Estadísticas
+        </Typography>
+        <Box m={4}>
+        <FormControl variant="standard" fullWidth size="small">
+              <InputLabel>Pregunta</InputLabel>
+              <Select
+                value={selectedPregunta}
+                onChange={handlePreguntaChange}
+                variant="standard"
+                className={classes.select}
+                fullWidth
+              >
+                <MenuItem value="">Todas las preguntas</MenuItem>
+                {preguntas.length > 0 && preguntas.map((pregunta) => (
+                  <MenuItem key={pregunta.id} value={pregunta.id}>
+                    {pregunta.descripcion}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+        </Box>
+        <Box m={4}>
+        <FormControl variant="standard" fullWidth size="small">
+              <InputLabel>Dependencia</InputLabel>
+              <Select
+                value={selectedDependencia}
+                onChange={handleDependenciaChange}
+                variant="standard"
+                className={classes.select}
+                fullWidth
+              >
+                <MenuItem value="">Todas las dependencias</MenuItem>
+                {dependencias.length > 0 && dependencias.map((dependencia) => (
+                  <MenuItem key={dependencia.id} value={dependencia.id}>
+                    {dependencia.nombreDependencia}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+        </Box>
+      </Grid>
 
-      {respuestaData && (
-        <div>
-          <Typography variant="h6">Respuestas</Typography>
-          <Bar data={respuestaData} options={{ responsive: true }} />
-        </div>
-      )}
+      <Grid item xs={12} sm={6}>
+        {respuestaData && (
+          <div>
+            <Typography variant="h6" align="center">
+              Respuestas
+            </Typography>
+            <Bar data={respuestaData} />
+          </div>
+        )}
+      </Grid>
 
-      {edadData && (
-        <div>
-          <Typography variant="h6">Edad</Typography>
-          <Pie data={edadData} options={{ responsive: true }} />
-        </div>
-      )}
+      <Grid item xs={12} sm={6}>
+        {edadData && (
+          <div>
+            <Typography variant="h6" align="center">
+              Edad
+            </Typography>
+            <Pie data={edadData} />
+          </div>
+        )}
+      </Grid>
 
-      {generoData && (
-        <div>
-          <Typography variant="h6">Género</Typography>
-          <Doughnut data={generoData} options={{ responsive: true }} />
-        </div>
-      )}
+      <Grid item xs={12} sm={6}>
+        {generoData && (
+          <div>
+            <Typography variant="h6" align="center">
+              Género
+            </Typography>
+            <Doughnut data={generoData} />
+          </div>
+        )}
+      </Grid>
 
-      {clasificacionData && (
-        <div>
-          <Typography variant="h6">Clasificación</Typography>
-          <PolarArea data={clasificacionData} options={{ responsive: true }} />
-        </div>
-      )}
+      <Grid item xs={12} sm={6}>
+        {clasificacionData && (
+          <div>
+            <Typography variant="h6" align="center">
+              Clasificación
+            </Typography>
+            <PolarArea data={clasificacionData} />
+          </div>
+        )}
+      </Grid>
 
-      {calificacionData && (
-        <div>
-          <Typography variant="h6">Calificación</Typography>
-          <Bar data={calificacionData} options={{ responsive: true }} />
-        </div>
-      )}
-    </div>
+      <Grid item xs={12} sm={6}>
+        {calificacionData && (
+          <div>
+            <Typography variant="h6" align="center">
+              Calificación
+            </Typography>
+            <Pie data={calificacionData} />
+          </div>
+        )}
+      </Grid>
+    </Grid>
   );
 };
 

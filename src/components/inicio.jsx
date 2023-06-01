@@ -8,8 +8,10 @@ import {
   TableBody,
   Box,
   Button,
+  Divider,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import "../components/global.css";
 import "../components/inicio.css";
 import { isLoggedIn } from "../auth";
 import Login from "./login";
@@ -27,19 +29,15 @@ const useStyles = makeStyles((theme) => ({
   },
   subtitulo: {
     fontSize: "22px !important",
-    marginBottom: "20px",
+    marginBottom: "10px",
+    marginTop: "20px",
   },
   tituloPrincipal: {
     fontSize: "46px !important",
     textAlign: "center",
     marginBottom: "30px",
   },
-  botonContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  //hacer que la tabla tenga fontSize 16px
+
 }));
 
 function Inicio() {
@@ -56,7 +54,7 @@ function Inicio() {
         <>
           <Typography variant="h1" className={classes.tituloPrincipal}>
             Relevamiento Fuero Civil - 2023
-            <hr />
+            <Divider></Divider>
           </Typography>
           <Typography variant="h2" className={classes.subtitulo}>
             INTRODUCCIÓN
@@ -91,55 +89,55 @@ function Inicio() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Sección</TableCell>
-                <TableCell>Descripción</TableCell>
+                <TableCell className="titulo-tabla">Sección</TableCell>
+                <TableCell className="titulo-tabla">Descripción</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell>Clima laboral</TableCell>
-                <TableCell className="tabla">
+                <TableCell className="texto-tabla">Clima laboral</TableCell>
+                <TableCell className="texto-tabla">
                   Preguntas sobre el clima laboral en la dependencia.
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Violencia/agresión externa</TableCell>
-                <TableCell>
+                <TableCell className="texto-tabla">Violencia/agresión externa</TableCell>
+                <TableCell className="texto-tabla">
                   Preguntas sobre la violencia y la agresión externa en el lugar
                   de trabajo.
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>
+                <TableCell className="texto-tabla">
                   Relaciones interpersonales en el grupo de trabajo
                 </TableCell>
-                <TableCell className={classes.cell}>
+                <TableCell className="texto-tabla">
                   Preguntas sobre las relaciones interpersonales en el grupo de
                   trabajo.
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Infraestructura</TableCell>
-                <TableCell>
+                <TableCell className="texto-tabla">Infraestructura</TableCell>
+                <TableCell className="texto-tabla">
                   Preguntas sobre la infraestructura en la dependencia.
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Tareas y formas de trabajo</TableCell>
-                <TableCell>
+                <TableCell className="texto-tabla">Tareas y formas de trabajo</TableCell>
+                <TableCell className="texto-tabla">
                   Preguntas sobre las tareas y formas de trabajo en la
                   dependencia.
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Comunicación</TableCell>
-                <TableCell>
+                <TableCell className="texto-tabla">Comunicación</TableCell>
+                <TableCell className="texto-tabla">
                   Preguntas sobre la comunicación en la dependencia.
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
-          <hr />
+          <Divider></Divider>
           <Typography variant="body1" className="parrafo">
             A continuación, encontrarán una serie de preguntas les pedimos que
             respondan con la mayor sinceridad posible; marcando la alternativa
@@ -152,14 +150,13 @@ function Inicio() {
           </Typography>
           <Box height={50} />
           <Box className="botonContainer">
-           <Button
-  variant="contained"
-  color="primary"
-  onClick={handleButtonClick}
-  style={{ marginRight: "auto" }}
->
-  ir a preguntas
-</Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleButtonClick}
+          >
+            ir a preguntas
+          </Button>
           </Box>
         </>
       ) : (
