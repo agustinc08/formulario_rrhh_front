@@ -5,6 +5,8 @@ import Preguntas from "./components/formulario.jsx";
 import Login from "./components/login.jsx";
 import Buscador from "./components/buscador.jsx";
 import Estadisticas from "./components/estadisticas.jsx"
+import Creacion from "./components/creacion.jsx"
+
 import {
   BrowserRouter as Router,
   Route,
@@ -36,6 +38,9 @@ function App() {
         </Route>
         <Route exact path="/formulario">
           {isLoggedIn ? <Preguntas /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/creacion">
+          {isLoggedIn ? <Creacion /> : <Redirect to="/login" />}
         </Route>
         <Route exact path="/buscador">
           {isLoggedIn ? <Buscador /> : <Redirect to="/login" />}

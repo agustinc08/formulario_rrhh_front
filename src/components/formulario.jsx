@@ -13,10 +13,11 @@ import {
   Grid,
   Divider,
 } from "@material-ui/core";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 import { makeStyles } from "@material-ui/core/styles";
 import Pagination from "@material-ui/lab/Pagination";
 import "../components/global.css";
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,7 +42,6 @@ const useStyles = makeStyles((theme) => ({
   },
   centrado: {
     textAlign: "center",
-    
   },
   pregunta: {
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
@@ -81,20 +81,24 @@ function Preguntas() {
   const [currentPage, setCurrentPage] = useState(1);
   const [respuestas, setRespuestas] = useState({});
   const [comentarios, setComentarios] = useState({});
+  const [mensaje, setMensaje] = useState(null);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("");
+  const [error, setError] = useState(false);
 
-  
   function handleEdadChange(event) {
     setEdad(event.target.value);
   }
-  
+
   function handleGeneroChange(event) {
     setGenero(event.target.value);
   }
-  
+
   function handleDependenciaChange(event) {
     setDependencia(event.target.value);
   }
-  
+
   function handleComentarioChange(event, preguntaId) {
     const { value } = event.target;
 
@@ -106,7 +110,7 @@ function Preguntas() {
 
   function handleExpresionChange(event, preguntaId) {
     const { value } = event.target;
-  
+
     setRespuestas((prevRespuestas) => ({
       ...prevRespuestas,
       [preguntaId]: {
@@ -115,10 +119,10 @@ function Preguntas() {
       },
     }));
   }
-  
+
   function handleCalificacionesChange(event, preguntaId) {
     const { value } = event.target;
-  
+
     setRespuestas((prevRespuestas) => ({
       ...prevRespuestas,
       [preguntaId]: {
@@ -127,10 +131,10 @@ function Preguntas() {
       },
     }));
   }
-  
+
   function handleClasificacionesChange(event, preguntaId) {
     const { value } = event.target;
-  
+
     setRespuestas((prevRespuestas) => ({
       ...prevRespuestas,
       [preguntaId]: {
@@ -139,10 +143,10 @@ function Preguntas() {
       },
     }));
   }
-  
+
   function handleGradoChange(event, preguntaId) {
     const { value } = event.target;
-  
+
     setRespuestas((prevRespuestas) => ({
       ...prevRespuestas,
       [preguntaId]: {
@@ -152,10 +156,29 @@ function Preguntas() {
     }));
   }
 
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnackbar(false);
+  };
+
   async function enviarRespuestas(event) {
     event.preventDefault();
     const respuestasData = [];
-  
+
+    // Verificar si alguna pregunta no tiene opción seleccionada
+    const preguntaSinSeleccion = preguntas.find((pregunta) => {
+      const respuesta = respuestas[pregunta.id];
+      return !respuesta || Object.keys(respuesta).length === 0;
+    });
+
+    if (preguntaSinSeleccion) {
+      setError(true);
+      return; // Detener el envío del formulario
+    }
+
     // Iterar sobre preguntasPorSeccion
     for (const seccionId in preguntasPorSeccion) {
       const preguntas = preguntasPorSeccion[seccionId];
@@ -163,35 +186,42 @@ function Preguntas() {
         const { id: preguntaId, tieneComentario } = pregunta;
         const { expresion, calificaciones, clasificaciones, grado } =
           respuestas[preguntaId] || {};
-  
+
         return {
           preguntaId,
           dependenciaId: parseInt(dependencia),
-          respuestaText: expresion || calificaciones || clasificaciones || grado,
+          respuestaText:
+            expresion || calificaciones || clasificaciones || grado,
           comentario: tieneComentario ? comentarios[preguntaId] || null : null,
         };
       });
-  
+
       // Agregar respuestas de la sección actual a respuestasData
       respuestasData.push(...respuestasSeccion);
     }
-  
+
     const createRespuestaDto = {
       respuestas: respuestasData,
       edad,
       genero,
     };
-  
+
     try {
       const response = await axios.post(
         "http://localhost:3000/respuestas",
         createRespuestaDto
       );
       console.log(response.data);
-      // Realizar acciones adicionales después de enviar las respuestas
+      setSnackbarMessage("El formulario fue enviado correctamente.");
+      setSnackbarSeverity("success");
+      setOpenSnackbar(true);
     } catch (error) {
       console.error(error);
-      // Manejar el error de alguna manera
+      setSnackbarMessage(
+        "Su formulario no pudo ser enviado. Faltan respuestas."
+      );
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
     }
   }
 
@@ -256,12 +286,18 @@ function Preguntas() {
   return (
     <div className="contenedor-principal">
       <Typography variant="h4" className={classes.centrado}>
+        {mensaje}
         {seccionId &&
           secciones.length > 0 &&
           secciones.find((seccion) => seccion.id === seccionId)?.descripcion}
       </Typography>
-      <Divider/>
+      <Divider />
       <form onSubmit={enviarRespuestas}>
+        {error && (
+          <Typography variant="body1" color="error">
+            Por favor, selecciona una opción en todas las preguntas.
+          </Typography>
+        )}
         {isFirstPage && (
           <>
             <Grid container spacing={3}>
@@ -275,7 +311,9 @@ function Preguntas() {
                     label="Edad"
                     required
                   >
-                    <MenuItem value="DESDE_18_A_45">Desde 18 a 45 Años</MenuItem>
+                    <MenuItem value="DESDE_18_A_45">
+                      Desde 18 a 45 Años
+                    </MenuItem>
                     <MenuItem value="MAS_45">Mas de 45 Años</MenuItem>
                   </Select>
                 </FormControl>
@@ -336,7 +374,7 @@ function Preguntas() {
                   value={pregunta.id}
                 >
                   <Typography>
-                  <Box sx={{fontSize: 18, paddingTop:10}}>
+                    <Box sx={{ fontSize: 18, paddingTop: 10 }}>
                       {pregunta.descripcion}
                     </Box>
                   </Typography>
@@ -372,7 +410,9 @@ function Preguntas() {
                           </InputLabel>
                           <Select
                             name="calificaciones"
-                            value={respuestas[pregunta.id]?.calificaciones || ""}
+                            value={
+                              respuestas[pregunta.id]?.calificaciones || ""
+                            }
                             onChange={(event) =>
                               handleCalificacionesChange(event, pregunta.id)
                             }
@@ -399,7 +439,9 @@ function Preguntas() {
                           </InputLabel>
                           <Select
                             name="clasificaciones"
-                            value={respuestas[pregunta.id]?.clasificaciones || ""}
+                            value={
+                              respuestas[pregunta.id]?.clasificaciones || ""
+                            }
                             onChange={(event) =>
                               handleClasificacionesChange(event, pregunta.id)
                             }
@@ -457,6 +499,20 @@ function Preguntas() {
             </Grid>
           ))}
         </Grid>
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+        >
+          <MuiAlert
+            elevation={6}
+            variant="filled"
+            onClose={handleSnackbarClose}
+            severity={snackbarSeverity}
+          >
+            {snackbarMessage}
+          </MuiAlert>
+        </Snackbar>
         <Box display="flex" justifyContent="center">
           {isLastPage && (
             <Button

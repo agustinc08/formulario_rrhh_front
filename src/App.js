@@ -60,6 +60,13 @@ function App() {
               <Redirect to="/login" />
             )}
           </Route>
+          <Route exact path="/creacion">
+            {sessionStorage.getItem("isLoggedIn") === "true" ? (
+              <Preguntas />
+            ) : (
+              <Redirect to="/login" />
+            )}
+          </Route>
           <Route exact path="/login">
             {sessionStorage.getItem("isLoggedIn") === "true" ? (
               <Redirect to="/inicio" />

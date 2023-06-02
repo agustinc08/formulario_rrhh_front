@@ -200,7 +200,7 @@ const Estadisticas = () => {
 
   return (
     <Grid container justifyContent="center" alignItems="center">
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={6} md={3}>
         <Typography variant="h4" align="center" className={classes.titulo}>
           Estadísticas
         </Typography>
@@ -244,7 +244,7 @@ const Estadisticas = () => {
         </Box>
       </Grid>
 
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={6} md={3}>
         {respuestaData && (
           <div>
             <Typography variant="h6" align="center">
@@ -255,7 +255,7 @@ const Estadisticas = () => {
         )}
       </Grid>
 
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={6} md={3}>
         {edadData && (
           <div>
             <Typography variant="h6" align="center">
@@ -266,7 +266,7 @@ const Estadisticas = () => {
         )}
       </Grid>
 
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={6} md={3}>
         {generoData && (
           <div>
             <Typography variant="h6" align="center">
@@ -277,7 +277,7 @@ const Estadisticas = () => {
         )}
       </Grid>
 
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={6} md={3}>
         {clasificacionData && (
           <div>
             <Typography variant="h6" align="center">
@@ -288,7 +288,7 @@ const Estadisticas = () => {
         )}
       </Grid>
 
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={6} md={3}>
         {calificacionData && (
           <div>
             <Typography variant="h6" align="center">
