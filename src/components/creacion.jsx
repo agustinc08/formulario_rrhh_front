@@ -1,283 +1,264 @@
-import React, { useState } from "react";
-import axios from "axios";
-import {
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-  Snackbar,
-  makeStyles,
-  TextField,
-  Box,
-} from "@material-ui/core";
-import MuiAlert from "@material-ui/lab/Alert";
+import React, { useState, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    margin: "auto",
-    maxWidth: 600,
-    padding: theme.spacing(4),
-    backgroundColor: "#f5f5f5",
-    borderRadius: 4,
-    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.1)",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: theme.spacing(3),
   },
   form: {
-    display: "flex",
-    flexDirection: "column",
-    "& > *": {
-      marginBottom: theme.spacing(2),
-    },
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginTop: theme.spacing(2),
+    border: '1px solid black',
+    padding: theme.spacing(2),
   },
-  section: {
-    marginBottom: theme.spacing(4),
+  textField: {
+    margin: theme.spacing(1),
   },
   button: {
-    alignSelf: "flex-end",
+    margin: theme.spacing(2),
   },
 }));
 
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
-function Creacion() {
+const Creaciones = () => {
   const classes = useStyles();
-  const [seccion, setSeccion] = useState("");
-  const [preguntaDescripcion, setPreguntaDescripcion] = useState("");
-  const [preguntaTieneComentario, setPreguntaTieneComentario] = useState(false);
-  const [preguntaTieneExpresion, setPreguntaTieneExpresion] = useState(false);
-  const [preguntaTieneCalificaciones, setPreguntaTieneCalificaciones] =
-    useState(false);
-  const [preguntaTieneClasificaciones, setPreguntaTieneClasificaciones] =
-    useState(false);
-  const [preguntaTieneGrado, setPreguntaTieneGrado] = useState(false);
-  const [dependencia, setDependencia] = useState("");
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("");
 
-  const handleSeccionChange = (event) => {
-    setSeccion(event.target.value);
+  const [dependenciaNombre, setDependenciaNombre] = useState('');
+  const [seccionDescripcion, setSeccionDescripcion] = useState('');
+  const [preguntaDescripcion, setPreguntaDescripcion] = useState('');
+  const [tieneComentario, setTieneComentario] = useState(false);
+  const [tieneExpresion, setTieneExpresion] = useState(false);
+  const [tieneCalificaciones, setTieneCalificaciones] = useState(false);
+  const [tieneClasificaciones, setTieneClasificaciones] = useState(false);
+  const [tieneGrado, setTieneGrado] = useState(false);
+  const [secciones, setSecciones] = useState([]);
+  const [seccionId, setSeccionId] = useState('');
+  const [alerta, setAlerta] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchSecciones();
+  }, []);
+
+  const fetchSecciones = () => {
+    fetch('http://localhost:3000/secciones')
+      .then(response => response.json())
+      .then(data => setSecciones(data))
+      .catch(error => console.log(error));
   };
 
-  const handlePreguntaDescripcionChange = (event) => {
-    setPreguntaDescripcion(event.target.value);
-  };
-
-  const handlePreguntaTieneComentarioChange = (event) => {
-    setPreguntaTieneComentario(event.target.value === "SI");
-  };
-
-  const handlePreguntaTieneExpresionChange = (event) => {
-    setPreguntaTieneExpresion(event.target.value === "SI");
-  };
-
-  const handlePreguntaTieneCalificacionesChange = (event) => {
-    setPreguntaTieneCalificaciones(event.target.value === "SI");
-  };
-
-  const handlePreguntaTieneClasificacionesChange = (event) => {
-    setPreguntaTieneClasificaciones(event.target.value === "SI");
-  };
-
-  const handlePreguntaTieneGradoChange = (event) => {
-    setPreguntaTieneGrado(event.target.value === "SI");
-  };
-
-  const handleDependenciaChange = (event) => {
-    setDependencia(event.target.value);
-  };
-
-  const handleSubmitDependencia = async (event) => {
+  const handleDependenciaSubmit = (event) => {
     event.preventDefault();
-
-    try {
-      const response = await axios.post("http://localhost:3000/dependencias", {
-        nombreDependencia: dependencia,
-      });
-
-      setOpenSnackbar(true);
-      setSnackbarMessage(response.data.message);
-      setSnackbarSeverity("success");
-    } catch (error) {
-      setOpenSnackbar(true);
-      setSnackbarMessage("Error al crear la dependencia");
-      setSnackbarSeverity("error");
-    }
-  };
-
-  const handleSubmitPregunta = async (event) => {
-    event.preventDefault();
-
-    try {
-      const response = await axios.post("http://localhost:3000/preguntas", {
-        descripcion: preguntaDescripcion,
-        tieneComentario: preguntaTieneComentario,
-        tieneExpresion: preguntaTieneExpresion,
-        tieneCalificaciones: preguntaTieneCalificaciones,
-        tieneClasificaciones: preguntaTieneClasificaciones,
-        tieneGrado: preguntaTieneGrado,
-      });
-
-      setOpenSnackbar(true);
-      setSnackbarMessage(response.data.message);
-      setSnackbarSeverity("success");
-    } catch (error) {
-      setOpenSnackbar(true);
-      setSnackbarMessage("Error al crear la pregunta");
-      setSnackbarSeverity("error");
-    }
-  };
-
-  const handleSubmitSeccion = async (event) => {
-    event.preventDefault();
-
-    try {
-      // Lógica para crear la sección utilizando el valor de "seccion"
-      const response = await axios.post("http://localhost:3000/secciones", {
-        descripcion: seccion,
-      });
-
-      setOpenSnackbar(true);
-      setSnackbarMessage(response.data.message);
-      setSnackbarSeverity("success");
-    } catch (error) {
-      setOpenSnackbar(true);
-      setSnackbarMessage("Error al crear la sección");
-      setSnackbarSeverity("error");
-    }
-  };
-
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
+    if (dependenciaNombre.trim() === '') {
+      setError('El nombre de la dependencia es requerido.');
       return;
     }
+    crearDependencia(dependenciaNombre);
+  };
 
-    setOpenSnackbar(false);
+  const crearDependencia = (nombre) => {
+    // Realizar la llamada a la API para crear la dependencia usando el valor de nombre
+    console.log('Crear dependencia:', nombre);
+    setAlerta(true);
+    setDependenciaNombre('');
+    setError('');
+  };
+
+  const handleSeccionSubmit = (event) => {
+    event.preventDefault();
+    if (seccionDescripcion.trim() === '') {
+      setError('La descripción de la sección es requerida.');
+      return;
+    }
+    crearSeccion(seccionDescripcion);
+  };
+
+  const crearSeccion = (descripcion) => {
+    // Realizar la llamada a la API para crear la sección usando el valor de descripcion
+    console.log('Crear sección:', descripcion);
+    setAlerta(true);
+    setSeccionDescripcion('');
+    setError('');
+  };
+
+  const handlePreguntaSubmit = (event) => {
+    event.preventDefault();
+    if (preguntaDescripcion.trim() === '') {
+      setError('La descripción de la pregunta es requerida.');
+      return;
+    }
+    if (seccionId === '') {
+      setError('Debe seleccionar una sección.');
+      return;
+    }
+    crearPregunta(preguntaDescripcion, tieneComentario, tieneExpresion, tieneCalificaciones, tieneClasificaciones, tieneGrado, seccionId);
+  };
+
+  const crearPregunta = (descripcion, comentario, expresion, calificaciones, clasificaciones, grado, seccion) => {
+    // Realizar la llamada a la API para crear la pregunta usando los valores proporcionados
+    console.log('Crear pregunta:', descripcion, comentario, expresion, calificaciones, clasificaciones, grado, seccion);
+    setAlerta(true);
+    setPreguntaDescripcion('');
+    setSeccionId('');
+    setError('');
   };
 
   return (
     <div className={classes.container}>
-      <Typography variant="h4" align="center" gutterBottom>
-        Creación
-      </Typography>
-
-      <form className={classes.form}>
-        <Box className={classes.section}>
-          <Typography variant="h5">Sección</Typography>
-
+      <div className={classes.form}>
+        <h2>Crear Dependencia</h2>
+        <form onSubmit={handleDependenciaSubmit}>
           <TextField
-            label="Descripción de la sección"
-            value={seccion}
-            onChange={handleSeccionChange}
+            className={classes.textField}
+            label="Nombre de la Dependencia"
+            value={dependenciaNombre}
+            onChange={(event) => setDependenciaNombre(event.target.value)}
+            error={error && !dependenciaNombre.trim()}
+            helperText={error}
           />
-
           <Button
             className={classes.button}
             variant="contained"
             color="primary"
-            onClick={handleSubmitSeccion}
+            type="submit"
+          >
+            Crear Dependencia
+          </Button>
+          {alerta && (
+            <Alert severity="success">¡La dependencia se creó correctamente!</Alert>
+          )}
+        </form>
+      </div>
+
+      <div className={classes.form}>
+        <h2>Crear Sección</h2>
+        <form onSubmit={handleSeccionSubmit}>
+          <TextField
+            className={classes.textField}
+            label="Descripción de la Sección"
+            value={seccionDescripcion}
+            onChange={(event) => setSeccionDescripcion(event.target.value)}
+            error={error && !seccionDescripcion.trim()}
+            helperText={error}
+          />
+          <Button
+            className={classes.button}
+            variant="contained"
+            color="primary"
+            type="submit"
           >
             Crear Sección
           </Button>
-        </Box>
+          {alerta && (
+            <Alert severity="success">¡La sección se creó correctamente!</Alert>
+          )}
+        </form>
+      </div>
 
-        <Box className={classes.section}>
-          <Typography variant="h5">Pregunta</Typography>
-
+      <div className={classes.form}>
+        <h2>Crear Pregunta</h2>
+        <form onSubmit={handlePreguntaSubmit}>
           <TextField
-            label="Descripción de la pregunta"
+            className={classes.textField}
+            label="Descripción de la Pregunta"
             value={preguntaDescripcion}
-            onChange={handlePreguntaDescripcionChange}
+            onChange={(event) => setPreguntaDescripcion(event.target.value)}
+            error={error && !preguntaDescripcion.trim()}
+            helperText={error}
           />
-
-          <FormControl>
-            <InputLabel id="comentario-label">¿Tiene Comentario?</InputLabel>
+          <div>
+            <label>
+              Tiene Comentario:
+              <input
+                type="checkbox"
+                checked={tieneComentario}
+                onChange={() => setTieneComentario(!tieneComentario)}
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              Tiene Expresión:
+              <input
+                type="checkbox"
+                checked={tieneExpresion}
+                onChange={() => setTieneExpresion(!tieneExpresion)}
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              Tiene Calificaciones:
+              <input
+                type="checkbox"
+                checked={tieneCalificaciones}
+                onChange={() => setTieneCalificaciones(!tieneCalificaciones)}
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              Tiene Clasificaciones:
+              <input
+                type="checkbox"
+                checked={tieneClasificaciones}
+                onChange={() => setTieneClasificaciones(!tieneClasificaciones)}
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              Tiene Grado:
+              <input
+                type="checkbox"
+                checked={tieneGrado}
+                onChange={() => setTieneGrado(!tieneGrado)}
+              />
+            </label>
+          </div>
+          <FormControl className={classes.textField}>
+            <InputLabel>Seleccionar Sección</InputLabel>
             <Select
-              labelId="comentario-label"
-              value={preguntaTieneComentario ? "SI" : "NO"}
-              onChange={handlePreguntaTieneComentarioChange}
+              value={seccionId}
+              onChange={(event) => setSeccionId(event.target.value)}
+              error={error && seccionId === ''}
             >
-              <MenuItem value={"SI"}>Sí</MenuItem>
-              <MenuItem value={"NO"}>No</MenuItem>
+              <MenuItem value="">
+                <em>Seleccionar</em>
+              </MenuItem>
+              {secciones.map((seccion) => (
+                <MenuItem key={seccion.id} value={seccion.id}>
+                  {seccion.descripcion}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
-
-          <FormControl>
-            <InputLabel id="expresion-label">¿Tiene Expresión?</InputLabel>
-            <Select
-              labelId="expresion-label"
-              value={preguntaTieneExpresion ? "SI" : "NO"}
-              onChange={handlePreguntaTieneExpresionChange}
-            >
-              <MenuItem value={"SI"}>Sí</MenuItem>
-              <MenuItem value={"NO"}>No</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl>
-            <InputLabel id="calificaciones-label">¿Tiene Calificaciones?</InputLabel>
-            <Select
-              labelId="calificaciones-label"
-              value={preguntaTieneCalificaciones ? "SI" : "NO"}
-              onChange={handlePreguntaTieneCalificacionesChange}
-            >
-              <MenuItem value={"SI"}>Sí</MenuItem>
-              <MenuItem value={"NO"}>No</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl>
-            <InputLabel id="clasificaciones-label">¿Tiene Clasificaciones?</InputLabel>
-            <Select
-              labelId="clasificaciones-label"
-              value={preguntaTieneClasificaciones ? "SI" : "NO"}
-              onChange={handlePreguntaTieneClasificacionesChange}
-            >
-              <MenuItem value={"SI"}>Sí</MenuItem>
-              <MenuItem value={"NO"}>No</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl>
-            <InputLabel id="grado-label">¿Tiene Grado?</InputLabel>
-            <Select
-              labelId="grado-label"
-              value={preguntaTieneGrado ? "SI" : "NO"}
-              onChange={handlePreguntaTieneGradoChange}
-            >
-              <MenuItem value={"SI"}>Sí</MenuItem>
-              <MenuItem value={"NO"}>No</MenuItem>
-            </Select>
-          </FormControl>
-
           <Button
             className={classes.button}
             variant="contained"
             color="primary"
-            onClick={handleSubmitPregunta}
+            type="submit"
           >
             Crear Pregunta
           </Button>
-        </Box>
-      </form>
-
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+          {alerta && (
+            <Alert severity="success">¡La pregunta se creó correctamente!</Alert>
+          )}
+        </form>
+      </div>
     </div>
   );
-}
+};
 
-export default Creacion;
+export default Creaciones;

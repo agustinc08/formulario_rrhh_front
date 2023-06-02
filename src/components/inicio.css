@@ -9,13 +9,6 @@ hr{
   padding: 16px;
 }
 
-/* Estilos para el contenedor principal */
-.contenedor-principal {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
 /* Estilos para los títulos principales */
 .titulo-principal {
   font-size: 2.7rem !important;

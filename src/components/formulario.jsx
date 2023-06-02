@@ -12,6 +12,7 @@ import {
   Box,
   Grid,
   Divider,
+  Container
 } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
@@ -284,7 +285,7 @@ function Preguntas() {
   }, [preguntasPorSeccion, seccionId, currentPage]);
 
   return (
-    <div className="contenedor-principal">
+    <Container>
       <Typography variant="h4" className={classes.centrado}>
         {mensaje}
         {seccionId &&
@@ -537,7 +538,7 @@ function Preguntas() {
           setIsLastPage(pageIndex === secciones.length - 1);
         }}
       />
-    </div>
+    </Container>
   );
 }
 

@@ -9,6 +9,7 @@ import {
   Box,
   Button,
   Divider,
+  Container
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import "../components/global.css";
@@ -49,7 +50,7 @@ function Inicio() {
   };
 
   return (
-    <div className="contenedor-principal fondo-gris">
+    <Container>
       {isLoggedIn() ? (
         <>
           <Typography variant="h1" className={classes.tituloPrincipal}>
@@ -162,7 +163,7 @@ function Inicio() {
       ) : (
         <Login />
       )}
-    </div>
+    </Container>
   );
 }
 

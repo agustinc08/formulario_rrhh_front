@@ -27,9 +27,10 @@ const useStyles = makeStyles((theme) => ({
   titulo: {
     marginTop: 20,
   },
-  boton: {
+  centrar: {
     display:"flex",
-    alignItems:"center"
+    alignItems:"center",
+    justifyContent:"center",
   },
 }));
 
@@ -135,7 +136,7 @@ const Buscador = () => {
           </Typography>
         </Box>
         <Divider></Divider>
-        <Grid container spacing={4}>
+        <Grid container spacing={4} className={classes.centrar}>
           <Grid item xs={12} sm={4} lg={3}>
             <FormControl variant="standard" fullWidth size="small">
               <InputLabel>Pregunta</InputLabel>
@@ -174,7 +175,7 @@ const Buscador = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={3} lg={2} className={classes.boton}>
+          <Grid item xs={12} sm={3} lg={2} className={classes.centrar}>
             <Button
               variant="contained"
               color="primary"
