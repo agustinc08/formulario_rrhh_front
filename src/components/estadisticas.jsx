@@ -9,8 +9,9 @@ import {
   makeStyles,
   Box,
 } from '@material-ui/core';
-import { Bar, Pie, Doughnut, PolarArea } from 'react-chartjs-2';
 import "../components/global.css";
+import { Bar, Pie, Doughnut, PolarArea } from 'react-chartjs-2';
+
 
 const useStyles = makeStyles((theme) => ({
   titulo: {
@@ -20,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
 
 const Estadisticas = () => {
   const classes = useStyles();
-
   const [dependencias, setDependencias] = useState([]);
   const [preguntas, setPreguntas] = useState([]);
   const [selectedDependencia, setSelectedDependencia] = useState('');
@@ -146,7 +146,7 @@ const Estadisticas = () => {
               ],
             },
           ],
-        });
+        })
 
         const calificacionCount = data.reduce((count, respuesta) => {
           const calificacion = respuesta.calificaciones || 'REGULAR';
@@ -170,6 +170,8 @@ const Estadisticas = () => {
             },
           ],
         });
+
+
       } catch (error) {
         console.error('Error al obtener las respuestas:', error);
       }
