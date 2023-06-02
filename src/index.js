@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
 import Inicio from "./components/inicio.jsx";
 import Preguntas from "./components/formulario.jsx";
 import Login from "./components/login.jsx";
@@ -13,6 +14,14 @@ import {
   Switch,
   Redirect,
 } from "react-router-dom";
+
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(

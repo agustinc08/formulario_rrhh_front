@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Container,
   Typography,
   Table,
   TableHead,
@@ -9,7 +10,7 @@ import {
   Box,
   Button,
   Divider,
-  Container
+  
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import "../components/global.css";
@@ -138,27 +139,28 @@ function Inicio() {
               </TableRow>
             </TableBody>
           </Table>
-          <Divider></Divider>
-          <Typography variant="body1" className="parrafo">
-            A continuación, encontrarán una serie de preguntas les pedimos que
-            respondan con la mayor sinceridad posible; marcando la alternativa
-            que mejor describa lo que usted siente y piensa. No existen
-            respuestas correctas o incorrectas, solo es información acerca de
-            “su opinión sobre el tema”. La encuesta es obligatoria, anónima y
-            confidencial. El relevamiento busca sistematizar información
-            actualizada, por lo que le solicitamos centre sus respuestas en el
-            período 2022 y 2023.
-          </Typography>
-          <Box height={50} />
-          <Box className="botonContainer">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleButtonClick}
-          >
-            ir a preguntas
-          </Button>
-          </Box>
+          <div className="separar">
+            <Typography variant="body1" className="parrafo">
+              A continuación, encontrarán una serie de preguntas les pedimos que
+              respondan con la mayor sinceridad posible; marcando la alternativa
+              que mejor describa lo que usted siente y piensa. No existen
+              respuestas correctas o incorrectas, solo es información acerca de
+              “su opinión sobre el tema”. La encuesta es obligatoria, anónima y
+              confidencial. El relevamiento busca sistematizar información
+              actualizada, por lo que le solicitamos centre sus respuestas en el
+              período 2022 y 2023.
+            </Typography>
+            <Box height={50} />
+            <Box className="botonContainer">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleButtonClick}
+              >
+                ir a preguntas
+              </Button>
+            </Box>
+          </div>
         </>
       ) : (
         <Login />

@@ -368,5 +368,5 @@ const Creaciones = () => {
     </div>
   );
 }
-,
+
 export default Creaciones;
