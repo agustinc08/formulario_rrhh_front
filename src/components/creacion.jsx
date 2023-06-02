@@ -1,26 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Alert from '@material-ui/lab/Alert';
+import React, { useState, useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Alert from "@material-ui/lab/Alert";
+
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
     padding: theme.spacing(3),
   },
   form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
     marginTop: theme.spacing(2),
-    border: '1px solid black',
+    border: "1px solid black",
     padding: theme.spacing(2),
   },
   textField: {
@@ -34,34 +35,53 @@ const useStyles = makeStyles((theme) => ({
 const Creaciones = () => {
   const classes = useStyles();
 
-  const [dependenciaNombre, setDependenciaNombre] = useState('');
-  const [seccionDescripcion, setSeccionDescripcion] = useState('');
-  const [preguntaDescripcion, setPreguntaDescripcion] = useState('');
+  const [dependenciaNombre, setDependenciaNombre] = useState("");
+  const [seccionDescripcion, setSeccionDescripcion] = useState("");
+  const [preguntaDescripcion, setPreguntaDescripcion] = useState("");
   const [tieneComentario, setTieneComentario] = useState(false);
   const [tieneExpresion, setTieneExpresion] = useState(false);
   const [tieneCalificaciones, setTieneCalificaciones] = useState(false);
   const [tieneClasificaciones, setTieneClasificaciones] = useState(false);
   const [tieneGrado, setTieneGrado] = useState(false);
+  const [dependencias, setDependencias] = useState([]);
+  const [dependenciaId, setDependenciaId] = useState("");
   const [secciones, setSecciones] = useState([]);
-  const [seccionId, setSeccionId] = useState('');
+  const [seccionId, setSeccionId] = useState("");
+  const [clave, setClave] = useState("");
   const [alerta, setAlerta] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchSecciones();
+    fetchDependencias();
   }, []);
 
   const fetchSecciones = () => {
-    fetch('http://localhost:3000/secciones')
-      .then(response => response.json())
-      .then(data => setSecciones(data))
-      .catch(error => console.log(error));
+    fetch("http://localhost:3000/secciones")
+      .then((response) => response.json())
+      .then((data) => {
+        setSecciones(data);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const fetchDependencias = () => {
+    fetch("http://localhost:3000/dependencias")
+      .then((response) => response.json())
+      .then((data) => {
+        // Ordenar las dependencias por nombre antes de establecer el estado
+        const dependenciasOrdenadas = data.sort((a, b) =>
+          a.nombreDependencia.localeCompare(b.nombreDependencia)
+        );
+        setDependencias(dependenciasOrdenadas);
+      })
+      .catch((error) => console.log(error));
   };
 
   const handleDependenciaSubmit = (event) => {
     event.preventDefault();
-    if (dependenciaNombre.trim() === '') {
-      setError('El nombre de la dependencia es requerido.');
+    if (dependenciaNombre.trim() === "") {
+      setError("El nombre de la dependencia es requerido.");
       return;
     }
     crearDependencia(dependenciaNombre);
@@ -69,49 +89,98 @@ const Creaciones = () => {
 
   const crearDependencia = (nombre) => {
     // Realizar la llamada a la API para crear la dependencia usando el valor de nombre
-    console.log('Crear dependencia:', nombre);
+    console.log("Crear dependencia:", nombre);
     setAlerta(true);
-    setDependenciaNombre('');
-    setError('');
+    setDependenciaNombre("");
+    setError("");
   };
 
   const handleSeccionSubmit = (event) => {
     event.preventDefault();
-    if (seccionDescripcion.trim() === '') {
-      setError('La descripción de la sección es requerida.');
+    if (seccionDescripcion.trim() === "") {
+      setError("La descripción de la sección es requerida.");
       return;
     }
     crearSeccion(seccionDescripcion);
   };
 
+  const handleClaveSubmit = (event) => {
+    event.preventDefault();
+    if (clave.trim() === "") {
+      setError("La clave es requerida.");
+      return;
+    }
+    crearClave(clave);
+  };
+
+  const crearClave = (valorClave) => {
+    // Realizar la llamada a la API para crear la clave usando el valor de valorClave
+    console.log("Crear clave:", valorClave);
+    setAlerta(true);
+    setClave("");
+    setError("");
+  };
+
   const crearSeccion = (descripcion) => {
     // Realizar la llamada a la API para crear la sección usando el valor de descripcion
-    console.log('Crear sección:', descripcion);
+    console.log("Crear sección:", descripcion);
     setAlerta(true);
-    setSeccionDescripcion('');
-    setError('');
+    setSeccionDescripcion("");
+    setError("");
   };
 
   const handlePreguntaSubmit = (event) => {
     event.preventDefault();
-    if (preguntaDescripcion.trim() === '') {
-      setError('La descripción de la pregunta es requerida.');
+    if (preguntaDescripcion.trim() === "") {
+      setError("La descripción de la pregunta es requerida.");
       return;
     }
-    if (seccionId === '') {
-      setError('Debe seleccionar una sección.');
+    if (seccionId === "") {
+      setError("Debe seleccionar una sección.");
       return;
     }
-    crearPregunta(preguntaDescripcion, tieneComentario, tieneExpresion, tieneCalificaciones, tieneClasificaciones, tieneGrado, seccionId);
+    crearPregunta({
+      descripcion: preguntaDescripcion,
+      comentario: tieneComentario,
+      expresion: tieneExpresion,
+      calificaciones: tieneCalificaciones,
+      clasificaciones: tieneClasificaciones,
+      grado: tieneGrado,
+      seccion: seccionId
+    });
+  };
+  
+  const crearPregunta = (
+    {
+      descripcion,
+      comentario,
+      expresion,
+      calificaciones,
+      clasificaciones,
+      grado,
+      seccion
+    }
+  ) => {
+    // Realizar la llamada a la API para crear la pregunta usando los valores proporcionados
+    console.log(
+      "Crear pregunta:",
+      descripcion,
+      comentario,
+      expresion,
+      calificaciones,
+      clasificaciones,
+      grado,
+      seccion
+    );
+    setAlerta(true);
+    setPreguntaDescripcion("");
+    setSeccionId("");
+    setError("");
   };
 
-  const crearPregunta = (descripcion, comentario, expresion, calificaciones, clasificaciones, grado, seccion) => {
-    // Realizar la llamada a la API para crear la pregunta usando los valores proporcionados
-    console.log('Crear pregunta:', descripcion, comentario, expresion, calificaciones, clasificaciones, grado, seccion);
-    setAlerta(true);
-    setPreguntaDescripcion('');
-    setSeccionId('');
-    setError('');
+  const updateDependencias = (value) => {
+    // Update the 'dependencias' state variable
+    setDependencias(value);
   };
 
   return (
@@ -136,7 +205,46 @@ const Creaciones = () => {
             Crear Dependencia
           </Button>
           {alerta && (
-            <Alert severity="success">¡La dependencia se creó correctamente!</Alert>
+            <Alert severity="success">
+              ¡La dependencia se creó correctamente!
+            </Alert>
+          )}
+        </form>
+      </div>
+
+      <div className={classes.form}>
+        <h2>Crear Clave</h2>
+        <form onSubmit={handleClaveSubmit}>
+          <TextField
+            className={classes.textField}
+            label="Clave"
+            value={clave}
+            onChange={(event) => setClave(event.target.value)}
+            error={error && !clave.trim()}
+            helperText={error}
+          />
+          <Select
+            labelId="dependencia-select-label"
+            id="dependencia-select"
+            value={dependenciaId}
+            onChange={(event) => setDependenciaId(event.target.value)}
+          >
+            {dependencias.map((dependencia) => (
+              <MenuItem key={dependencia.id} value={dependencia.id}>
+                {dependencia.nombreDependencia}
+              </MenuItem>
+            ))}
+          </Select>
+          <Button
+            className={classes.button}
+            variant="contained"
+            color="primary"
+            type="submit"
+          >
+            Crear Clave
+          </Button>
+          {alerta && (
+            <Alert severity="success">¡La clave se creó correctamente!</Alert>
           )}
         </form>
       </div>
@@ -232,7 +340,7 @@ const Creaciones = () => {
             <Select
               value={seccionId}
               onChange={(event) => setSeccionId(event.target.value)}
-              error={error && seccionId === ''}
+              error={error && seccionId === ""}
             >
               <MenuItem value="">
                 <em>Seleccionar</em>
@@ -259,6 +367,6 @@ const Creaciones = () => {
       </div>
     </div>
   );
-};
-
+}
+,
 export default Creaciones;
