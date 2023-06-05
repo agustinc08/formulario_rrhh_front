@@ -55,6 +55,7 @@ const Creaciones = () => {
   const [alertaClave, setAlertaClave] = useState(false);
   const [alertaSeccion, setAlertaSeccion] = useState(false);
   const [alertaPregunta, setAlertaPregunta] = useState(false);
+  const [showUpdateConfirmation, setShowUpdateConfirmation] = useState(false);
 
   useEffect(() => {
     fetchSecciones();
@@ -93,12 +94,29 @@ const Creaciones = () => {
   };
 
   const crearDependencia = (nombre) => {
-    // Realizar la llamada a la API para crear la dependencia usando el valor de nombre
-    console.log("Crear dependencia:", nombre);
-    setAlertaDependencia(true);
-    setDependenciaNombre("");
-    setErrorDependencia("");
+    fetch("http://localhost:3000/dependencias", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ nombreDependencia: nombre }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log("Dependencia creada:", nombre);
+          setAlertaDependencia(true);
+          setDependenciaNombre("");
+          setErrorDependencia("");
+        } else {
+          throw new Error("Error al crear la dependencia.");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        setErrorDependencia("Error al crear la dependencia. Inténtalo nuevamente.");
+      });
   };
+  
 
   const handleSeccionSubmit = (event) => {
     event.preventDefault();
@@ -118,20 +136,86 @@ const Creaciones = () => {
     crearClave(clave);
   };
 
-  const crearClave = (valorClave) => {
-    // Realizar la llamada a la API para crear la clave usando el valor de valorClave
-    console.log("Crear clave:", valorClave);
-    setAlertaClave(true);
-    setClave("");
-    setErrorClave("");
+  const crearClave = (clave, dependenciaId) => {
+    fetch("http://localhost:3000/claves", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ dependencia: { connect: { id: dependenciaId } }, clave: clave }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log("Clave creada:", clave);
+          setAlertaClave(true);
+          setClave("");
+          setErrorClave("");
+        } else {
+          return response.json().then((data) => {
+            if (data.error === 'Esta dependencia ya tiene una clave. ¿Desea actualizarla?') {
+              setShowUpdateConfirmation(true);
+            } else {
+              throw new Error("Error al crear la clave.");
+            }
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        setErrorClave("Error al crear la clave. Inténtalo nuevamente.");
+      });
   };
 
+  // const handleUpdateConfirmation = () => {
+  //   setShowUpdateConfirmation(false);
+  
+  //   fetch(`http://localhost:3000/claves/${dependenciaId}`, {
+  //     method: "PUT",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({ clave }),
+  //   })
+  //     .then((response) => {
+  //       if (response.ok) {
+  //         console.log("Clave actualizada:", clave);
+  //         setAlertaClave(true);
+  //         setClave("");
+  //         setErrorClave("");
+  //       } else {
+  //         throw new Error("Error al actualizar la clave.");
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //       setErrorClave("Error al actualizar la clave. Inténtalo nuevamente.");
+  //     });
+  // };
+  
+  
+
   const crearSeccion = (descripcion) => {
-    // Realizar la llamada a la API para crear la sección usando el valor de descripcion
-    console.log("Crear sección:", descripcion);
-    setAlertaSeccion(true);
-    setSeccionDescripcion("");
-    setErrorSeccion("");
+    fetch("http://localhost:3000/secciones", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ descripcion: descripcion }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log("Sección creada:", descripcion);
+          setAlertaSeccion(true);
+          setSeccionDescripcion("");
+          setErrorSeccion("");
+        } else {
+          throw new Error("Error al crear la sección.");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        setErrorSeccion("Error al crear la sección. Inténtalo nuevamente.");
+      });
   };
 
   const handlePreguntaSubmit = (event) => {

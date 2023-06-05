@@ -12,7 +12,7 @@ import {
   Box,
   Grid,
   Divider,
-  Container
+  Container,
 } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tituloPregunta: {
     textAlign: "center",
-    marginTop:"15px",
+    marginTop: "15px",
   },
   pregunta: {
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
@@ -304,7 +304,12 @@ function Preguntas() {
           <>
             <Grid container spacing={3}>
               <Grid item xs={4}>
-                <FormControl variant="outlined" fullWidth size="small">
+                <FormControl
+                  error={error}
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                >
                   <InputLabel>Edad</InputLabel>
                   <Select
                     name="edad"
@@ -490,6 +495,7 @@ function Preguntas() {
                           onChange={(event) =>
                             handleComentarioChange(event, pregunta.id)
                           }
+                          error={error}
                           fullWidth
                           multiline
                         />
@@ -529,7 +535,7 @@ function Preguntas() {
         </Box>
       </form>
       <Pagination
-        style={{ marginBottom: '20px' }}
+        style={{ marginBottom: "20px" }}
         count={secciones.length}
         page={secciones.findIndex((seccion) => seccion.id === seccionId) + 1}
         onChange={(event, value) => {
