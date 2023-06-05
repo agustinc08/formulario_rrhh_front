@@ -10,7 +10,6 @@ import {
   Box,
   Button,
   Divider,
-  
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import "../components/global.css";
@@ -37,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   tituloPrincipal: {
     fontSize: "46px !important",
     textAlign: "center",
-    marginBottom: "30px",
+    marginTop:"10px",
   },
 
 }));
@@ -62,7 +61,8 @@ function Inicio() {
             INTRODUCCIÓN
           </Typography>
           <Typography variant="body1" className="parrafo">
-            El presente relevamiento general tiene como finalidad conocer
+            <span className="sangria">El </span>
+              presente relevamiento general tiene como finalidad conocer
             aspectos del trabajo cotidiano en las distintas dependencias del
             fuero para desarrollar acciones en los temas que así lo requieran,
             con el fin de mejorar el clima laboral, la comunicación,
@@ -71,7 +71,8 @@ function Inicio() {
             ASPO en relación a las formas de funcionamiento.
           </Typography>
           <Typography variant="body1" className="parrafo">
-            Participará todo el personal que se viene desempeñando en el Fuero
+            <span className="sangria">Participará </span>
+            todo el personal que se viene desempeñando en el Fuero
             Civil de manera interina, suplente, contratada, provisional o
             efectiva y cuente con más de un mes de antigüedad en el cargo.
           </Typography>
@@ -79,7 +80,8 @@ function Inicio() {
             OBJETIVOS
           </Typography>
           <Typography variant="body1" className="parrafo">
-            El presente relevamiento tiene como objetivo sistematizar
+            <span className="sangria">El </span>
+            presente relevamiento tiene como objetivo sistematizar
             información actualizada y pertinente, con el fin de identificar los
             principales determinantes en los procesos de trabajo y sus efectos
             en las personas que las llevan adelante, las tareas que desarrollan
@@ -141,7 +143,8 @@ function Inicio() {
           </Table>
           <div className="separar">
             <Typography variant="body1" className="parrafo">
-              A continuación, encontrarán una serie de preguntas les pedimos que
+              <span className="sangria">A </span>
+              continuación, encontrarán una serie de preguntas les pedimos que
               respondan con la mayor sinceridad posible; marcando la alternativa
               que mejor describa lo que usted siente y piensa. No existen
               respuestas correctas o incorrectas, solo es información acerca de

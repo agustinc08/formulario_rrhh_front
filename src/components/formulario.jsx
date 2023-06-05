@@ -41,8 +41,9 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     marginBottom: "30px",
   },
-  centrado: {
+  tituloPregunta: {
     textAlign: "center",
+    marginTop:"15px",
   },
   pregunta: {
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
@@ -286,7 +287,7 @@ function Preguntas() {
 
   return (
     <Container>
-      <Typography variant="h4" className={classes.centrado}>
+      <Typography variant="h4" className={classes.tituloPregunta}>
         {mensaje}
         {seccionId &&
           secciones.length > 0 &&
@@ -528,6 +529,7 @@ function Preguntas() {
         </Box>
       </form>
       <Pagination
+        style={{ marginBottom: '20px' }}
         count={secciones.length}
         page={secciones.findIndex((seccion) => seccion.id === seccionId) + 1}
         onChange={(event, value) => {

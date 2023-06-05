@@ -8,9 +8,7 @@ import MuiAlert from "@material-ui/lab/Alert";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import backgroundImage from "../41-0.131209001550177303_B.jpg";
-import { withRouter } from "react-router-dom";
 import "./global.css";
-
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -81,8 +79,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-function Login() {
+function Login({ onLogin }) {
   const classes = useStyles();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -91,7 +88,7 @@ function Login() {
   const [open, setOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const history = useHistory();
- 
+
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
   };
@@ -104,7 +101,6 @@ function Login() {
     if (reason === "clickaway") {
       return;
     }
-
     setOpen(false);
   };
 
@@ -119,8 +115,11 @@ function Login() {
       );
       if (clave) {
         console.log("Inicio de sesión exitoso!");
-        sessionStorage.setItem("isLoggedIn", true);
+        sessionStorage.setItem("isLoggedIn", "true");
         sessionStorage.setItem("dependencia", dependencia.nombreDependencia);
+        // Llama a la función onLogin pasada como prop desde App.js
+        // para actualizar el estado isLoggedIn
+        onLogin(dependencia.nombreDependencia, clave.clave);
         history.push("/inicio");
       } else {
         setErrorMessage("La clave es incorrecta para esta dependencia.");
@@ -132,7 +131,7 @@ function Login() {
       );
       setOpen(true);
     }
-  }
+  };
 
   const fetchDependencias = async () => {
     const response = await fetch("http://localhost:3000/dependencias");
@@ -158,7 +157,7 @@ function Login() {
         <div className={classes.login}>
           <form className={classes.form} onSubmit={handleSubmit}>
             <div className={classes.textFieldContainer}>
-                <TextField
+              <TextField
                 label="Dependencia"
                 variant="outlined"
                 className={classes.textField}
@@ -182,7 +181,12 @@ function Login() {
                 Iniciar sesión
               </Button>
             </div>
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Snackbar
+              open={open}
+              autoHideDuration={6000}
+              onClose={handleClose}
+              className={classes.snackbar}
+            >
               <MuiAlert
                 elevation={6}
                 variant="filled"
@@ -208,4 +212,4 @@ function Login() {
   );
 }
 
-export default withRouter(Login); // exportar Login con withRoute
+export default Login;

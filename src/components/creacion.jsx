@@ -7,12 +7,11 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Alert from "@material-ui/lab/Alert";
-
+import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
-    flexDirection: "column",
     alignItems: "center",
     padding: theme.spacing(3),
   },
@@ -20,12 +19,13 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    justifyContent: "center",
     marginTop: theme.spacing(2),
-    border: "1px solid black",
     padding: theme.spacing(2),
   },
   textField: {
     margin: theme.spacing(1),
+    width: "70% !important",
   },
   button: {
     margin: theme.spacing(2),
@@ -34,8 +34,6 @@ const useStyles = makeStyles((theme) => ({
 
 const Creaciones = () => {
   const classes = useStyles();
-
-  const [dependenciaNombre, setDependenciaNombre] = useState("");
   const [seccionDescripcion, setSeccionDescripcion] = useState("");
   const [preguntaDescripcion, setPreguntaDescripcion] = useState("");
   const [tieneComentario, setTieneComentario] = useState(false);
@@ -48,8 +46,15 @@ const Creaciones = () => {
   const [secciones, setSecciones] = useState([]);
   const [seccionId, setSeccionId] = useState("");
   const [clave, setClave] = useState("");
-  const [alerta, setAlerta] = useState(false);
-  const [error, setError] = useState("");
+  const [dependenciaNombre, setDependenciaNombre] = useState("");
+  const [errorDependencia, setErrorDependencia] = useState(false);
+  const [errorClave, setErrorClave] = useState(false);
+  const [errorSeccion, setErrorSeccion] = useState(false);
+  const [errorPregunta, setErrorPregunta] = useState(false);
+  const [alertaDependencia, setAlertaDependencia] = useState(false);
+  const [alertaClave, setAlertaClave] = useState(false);
+  const [alertaSeccion, setAlertaSeccion] = useState(false);
+  const [alertaPregunta, setAlertaPregunta] = useState(false);
 
   useEffect(() => {
     fetchSecciones();
@@ -81,7 +86,7 @@ const Creaciones = () => {
   const handleDependenciaSubmit = (event) => {
     event.preventDefault();
     if (dependenciaNombre.trim() === "") {
-      setError("El nombre de la dependencia es requerido.");
+      setErrorDependencia("El nombre de la dependencia es requerido.");
       return;
     }
     crearDependencia(dependenciaNombre);
@@ -90,15 +95,15 @@ const Creaciones = () => {
   const crearDependencia = (nombre) => {
     // Realizar la llamada a la API para crear la dependencia usando el valor de nombre
     console.log("Crear dependencia:", nombre);
-    setAlerta(true);
+    setAlertaDependencia(true);
     setDependenciaNombre("");
-    setError("");
+    setErrorDependencia("");
   };
 
   const handleSeccionSubmit = (event) => {
     event.preventDefault();
     if (seccionDescripcion.trim() === "") {
-      setError("La descripción de la sección es requerida.");
+      setErrorSeccion("La descripción de la sección es requerida.");
       return;
     }
     crearSeccion(seccionDescripcion);
@@ -107,7 +112,7 @@ const Creaciones = () => {
   const handleClaveSubmit = (event) => {
     event.preventDefault();
     if (clave.trim() === "") {
-      setError("La clave es requerida.");
+      setErrorClave("La clave es requerida.");
       return;
     }
     crearClave(clave);
@@ -116,27 +121,29 @@ const Creaciones = () => {
   const crearClave = (valorClave) => {
     // Realizar la llamada a la API para crear la clave usando el valor de valorClave
     console.log("Crear clave:", valorClave);
-    setAlerta(true);
+    setAlertaClave(true);
     setClave("");
-    setError("");
+    setErrorClave("");
   };
 
   const crearSeccion = (descripcion) => {
     // Realizar la llamada a la API para crear la sección usando el valor de descripcion
     console.log("Crear sección:", descripcion);
-    setAlerta(true);
+    setAlertaSeccion(true);
     setSeccionDescripcion("");
-    setError("");
+    setErrorSeccion("");
   };
 
   const handlePreguntaSubmit = (event) => {
     event.preventDefault();
     if (preguntaDescripcion.trim() === "") {
-      setError("La descripción de la pregunta es requerida.");
+      setErrorPregunta(true);
+      setErrorPregunta("La descripción de la pregunta es requerida.");
       return;
     }
     if (seccionId === "") {
-      setError("Debe seleccionar una sección.");
+      setErrorSeccion(true);
+      setErrorPregunta("Debe seleccionar una sección.");
       return;
     }
     crearPregunta({
@@ -146,21 +153,19 @@ const Creaciones = () => {
       calificaciones: tieneCalificaciones,
       clasificaciones: tieneClasificaciones,
       grado: tieneGrado,
-      seccion: seccionId
+      seccion: seccionId,
     });
   };
-  
-  const crearPregunta = (
-    {
-      descripcion,
-      comentario,
-      expresion,
-      calificaciones,
-      clasificaciones,
-      grado,
-      seccion
-    }
-  ) => {
+
+  const crearPregunta = ({
+    descripcion,
+    comentario,
+    expresion,
+    calificaciones,
+    clasificaciones,
+    grado,
+    seccion,
+  }) => {
     // Realizar la llamada a la API para crear la pregunta usando los valores proporcionados
     console.log(
       "Crear pregunta:",
@@ -172,201 +177,214 @@ const Creaciones = () => {
       grado,
       seccion
     );
-    setAlerta(true);
+    setAlertaPregunta(true);
     setPreguntaDescripcion("");
     setSeccionId("");
-    setError("");
-  };
-
-  const updateDependencias = (value) => {
-    // Update the 'dependencias' state variable
-    setDependencias(value);
+    setErrorPregunta("");
   };
 
   return (
     <div className={classes.container}>
-      <div className={classes.form}>
-        <h2>Crear Dependencia</h2>
-        <form onSubmit={handleDependenciaSubmit}>
-          <TextField
-            className={classes.textField}
-            label="Nombre de la Dependencia"
-            value={dependenciaNombre}
-            onChange={(event) => setDependenciaNombre(event.target.value)}
-            error={error && !dependenciaNombre.trim()}
-            helperText={error}
-          />
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="primary"
-            type="submit"
-          >
-            Crear Dependencia
-          </Button>
-          {alerta && (
-            <Alert severity="success">
-              ¡La dependencia se creó correctamente!
-            </Alert>
-          )}
-        </form>
-      </div>
+      <Grid item xs={12} sm={4} lg={3}>
+        <div className={classes.form}>
+          <h2>Crear Dependencia</h2>
 
-      <div className={classes.form}>
-        <h2>Crear Clave</h2>
-        <form onSubmit={handleClaveSubmit}>
-          <TextField
-            className={classes.textField}
-            label="Clave"
-            value={clave}
-            onChange={(event) => setClave(event.target.value)}
-            error={error && !clave.trim()}
-            helperText={error}
-          />
-          <Select
-            labelId="dependencia-select-label"
-            id="dependencia-select"
-            value={dependenciaId}
-            onChange={(event) => setDependenciaId(event.target.value)}
-          >
-            {dependencias.map((dependencia) => (
-              <MenuItem key={dependencia.id} value={dependencia.id}>
-                {dependencia.nombreDependencia}
-              </MenuItem>
-            ))}
-          </Select>
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="primary"
-            type="submit"
-          >
-            Crear Clave
-          </Button>
-          {alerta && (
-            <Alert severity="success">¡La clave se creó correctamente!</Alert>
-          )}
-        </form>
-      </div>
-
-      <div className={classes.form}>
-        <h2>Crear Sección</h2>
-        <form onSubmit={handleSeccionSubmit}>
-          <TextField
-            className={classes.textField}
-            label="Descripción de la Sección"
-            value={seccionDescripcion}
-            onChange={(event) => setSeccionDescripcion(event.target.value)}
-            error={error && !seccionDescripcion.trim()}
-            helperText={error}
-          />
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="primary"
-            type="submit"
-          >
-            Crear Sección
-          </Button>
-          {alerta && (
-            <Alert severity="success">¡La sección se creó correctamente!</Alert>
-          )}
-        </form>
-      </div>
-
-      <div className={classes.form}>
-        <h2>Crear Pregunta</h2>
-        <form onSubmit={handlePreguntaSubmit}>
-          <TextField
-            className={classes.textField}
-            label="Descripción de la Pregunta"
-            value={preguntaDescripcion}
-            onChange={(event) => setPreguntaDescripcion(event.target.value)}
-            error={error && !preguntaDescripcion.trim()}
-            helperText={error}
-          />
-          <div>
-            <label>
-              Tiene Comentario:
-              <input
-                type="checkbox"
-                checked={tieneComentario}
-                onChange={() => setTieneComentario(!tieneComentario)}
-              />
-            </label>
-          </div>
-          <div>
-            <label>
-              Tiene Expresión:
-              <input
-                type="checkbox"
-                checked={tieneExpresion}
-                onChange={() => setTieneExpresion(!tieneExpresion)}
-              />
-            </label>
-          </div>
-          <div>
-            <label>
-              Tiene Calificaciones:
-              <input
-                type="checkbox"
-                checked={tieneCalificaciones}
-                onChange={() => setTieneCalificaciones(!tieneCalificaciones)}
-              />
-            </label>
-          </div>
-          <div>
-            <label>
-              Tiene Clasificaciones:
-              <input
-                type="checkbox"
-                checked={tieneClasificaciones}
-                onChange={() => setTieneClasificaciones(!tieneClasificaciones)}
-              />
-            </label>
-          </div>
-          <div>
-            <label>
-              Tiene Grado:
-              <input
-                type="checkbox"
-                checked={tieneGrado}
-                onChange={() => setTieneGrado(!tieneGrado)}
-              />
-            </label>
-          </div>
-          <FormControl className={classes.textField}>
-            <InputLabel>Seleccionar Sección</InputLabel>
-            <Select
-              value={seccionId}
-              onChange={(event) => setSeccionId(event.target.value)}
-              error={error && seccionId === ""}
+          <form onSubmit={handleDependenciaSubmit}>
+            <TextField
+              className={classes.textField}
+              label="Dependencia"
+              value={dependenciaNombre}
+              onChange={(event) => setDependenciaNombre(event.target.value)}
+              error={!!errorDependencia}
+              helperText={errorDependencia}
+            />
+            <Button
+              className={classes.button}
+              variant="contained"
+              color="primary"
+              type="submit"
             >
-              <MenuItem value="">
-                <em>Seleccionar</em>
-              </MenuItem>
-              {secciones.map((seccion) => (
-                <MenuItem key={seccion.id} value={seccion.id}>
-                  {seccion.descripcion}
+              Crear Dependencia
+            </Button>
+            {alertaDependencia && (
+              <Alert severity="success">
+                ¡La dependencia se creó correctamente!
+              </Alert>
+            )}
+          </form>
+        </div>
+      </Grid>
+
+      <Grid item xs={12} sm={4} lg={3}>
+        <div className={classes.form}>
+          <h2>Crear Clave</h2>
+          <form onSubmit={handleClaveSubmit}>
+            <TextField
+              className={classes.textField}
+              label="Clave"
+              value={clave}
+              onChange={(event) => setClave(event.target.value)}
+              error={errorClave && !clave.trim()}
+              helperText={errorClave}
+            />
+            <Select
+              labelId="dependencia-select-label"
+              id="dependencia-select"
+              value={dependenciaId}
+              onChange={(event) => setDependenciaId(event.target.value)}
+            >
+              {dependencias.map((dependencia) => (
+                <MenuItem key={dependencia.id} value={dependencia.id}>
+                  {dependencia.nombreDependencia}
                 </MenuItem>
               ))}
             </Select>
-          </FormControl>
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="primary"
-            type="submit"
-          >
-            Crear Pregunta
-          </Button>
-          {alerta && (
-            <Alert severity="success">¡La pregunta se creó correctamente!</Alert>
-          )}
-        </form>
-      </div>
+            <Button
+              className={classes.button}
+              variant="contained"
+              color="primary"
+              type="submit"
+            >
+              Crear Clave
+            </Button>
+            {alertaClave && (
+              <Alert severity="success">¡La clave se creó correctamente!</Alert>
+            )}
+          </form>
+        </div>
+      </Grid>
+
+      <Grid item xs={12} sm={4} lg={3}>
+        <div className={classes.form}>
+          <h2>Crear Sección</h2>
+          <form onSubmit={handleSeccionSubmit}>
+            <TextField
+              className={classes.textField}
+              label="Descripción"
+              value={seccionDescripcion}
+              onChange={(event) => setSeccionDescripcion(event.target.value)}
+              error={errorSeccion && !seccionDescripcion.trim()}
+              helperText={errorSeccion}
+            />
+            <Button
+              className={classes.button}
+              variant="contained"
+              color="primary"
+              type="submit"
+            >
+              Crear Sección
+            </Button>
+            {alertaSeccion && (
+              <Alert severity="success">
+                ¡La sección se creó correctamente!
+              </Alert>
+            )}
+          </form>
+        </div>
+      </Grid>
+
+      <Grid item xs={12} sm={4} lg={3}>
+        <div className={classes.form}>
+          <h2>Crear Pregunta</h2>
+          <form onSubmit={handlePreguntaSubmit}>
+            <TextField
+              className={classes.textField}
+              label="Pregunta"
+              value={preguntaDescripcion}
+              onChange={(event) => setPreguntaDescripcion(event.target.value)}
+              error={errorPregunta}
+              helperText={errorPregunta}
+            />
+            <div>
+              <label>
+                Tiene Comentario:
+                <input
+                  type="checkbox"
+                  checked={tieneComentario}
+                  onChange={() => setTieneComentario(!tieneComentario)}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Tiene Expresión:
+                <input
+                  type="checkbox"
+                  checked={tieneExpresion}
+                  onChange={() => setTieneExpresion(!tieneExpresion)}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Tiene Calificaciones:
+                <input
+                  type="checkbox"
+                  checked={tieneCalificaciones}
+                  onChange={() => setTieneCalificaciones(!tieneCalificaciones)}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Tiene Clasificaciones:
+                <input
+                  type="checkbox"
+                  checked={tieneClasificaciones}
+                  onChange={() =>
+                    setTieneClasificaciones(!tieneClasificaciones)
+                  }
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Tiene Grado:
+                <input
+                  type="checkbox"
+                  checked={tieneGrado}
+                  onChange={() => setTieneGrado(!tieneGrado)}
+                />
+              </label>
+            </div>
+            <Grid item xs={12} sm={6} lg={4}>
+            <FormControl error={!!errorPregunta} className={classes.textField}>
+                <InputLabel>Seleccionar Sección</InputLabel>
+                <Select
+                  value={seccionId}
+                  onChange={(event) => setSeccionId(event.target.value)}
+                  error={errorPregunta && seccionId === ""}
+                >
+                  <MenuItem value="">
+                    <em>Seleccionar</em>
+                  </MenuItem>
+                  {secciones.map((seccion) => (
+                    <MenuItem key={seccion.id} value={seccion.id}>
+                      {seccion.descripcion}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <Button
+                className={classes.button}
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Crear Pregunta
+              </Button>
+            </Grid>
+            {alertaPregunta && (
+              <Alert severity="success">
+                ¡La pregunta se creó correctamente!
+              </Alert>
+            )}
+          </form>
+        </div>
+      </Grid>
     </div>
   );
-}
+};
 
 export default Creaciones;
