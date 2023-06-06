@@ -109,6 +109,7 @@ const Creaciones = () => {
           setAlertaDependencia(true);
           setDependenciaNombre("");
           setErrorDependencia(true);
+          window.location.reload();
         } else {
           throw new Error("Error al crear la dependencia.");
         }
@@ -155,6 +156,7 @@ const Creaciones = () => {
           setAlertaClave(true);
           setClave("");
           setErrorClave(true);
+          window.location.reload();
         } else {
           return response.json().then((data) => {
             if (
@@ -188,6 +190,7 @@ const Creaciones = () => {
           setAlertaSeccion(true);
           setSeccionDescripcion("");
           setErrorSeccion(true);
+          window.location.reload();
         } else {
           throw new Error("Error al crear la sección.");
         }
@@ -252,6 +255,7 @@ const Creaciones = () => {
           setPregunta("");
           setSeccionId("");
           setErrorPregunta(false); // Establecer el estado de error a false
+          window.location.reload();
         } else {
           throw new Error("Error al crear la pregunta.");
         }
