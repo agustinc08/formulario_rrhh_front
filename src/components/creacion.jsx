@@ -8,6 +8,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Alert from "@material-ui/lab/Alert";
 import Grid from "@material-ui/core/Grid";
+import FormHelperText from "@material-ui/core/FormHelperText";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -46,6 +47,7 @@ const Creaciones = () => {
   const [secciones, setSecciones] = useState([]);
   const [seccionId, setSeccionId] = useState("");
   const [clave, setClave] = useState("");
+  const [pregunta, setPregunta] = useState("");
   const [dependenciaNombre, setDependenciaNombre] = useState("");
   const [errorDependencia, setErrorDependencia] = useState(false);
   const [errorClave, setErrorClave] = useState(false);
@@ -87,7 +89,7 @@ const Creaciones = () => {
   const handleDependenciaSubmit = (event) => {
     event.preventDefault();
     if (dependenciaNombre.trim() === "") {
-      setErrorDependencia("El nombre de la dependencia es requerido.");
+      setErrorDependencia(true);
       return;
     }
     crearDependencia(dependenciaNombre);
@@ -106,22 +108,21 @@ const Creaciones = () => {
           console.log("Dependencia creada:", nombre);
           setAlertaDependencia(true);
           setDependenciaNombre("");
-          setErrorDependencia("");
+          setErrorDependencia(true);
         } else {
           throw new Error("Error al crear la dependencia.");
         }
       })
       .catch((error) => {
         console.error(error);
-        setErrorDependencia("Error al crear la dependencia. Inténtalo nuevamente.");
+        setErrorDependencia(true);
       });
   };
-  
 
   const handleSeccionSubmit = (event) => {
     event.preventDefault();
     if (seccionDescripcion.trim() === "") {
-      setErrorSeccion("La descripción de la sección es requerida.");
+      setErrorSeccion(true);
       return;
     }
     crearSeccion(seccionDescripcion);
@@ -130,10 +131,11 @@ const Creaciones = () => {
   const handleClaveSubmit = (event) => {
     event.preventDefault();
     if (clave.trim() === "") {
-      setErrorClave("La clave es requerida.");
+      setErrorClave(true);
       return;
     }
-    crearClave(clave);
+    crearClave(clave, dependenciaId);  // Pasar dependenciaId como segundo argumento
+    console.log(dependenciaId)
   };
 
   const crearClave = (clave, dependenciaId) => {
@@ -142,17 +144,23 @@ const Creaciones = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ dependencia: { connect: { id: dependenciaId } }, clave: clave }),
+      body: JSON.stringify({
+        dependenciaId: dependenciaId, // Pass the dependenciaId as a separate property
+        clave: clave,
+      }),
     })
       .then((response) => {
         if (response.ok) {
           console.log("Clave creada:", clave);
           setAlertaClave(true);
           setClave("");
-          setErrorClave("");
+          setErrorClave(true);
         } else {
           return response.json().then((data) => {
-            if (data.error === 'Esta dependencia ya tiene una clave. ¿Desea actualizarla?') {
+            if (
+              data.error ===
+              "Esta dependencia ya tiene una clave. ¿Desea actualizarla?"
+            ) {
               setShowUpdateConfirmation(true);
             } else {
               throw new Error("Error al crear la clave.");
@@ -162,37 +170,9 @@ const Creaciones = () => {
       })
       .catch((error) => {
         console.error(error);
-        setErrorClave("Error al crear la clave. Inténtalo nuevamente.");
+        setErrorClave(true);
       });
   };
-
-  // const handleUpdateConfirmation = () => {
-  //   setShowUpdateConfirmation(false);
-  
-  //   fetch(`http://localhost:3000/claves/${dependenciaId}`, {
-  //     method: "PUT",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({ clave }),
-  //   })
-  //     .then((response) => {
-  //       if (response.ok) {
-  //         console.log("Clave actualizada:", clave);
-  //         setAlertaClave(true);
-  //         setClave("");
-  //         setErrorClave("");
-  //       } else {
-  //         throw new Error("Error al actualizar la clave.");
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //       setErrorClave("Error al actualizar la clave. Inténtalo nuevamente.");
-  //     });
-  // };
-  
-  
 
   const crearSeccion = (descripcion) => {
     fetch("http://localhost:3000/secciones", {
@@ -207,37 +187,37 @@ const Creaciones = () => {
           console.log("Sección creada:", descripcion);
           setAlertaSeccion(true);
           setSeccionDescripcion("");
-          setErrorSeccion("");
+          setErrorSeccion(true);
         } else {
           throw new Error("Error al crear la sección.");
         }
       })
       .catch((error) => {
         console.error(error);
-        setErrorSeccion("Error al crear la sección. Inténtalo nuevamente.");
+        setErrorSeccion(true);
       });
   };
 
   const handlePreguntaSubmit = (event) => {
     event.preventDefault();
-    if (preguntaDescripcion.trim() === "") {
+    if (pregunta.trim() === "") {
       setErrorPregunta(true);
-      setErrorPregunta("La descripción de la pregunta es requerida.");
       return;
     }
-    if (seccionId === "") {
+    if (!seccionId) {
+      setErrorPregunta(true);
       setErrorSeccion(true);
-      setErrorPregunta("Debe seleccionar una sección.");
       return;
     }
+
     crearPregunta({
-      descripcion: preguntaDescripcion,
+      descripcion: pregunta,
       comentario: tieneComentario,
       expresion: tieneExpresion,
       calificaciones: tieneCalificaciones,
       clasificaciones: tieneClasificaciones,
       grado: tieneGrado,
-      seccion: seccionId,
+      seccionId: seccionId,
     });
   };
 
@@ -248,23 +228,38 @@ const Creaciones = () => {
     calificaciones,
     clasificaciones,
     grado,
-    seccion,
+    seccionId,
   }) => {
-    // Realizar la llamada a la API para crear la pregunta usando los valores proporcionados
-    console.log(
-      "Crear pregunta:",
-      descripcion,
-      comentario,
-      expresion,
-      calificaciones,
-      clasificaciones,
-      grado,
-      seccion
-    );
-    setAlertaPregunta(true);
-    setPreguntaDescripcion("");
-    setSeccionId("");
-    setErrorPregunta("");
+    fetch("http://localhost:3000/preguntas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        descripcion: descripcion,
+        comentario: comentario,
+        expresion: expresion,
+        calificaciones: calificaciones,
+        clasificaciones: clasificaciones,
+        grado: grado,
+        seccionId: seccionId,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log("Pregunta creada:", descripcion);
+          setAlertaPregunta(true);
+          setPregunta("");
+          setSeccionId("");
+          setErrorPregunta(false); // Establecer el estado de error a false
+        } else {
+          throw new Error("Error al crear la pregunta.");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        setErrorPregunta(true);
+      });
   };
 
   return (
@@ -279,8 +274,8 @@ const Creaciones = () => {
               label="Dependencia"
               value={dependenciaNombre}
               onChange={(event) => setDependenciaNombre(event.target.value)}
-              error={!!errorDependencia}
-              helperText={errorDependencia}
+              error={errorDependencia}
+
             />
             <Button
               className={classes.button}
@@ -309,7 +304,7 @@ const Creaciones = () => {
               value={clave}
               onChange={(event) => setClave(event.target.value)}
               error={errorClave && !clave.trim()}
-              helperText={errorClave}
+
             />
             <Select
               labelId="dependencia-select-label"
@@ -348,7 +343,7 @@ const Creaciones = () => {
               value={seccionDescripcion}
               onChange={(event) => setSeccionDescripcion(event.target.value)}
               error={errorSeccion && !seccionDescripcion.trim()}
-              helperText={errorSeccion}
+
             />
             <Button
               className={classes.button}
@@ -374,10 +369,9 @@ const Creaciones = () => {
             <TextField
               className={classes.textField}
               label="Pregunta"
-              value={preguntaDescripcion}
-              onChange={(event) => setPreguntaDescripcion(event.target.value)}
+              value={pregunta}
+              onChange={(event) => setPregunta(event.target.value)}
               error={errorPregunta}
-              helperText={errorPregunta}
             />
             <div>
               <label>
@@ -432,9 +426,14 @@ const Creaciones = () => {
               </label>
             </div>
             <Grid item xs={12} sm={6} lg={4}>
-            <FormControl error={!!errorPregunta} className={classes.textField}>
+              <FormControl
+                error={errorPregunta && seccionId === ""}
+                className={classes.textField}
+              >
                 <InputLabel>Seleccionar Sección</InputLabel>
                 <Select
+                  labelId="seccion-select-label"
+                  id="seccion-select"
                   value={seccionId}
                   onChange={(event) => setSeccionId(event.target.value)}
                   error={errorPregunta && seccionId === ""}
@@ -448,6 +447,9 @@ const Creaciones = () => {
                     </MenuItem>
                   ))}
                 </Select>
+                {errorPregunta && seccionId === "" && (
+                  <FormHelperText>Seleccione una sección</FormHelperText>
+                )}
               </FormControl>
 
               <Button
