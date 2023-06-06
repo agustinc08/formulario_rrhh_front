@@ -9,6 +9,10 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Alert from "@material-ui/lab/Alert";
 import Grid from "@material-ui/core/Grid";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import Checkbox from "@material-ui/core/Checkbox";
+import  FormControlLabel  from '@material-ui/core/FormControlLabel';
+
+
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -215,22 +219,17 @@ const Creaciones = () => {
 
     crearPregunta({
       descripcion: pregunta,
-      comentario: tieneComentario,
-      expresion: tieneExpresion,
-      calificaciones: tieneCalificaciones,
-      clasificaciones: tieneClasificaciones,
-      grado: tieneGrado,
       seccionId: seccionId,
+      tieneComentario: tieneComentario,
+      tieneExpresion: tieneExpresion,
+      tieneCalificaciones: tieneCalificaciones,
+      tieneClasificaciones: tieneClasificaciones,
+      tieneGrado: tieneGrado
     });
   };
 
   const crearPregunta = ({
     descripcion,
-    comentario,
-    expresion,
-    calificaciones,
-    clasificaciones,
-    grado,
     seccionId,
   }) => {
     fetch("http://localhost:3000/preguntas", {
@@ -240,12 +239,12 @@ const Creaciones = () => {
       },
       body: JSON.stringify({
         descripcion: descripcion,
-        comentario: comentario,
-        expresion: expresion,
-        calificaciones: calificaciones,
-        clasificaciones: clasificaciones,
-        grado: grado,
         seccionId: seccionId,
+        tieneComentario: tieneComentario, // Pasar el valor booleano directamente
+        tieneExpresion: tieneExpresion, // Pasar el valor booleano directamente
+        tieneCalificaciones: tieneCalificaciones, // Pasar el valor booleano directamente
+        tieneClasificaciones: tieneClasificaciones, // Pasar el valor booleano directamente
+        tieneGrado: tieneGrado, // Pasar el valor booleano directamente
       }),
     })
       .then((response) => {
@@ -378,56 +377,59 @@ const Creaciones = () => {
               error={errorPregunta}
             />
             <div>
-              <label>
-                Tiene Comentario:
-                <input
-                  type="checkbox"
-                  checked={tieneComentario}
-                  onChange={() => setTieneComentario(!tieneComentario)}
-                />
-              </label>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={tieneComentario}
+                    onChange={(event) => setTieneComentario(event.target.checked)}
+                  />
+                }
+                label="Tiene Comentario"
+              />
             </div>
             <div>
-              <label>
-                Tiene Expresión:
-                <input
-                  type="checkbox"
-                  checked={tieneExpresion}
-                  onChange={() => setTieneExpresion(!tieneExpresion)}
-                />
-              </label>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={tieneExpresion}
+                    onChange={(event) => setTieneExpresion(event.target.checked)}
+                  />
+                }
+                label="Tiene Expresion"
+              />
             </div>
             <div>
-              <label>
-                Tiene Calificaciones:
-                <input
-                  type="checkbox"
-                  checked={tieneCalificaciones}
-                  onChange={() => setTieneCalificaciones(!tieneCalificaciones)}
-                />
-              </label>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={tieneCalificaciones}
+                    onChange={(event) => setTieneCalificaciones(event.target.checked)}
+                  />
+                }
+                label="Tiene Calificaciones"
+              />
             </div>
             <div>
-              <label>
-                Tiene Clasificaciones:
-                <input
-                  type="checkbox"
-                  checked={tieneClasificaciones}
-                  onChange={() =>
-                    setTieneClasificaciones(!tieneClasificaciones)
-                  }
-                />
-              </label>
-            </div>
-            <div>
-              <label>
-                Tiene Grado:
-                <input
-                  type="checkbox"
+            <FormControlLabel
+              control={
+                <Checkbox
                   checked={tieneGrado}
-                  onChange={() => setTieneGrado(!tieneGrado)}
+                  onChange={(event) => setTieneGrado(event.target.checked)}
                 />
-              </label>
+              }
+              label="Tiene Grado"
+            />
+            </div>
+            <div>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={tieneClasificaciones}
+                  onChange={(event) => setTieneClasificaciones(event.target.checked)}
+                />
+              }
+              label="Tiene Clasificaciones"
+            />
             </div>
             <Grid item xs={12} sm={6} lg={4}>
               <FormControl
