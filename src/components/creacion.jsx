@@ -17,6 +17,8 @@ import List from "@material-ui/core/List";
 import Modal from "@material-ui/core/Modal";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
+import Backdrop from "@material-ui/core/Backdrop";
+import { Paper } from '@material-ui/core';
 import {
   Table,
   TableHead,
@@ -29,15 +31,27 @@ import {
 import "../components/global.css";
 
 const useStyles = makeStyles((theme) => ({
-  divMain:{
+  divMain: {
     '& h2, & .MuiListItem-root': {
       fontFamily: 'Roboto, sans-serif',
     },
-    '& h2':{
+    '& h2': {
       marginBottom: 0
     }
   },
-
+  modal: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    width: 400,
+    maxHeight: "80vh",
+    overflowY: "auto",
+    padding: theme.spacing(2),
+    position: "relative",
+  },
   drawer: {
     width: 140,
     flexShrink: 0,
@@ -47,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
 
-  gridPrincipal:{
+  gridPrincipal: {
     height: '85vh',
     margin: '0 auto',
     [theme.breakpoints.up('sm')]: {
@@ -95,8 +109,8 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(2),
     width: "80%"
   },
-  cardCreacion:{
-    [theme.breakpoints.up('xs', 'sm' )]: {
+  cardCreacion: {
+    [theme.breakpoints.up('xs', 'sm')]: {
       paddingTop: "0px !important",
     },
   },
@@ -119,6 +133,7 @@ const Creaciones = () => {
   const [clave, setClave] = useState("");
   const [pregunta, setPregunta] = useState("");
   const [dependenciaNombre, setDependenciaNombre] = useState("");
+  const [error, setError] = useState("");
   const [errorDependencia, setErrorDependencia] = useState(false);
   const [errorClave, setErrorClave] = useState(false);
   const [errorSeccion, setErrorSeccion] = useState(false);
@@ -127,9 +142,9 @@ const Creaciones = () => {
   const [alertaClave, setAlertaClave] = useState(false);
   const [alertaSeccion, setAlertaSeccion] = useState(false);
   const [alertaPregunta, setAlertaPregunta] = useState(false);
-  const [showUpdateConfirmation, setShowUpdateConfirmation] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedList, setSelectedList] = useState([]);
+  const [showAlert, setShowAlert] = useState(true);
 
 
   useEffect(() => {
@@ -188,6 +203,74 @@ const Creaciones = () => {
     setOpen(false);
   };
 
+  const handleCloseAlert = () => {
+    setShowAlert(false);
+  };
+
+  const verificarDependencia = (dependenciaId) => {
+    const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
+    if (dependencia && dependencia.clave) {
+      setAlertaDependencia(true);
+    } else {
+      setAlertaDependencia(false);
+      crearClave(clave, dependenciaId); // Llama a crearClave solo cuando no hay alerta de dependencia
+    }
+  };
+
+  const handleClaveSubmit = (event) => {
+    if (event) {
+      event.preventDefault();
+    }
+
+    if (clave.trim() === "") {
+      setErrorClave(true);
+      setError("Debe ingresar una clave");
+      return;
+    }
+
+    if (!dependenciaId) {
+      setErrorClave(true);
+      setErrorDependencia(true);
+      setError("Debe ingresar una Dependencia.");
+      return;
+    }
+
+    verificarDependencia(dependenciaId); // Verificar si la dependencia ya tiene clave
+  };
+
+  const crearClave = (clave, dependenciaId) => {
+    fetch("http://localhost:3000/claves", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        dependenciaId: dependenciaId,
+        clave: clave,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log("Clave creada correctamente");
+          // Aquí puedes realizar acciones adicionales, como mostrar un mensaje en la interfaz
+        } else if (response.status === 409) {
+          throw new Error("La dependencia ya tiene clave");
+          setError("la dependencia tiene clave");
+        } else {
+          throw new Error("Error al crear la clave");
+        }
+      })
+      .catch((error) => {
+        // Manejar el error y mostrarlo en pantalla
+        if (error.message === "La dependencia ya tiene clave") {
+          console.error("Error: La dependencia ya tiene clave asignada");
+          // Aquí puedes realizar acciones adicionales, como mostrar un mensaje en la interfaz
+        } else {
+          console.error("Error: " + error.message);
+        }
+      });
+  };
+
   const handleDependenciaSubmit = (event) => {
     event.preventDefault();
     if (dependenciaNombre.trim() === "") {
@@ -211,7 +294,7 @@ const Creaciones = () => {
           setAlertaDependencia(true);
           setDependenciaNombre("");
           setErrorDependencia(true);
-          window.location.reload();
+          //window.location.reload();
         } else {
           throw new Error("Error al crear la dependencia.");
         }
@@ -231,53 +314,6 @@ const Creaciones = () => {
     crearSeccion(seccionDescripcion);
   };
 
-  const handleClaveSubmit = (event) => {
-    event.preventDefault();
-    if (clave.trim() === "") {
-      setErrorClave(true);
-      return;
-    }
-    crearClave(clave, dependenciaId);  // Pasar dependenciaId como segundo argumento
-    console.log(dependenciaId)
-  };
-
-  const crearClave = (clave, dependenciaId) => {
-    fetch("http://localhost:3000/claves", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        dependenciaId: dependenciaId, // Pass the dependenciaId as a separate property
-        clave: clave,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log("Clave creada:", clave);
-          setAlertaClave(true);
-          setClave("");
-          setErrorClave(true);
-          window.location.reload();
-        } else {
-          return response.json().then((data) => {
-            if (
-              data.error ===
-              "Esta dependencia ya tiene una clave. ¿Desea actualizarla?"
-            ) {
-              setShowUpdateConfirmation(true);
-            } else {
-              throw new Error("Error al crear la clave.");
-            }
-          });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        setErrorClave(true);
-      });
-  };
-
   const crearSeccion = (descripcion) => {
     fetch("http://localhost:3000/secciones", {
       method: "POST",
@@ -292,7 +328,7 @@ const Creaciones = () => {
           setAlertaSeccion(true);
           setSeccionDescripcion("");
           setErrorSeccion(true);
-          window.location.reload();
+          //window.location.reload();
         } else {
           throw new Error("Error al crear la sección.");
         }
@@ -352,7 +388,7 @@ const Creaciones = () => {
           setPregunta("");
           setSeccionId("");
           setErrorPregunta(false); // Establecer el estado de error a false
-          window.location.reload();
+          //window.location.reload();
         } else {
           throw new Error("Error al crear la pregunta.");
         }
@@ -364,7 +400,7 @@ const Creaciones = () => {
   };
 
   return (
-    <div className={classes.divMain} style={{display:"flex"}}>
+    <div className={classes.divMain} style={{ display: "flex" }}>
       <Drawer
         className={classes.drawer}
         variant="permanent"
@@ -376,122 +412,130 @@ const Creaciones = () => {
           <ListItem button onClick={() => handleOpen("dependencias")}>
             Dependencias
           </ListItem>
-          <Modal open={open && selectedList === "dependencias"} onClose={handleClose}>
-            <TableContainer>
-              <IconButton
-                aria-label="close"
-                className={classes.closeButton}
-                onClick={handleClose}
-              >
-                <CloseIcon />
-              </IconButton>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Numero</TableCell>
-                    <TableCell>Nombre de la Dependencia</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {dependencias.map((dependencia) => (
-                    <TableRow key={dependencia.id}>
-                      <TableCell>{dependencia.id}</TableCell>
-                      <TableCell>{dependencia.nombreDependencia}</TableCell>
+          <Modal open={open && selectedList === "dependencias"} onClose={handleClose} className={classes.modal}>
+            <Paper className={classes.modalContent}>
+              <TableContainer>
+                <IconButton
+                  aria-label="close"
+                  className={classes.closeButton}
+                  onClick={handleClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Numero</TableCell>
+                      <TableCell>Nombre de la Dependencia</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {dependencias.map((dependencia) => (
+                      <TableRow key={dependencia.id}>
+                        <TableCell>{dependencia.id}</TableCell>
+                        <TableCell>{dependencia.nombreDependencia}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
           </Modal>
           <ListItem button onClick={() => handleOpen("preguntas")}>
             Preguntas
           </ListItem>
-          <Modal open={open && selectedList === "preguntas"} onClose={handleClose}>
-            <TableContainer>
-              <IconButton
-                aria-label="close"
-                className={classes.closeButton}
-                onClick={handleClose}
-              >
-                <CloseIcon />
-              </IconButton>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Numero</TableCell>
-                    <TableCell>Descripcion</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {preguntas.map((pregunta) => (
-                    <TableRow key={pregunta.id}>
-                      <TableCell>{pregunta.id}</TableCell>
-                      <TableCell>{pregunta.descripcion}</TableCell>
+          <Modal open={open && selectedList === "preguntas"} onClose={handleClose} className={classes.modal}>
+            <Paper className={classes.modalContent}>
+              <TableContainer>
+                <IconButton
+                  aria-label="close"
+                  className={classes.closeButton}
+                  onClick={handleClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Numero</TableCell>
+                      <TableCell>Descripcion</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {preguntas.map((pregunta) => (
+                      <TableRow key={pregunta.id}>
+                        <TableCell>{pregunta.id}</TableCell>
+                        <TableCell>{pregunta.descripcion}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
           </Modal>
           <ListItem button onClick={() => handleOpen("secciones")}>
             Secciones
           </ListItem>
-          <Modal open={open && selectedList === "secciones"} onClose={handleClose}>
-            <TableContainer>
-              <IconButton
-                aria-label="close"
-                className={classes.closeButton}
-                onClick={handleClose}
-              >
-                <CloseIcon />
-              </IconButton>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Numero</TableCell>
-                    <TableCell>Seccion</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {secciones.map((seccion) => (
-                    <TableRow key={seccion.id}>
-                      <TableCell>{seccion.id}</TableCell>
-                      <TableCell>{seccion.descripcion}</TableCell>
+          <Modal open={open && selectedList === "secciones"} onClose={handleClose} className={classes.modal}>
+            <Paper className={classes.modalContent}>
+              <TableContainer>
+                <IconButton
+                  aria-label="close"
+                  className={classes.closeButton}
+                  onClick={handleClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Numero</TableCell>
+                      <TableCell>Seccion</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {secciones.map((seccion) => (
+                      <TableRow key={seccion.id}>
+                        <TableCell>{seccion.id}</TableCell>
+                        <TableCell>{seccion.descripcion}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
           </Modal>
           <ListItem button onClick={() => handleOpen("claves")}>
             Claves
           </ListItem>
-          <Modal open={open && selectedList === "claves"} onClose={handleClose}>
-            <TableContainer>
-              <IconButton
-                aria-label="close"
-                className={classes.closeButton}
-                onClick={handleClose}
-              >
-                <CloseIcon />
-              </IconButton>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Dependencia</TableCell>
-                    <TableCell>Claves</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {claves.map((clave) => (
-                    <TableRow key={clave.id}>
-                      <TableCell>{clave.dependencia.nombreDependencia}</TableCell>
-                      <TableCell>{clave.clave}</TableCell>
+          <Modal open={open && selectedList === "claves"} onClose={handleClose} className={classes.modal}>
+            <Paper className={classes.modalContent}>
+              <TableContainer>
+                <IconButton
+                  aria-label="close"
+                  className={classes.closeButton}
+                  onClick={handleClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Dependencia</TableCell>
+                      <TableCell>Claves</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {claves.map((clave) => (
+                      <TableRow key={clave.id}>
+                        <TableCell>{clave.dependencia.nombreDependencia}</TableCell>
+                        <TableCell>{clave.clave}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
           </Modal>
         </List>
       </Drawer>
@@ -499,76 +543,95 @@ const Creaciones = () => {
 
       <Grid container spacing={6} className={classes.gridPrincipal}>
         <Grid item xs={12} sm={12} md={6} className={`${classes.cardCreacion} ${classes.gridIzquierdo}`}>
-            <Box className={`${classes.boxForm} ${classes.boxIzquierdo}`} boxShadow={8} borderRadius={7}>
-              <form onSubmit={handleDependenciaSubmit} className={classes.form}>
-                <h2>Crear Dependencia</h2>
-                <TextField
-                  className={classes.textField}
-                  label="Dependencia"
-                  value={dependenciaNombre}
-                  onChange={(event) => setDependenciaNombre(event.target.value)}
-                  error={errorDependencia}
+          <Box className={`${classes.boxForm} ${classes.boxIzquierdo}`} boxShadow={8} borderRadius={7}>
+            <form onSubmit={handleDependenciaSubmit} className={classes.form}>
+              <h2>Crear Dependencia</h2>
+              <TextField
+                className={classes.textField}
+                label="Dependencia"
+                value={dependenciaNombre}
+                onChange={(event) => setDependenciaNombre(event.target.value)}
+                error={errorDependencia}
 
-                />
-                <Button
-                  className={classes.button}
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                >
-                  Crear Dependencia
-                </Button>
-                {alertaDependencia && (
-                  <Alert severity="success">
-                    ¡La dependencia se creó correctamente!
-                  </Alert>
-                )}
-              </form>
-            </Box>
+              />
+              <Button
+                className={classes.button}
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Crear Dependencia
+              </Button>
+              {alertaDependencia && (
+                <Alert severity="success">
+                  ¡La dependencia se creó correctamente!
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={handleCloseAlert}
+                    className={classes.closeButton}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                </Alert>
+              )}
+            </form>
+          </Box>
 
-          
-            <Box className={`${classes.boxForm} ${classes.boxIzquierdo}`} boxShadow={8} borderRadius={7}>
-              <form onSubmit={handleClaveSubmit} className={classes.form}>
-                <h2>Crear Clave</h2>
-                <TextField
-                  className={classes.textField}
-                  label="Clave"
-                  value={clave}
-                  onChange={(event) => setClave(event.target.value)}
-                  error={errorClave && !clave.trim()}
-                />
-                <InputLabel style={{display: "flex", justifyContent: "start"}}>Dependencia</InputLabel>
-                <Select
-                  labelId="dependencia-select-label"
-                  id="dependencia-select"
-                  value={dependenciaId}
-                  onChange={(event) => setDependenciaId(event.target.value)}
-                  style={{width:"70%"}}
-                >
-                  {dependencias.map((dependencia) => (
-                    <MenuItem key={dependencia.id} value={dependencia.id}>
-                      {dependencia.nombreDependencia}
-                    </MenuItem>
-                  ))}
-                </Select>
 
-                <Button
-                  className={classes.button}
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                >
-                  Crear Clave
-                </Button>
-                {alertaClave && (
-                  <Alert severity="success">¡La clave se creó correctamente!</Alert>
-                )}
-              </form>
-            </Box>
-          
+          <Box className={`${classes.boxForm} ${classes.boxIzquierdo}`} boxShadow={8} borderRadius={7}>
+            <form onSubmit={handleClaveSubmit} className={classes.form}>
+              <h2>Crear Clave</h2>
+              <TextField
+                className={classes.textField}
+                label="Clave"
+                value={clave}
+                onChange={(event) => setClave(event.target.value)}
+                error={errorClave && !clave.trim()}
+              />
+              <InputLabel style={{ display: "flex", justifyContent: "start" }}>Dependencia</InputLabel>
+              <Select
+                labelId="dependencia-select-label"
+                id="dependencia-select"
+                value={dependenciaId}
+                onChange={(event) => setDependenciaId(event.target.value)}
+                style={{ width: "70%" }}
+              >
+                {dependencias.map((dependencia) => (
+                  <MenuItem key={dependencia.id} value={dependencia.id}>
+                    {dependencia.nombreDependencia}
+                  </MenuItem>
+                ))}
+              </Select>
+
+              <Button
+                className={classes.button}
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Crear Clave
+              </Button>
+              {alertaClave && (
+                <Alert severity="success">¡La clave se creó correctamente!
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={handleCloseAlert}
+                    className={classes.closeButton}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton></Alert>
+
+              )}
+            </form>
+          </Box>
+
 
         </Grid>
-       
+
 
         <Grid item xs={12} sm={12} md={6} className={`${classes.cardCreacion} ${classes.gridDerecho}`}>
           <Box className={`${classes.boxForm} ${classes.boxDerecho}`} boxShadow={8} borderRadius={7}>
@@ -590,11 +653,20 @@ const Creaciones = () => {
               >
                 Crear Sección
               </Button>
-                {alertaSeccion && (
-                  <Alert severity="success">
-                    ¡La sección se creó correctamente!
-                  </Alert>
-                )}
+              {alertaSeccion && (
+                <Alert severity="success">
+                  ¡La sección se creó correctamente!
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={handleCloseAlert}
+                    className={classes.closeButton}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                </Alert>
+              )}
             </form>
           </Box>
           <Box className={`${classes.boxForm} ${classes.boxDerecho}`} boxShadow={8} borderRadius={10} >
@@ -662,51 +734,60 @@ const Creaciones = () => {
                   label="Tiene Clasificaciones"
                 />
               </div>
-                <FormControl
+              <FormControl
+                error={errorPregunta && seccionId === ""}
+                className={classes.textField}
+              >
+                <InputLabel>Sección</InputLabel>
+                <Select
+                  labelId="seccion-select-label"
+                  id="seccion-select"
+                  value={seccionId}
+                  onChange={(event) => setSeccionId(event.target.value)}
                   error={errorPregunta && seccionId === ""}
-                  className={classes.textField}
                 >
-                  <InputLabel>Sección</InputLabel>
-                  <Select
-                    labelId="seccion-select-label"
-                    id="seccion-select"
-                    value={seccionId}
-                    onChange={(event) => setSeccionId(event.target.value)}
-                    error={errorPregunta && seccionId === ""}
-                  >
-                    <MenuItem value="">
-                      <em>Seleccionar</em>
+                  <MenuItem value="">
+                    <em>Seleccionar</em>
+                  </MenuItem>
+                  {secciones.map((seccion) => (
+                    <MenuItem key={seccion.id} value={seccion.id}>
+                      {seccion.descripcion}
                     </MenuItem>
-                    {secciones.map((seccion) => (
-                      <MenuItem key={seccion.id} value={seccion.id}>
-                        {seccion.descripcion}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {errorPregunta && seccionId === "" && (
-                    <FormHelperText>Seleccione una sección</FormHelperText>
-                  )}
-                </FormControl>
+                  ))}
+                </Select>
+                {errorPregunta && seccionId === "" && (
+                  <FormHelperText>Seleccione una sección</FormHelperText>
+                )}
+              </FormControl>
 
-                <Button
-                  className={classes.button}
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                >
-                  Crear Pregunta
-                </Button>
-              
+              <Button
+                className={classes.button}
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Crear Pregunta
+              </Button>
+
               {alertaPregunta && (
                 <Alert severity="success">
                   ¡La pregunta se creó correctamente!
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={handleCloseAlert}
+                    className={classes.closeButton}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
                 </Alert>
               )}
             </form>
           </Box>
         </Grid>
       </Grid>
-      
+
     </div>
   );
 };
