@@ -10,10 +10,21 @@ import Alert from "@material-ui/lab/Alert";
 import Grid from "@material-ui/core/Grid";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Checkbox from "@material-ui/core/Checkbox";
-import  FormControlLabel  from '@material-ui/core/FormControlLabel';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Drawer from "@material-ui/core/Drawer";
 import ListItem from "@material-ui/core/ListItem";
 import List from "@material-ui/core/List";
+import Modal from "@material-ui/core/Modal";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableContainer,
+} from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -56,6 +67,8 @@ const Creaciones = () => {
   const [tieneCalificaciones, setTieneCalificaciones] = useState(false);
   const [tieneClasificaciones, setTieneClasificaciones] = useState(false);
   const [tieneGrado, setTieneGrado] = useState(false);
+  const [preguntas, setPreguntas] = useState([]);
+  const [claves, setClaves] = useState([]);
   const [dependencias, setDependencias] = useState([]);
   const [dependenciaId, setDependenciaId] = useState("");
   const [secciones, setSecciones] = useState([]);
@@ -72,11 +85,34 @@ const Creaciones = () => {
   const [alertaSeccion, setAlertaSeccion] = useState(false);
   const [alertaPregunta, setAlertaPregunta] = useState(false);
   const [showUpdateConfirmation, setShowUpdateConfirmation] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [selectedList, setSelectedList] = useState([]);
+
 
   useEffect(() => {
     fetchSecciones();
     fetchDependencias();
+    fetchPreguntas(); // Fetch 'preguntas' data
+    fetchClaves(); // Fetch 'claves' data
   }, []);
+
+  const fetchPreguntas = () => {
+    fetch("http://localhost:3000/preguntas")
+      .then((response) => response.json())
+      .then((data) => {
+        setPreguntas(data);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const fetchClaves = () => {
+    fetch("http://localhost:3000/claves")
+      .then((response) => response.json())
+      .then((data) => {
+        setClaves(data);
+      })
+      .catch((error) => console.log(error));
+  };
 
   const fetchSecciones = () => {
     fetch("http://localhost:3000/secciones")
@@ -87,17 +123,26 @@ const Creaciones = () => {
       .catch((error) => console.log(error));
   };
 
+
   const fetchDependencias = () => {
     fetch("http://localhost:3000/dependencias")
       .then((response) => response.json())
       .then((data) => {
-        // Ordenar las dependencias por nombre antes de establecer el estado
         const dependenciasOrdenadas = data.sort((a, b) =>
           a.nombreDependencia.localeCompare(b.nombreDependencia)
         );
         setDependencias(dependenciasOrdenadas);
       })
       .catch((error) => console.log(error));
+  };
+
+  const handleOpen = (list) => {
+    setSelectedList(list);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   const handleDependenciaSubmit = (event) => {
@@ -277,239 +322,348 @@ const Creaciones = () => {
 
   return (
     <div>
-    <Drawer
-      className={classes.drawer}
-      variant="permanent"
-      classes={{
-        paper: classes.drawerPaper,
-      }}
-    >
-      <List>
-        <ListItem button component="a" href="http://localhost:3000/dependencias">
-          Dependencias
-        </ListItem>
-        <ListItem button component="a" href="http://localhost:3000/preguntas">
-          Preguntas
-        </ListItem>
-        <ListItem button component="a" href="http://localhost:3000/secciones">
-          Secciones
-        </ListItem>
-        <ListItem button component="a" href="http://localhost:3000/claves">
-          Claves
-        </ListItem>
-      </List>
-    </Drawer>
-
-    <div className={classes.container}>
-      <Grid item xs={12} sm={4} lg={3}>
-        <div className={classes.form}>
-          <h2>Crear Dependencia</h2>
-
-          <form onSubmit={handleDependenciaSubmit}>
-            <TextField
-              className={classes.textField}
-              label="Dependencia"
-              value={dependenciaNombre}
-              onChange={(event) => setDependenciaNombre(event.target.value)}
-              error={errorDependencia}
-
-            />
-            <Button
-              className={classes.button}
-              variant="contained"
-              color="primary"
-              type="submit"
-            >
-              Crear Dependencia
-            </Button>
-            {alertaDependencia && (
-              <Alert severity="success">
-                ¡La dependencia se creó correctamente!
-              </Alert>
-            )}
-          </form>
-        </div>
-      </Grid>
-
-      <Grid item xs={12} sm={4} lg={3}>
-        <div className={classes.form}>
-          <h2>Crear Clave</h2>
-          <form onSubmit={handleClaveSubmit}>
-            <TextField
-              className={classes.textField}
-              label="Clave"
-              value={clave}
-              onChange={(event) => setClave(event.target.value)}
-              error={errorClave && !clave.trim()}
-
-            />
-            <Select
-              labelId="dependencia-select-label"
-              id="dependencia-select"
-              value={dependenciaId}
-              onChange={(event) => setDependenciaId(event.target.value)}
-            >
-              {dependencias.map((dependencia) => (
-                <MenuItem key={dependencia.id} value={dependencia.id}>
-                  {dependencia.nombreDependencia}
-                </MenuItem>
-              ))}
-            </Select>
-            <Button
-              className={classes.button}
-              variant="contained"
-              color="primary"
-              type="submit"
-            >
-              Crear Clave
-            </Button>
-            {alertaClave && (
-              <Alert severity="success">¡La clave se creó correctamente!</Alert>
-            )}
-          </form>
-        </div>
-      </Grid>
-
-      <Grid item xs={12} sm={4} lg={3}>
-        <div className={classes.form}>
-          <h2>Crear Sección</h2>
-          <form onSubmit={handleSeccionSubmit}>
-            <TextField
-              className={classes.textField}
-              label="Descripción"
-              value={seccionDescripcion}
-              onChange={(event) => setSeccionDescripcion(event.target.value)}
-              error={errorSeccion && !seccionDescripcion.trim()}
-
-            />
-            <Button
-              className={classes.button}
-              variant="contained"
-              color="primary"
-              type="submit"
-            >
-              Crear Sección
-            </Button>
-            {alertaSeccion && (
-              <Alert severity="success">
-                ¡La sección se creó correctamente!
-              </Alert>
-            )}
-          </form>
-        </div>
-      </Grid>
-
-      <Grid item xs={12} sm={4} lg={3}>
-        <div className={classes.form}>
-          <h2>Crear Pregunta</h2>
-          <form onSubmit={handlePreguntaSubmit}>
-            <TextField
-              className={classes.textField}
-              label="Pregunta"
-              value={pregunta}
-              onChange={(event) => setPregunta(event.target.value)}
-              error={errorPregunta}
-            />
-            <div>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={tieneComentario}
-                    onChange={(event) => setTieneComentario(event.target.checked)}
-                  />
-                }
-                label="Tiene Comentario"
-              />
-            </div>
-            <div>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={tieneExpresion}
-                    onChange={(event) => setTieneExpresion(event.target.checked)}
-                  />
-                }
-                label="Tiene Expresion"
-              />
-            </div>
-            <div>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={tieneCalificaciones}
-                    onChange={(event) => setTieneCalificaciones(event.target.checked)}
-                  />
-                }
-                label="Tiene Calificaciones"
-              />
-            </div>
-            <div>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={tieneGrado}
-                  onChange={(event) => setTieneGrado(event.target.checked)}
-                />
-              }
-              label="Tiene Grado"
-            />
-            </div>
-            <div>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={tieneClasificaciones}
-                  onChange={(event) => setTieneClasificaciones(event.target.checked)}
-                />
-              }
-              label="Tiene Clasificaciones"
-            />
-            </div>
-            <Grid item xs={12} sm={6} lg={4}>
-              <FormControl
-                error={errorPregunta && seccionId === ""}
-                className={classes.textField}
+      <Drawer
+        className={classes.drawer}
+        variant="permanent"
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+      >
+        <List>
+          <ListItem button onClick={() => handleOpen("dependencias")}>
+            Dependencias
+          </ListItem>
+          <Modal open={open && selectedList === "dependencias"} onClose={handleClose}>
+            <TableContainer>
+              <IconButton
+                aria-label="close"
+                className={classes.closeButton}
+                onClick={handleClose}
               >
-                <InputLabel>Seleccionar Sección</InputLabel>
-                <Select
-                  labelId="seccion-select-label"
-                  id="seccion-select"
-                  value={seccionId}
-                  onChange={(event) => setSeccionId(event.target.value)}
-                  error={errorPregunta && seccionId === ""}
-                >
-                  <MenuItem value="">
-                    <em>Seleccionar</em>
-                  </MenuItem>
-                  {secciones.map((seccion) => (
-                    <MenuItem key={seccion.id} value={seccion.id}>
-                      {seccion.descripcion}
-                    </MenuItem>
+                <CloseIcon />
+              </IconButton>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Numero</TableCell>
+                    <TableCell>Nombre de la Dependencia</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {dependencias.map((dependencia) => (
+                    <TableRow key={dependencia.id}>
+                      <TableCell>{dependencia.id}</TableCell>
+                      <TableCell>{dependencia.nombreDependencia}</TableCell>
+                    </TableRow>
                   ))}
-                </Select>
-                {errorPregunta && seccionId === "" && (
-                  <FormHelperText>Seleccione una sección</FormHelperText>
-                )}
-              </FormControl>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Modal>
+          <ListItem button onClick={() => handleOpen("preguntas")}>
+            Preguntas
+          </ListItem>
+          <Modal open={open && selectedList === "preguntas"} onClose={handleClose}>
+            <TableContainer>
+              <IconButton
+                aria-label="close"
+                className={classes.closeButton}
+                onClick={handleClose}
+              >
+                <CloseIcon />
+              </IconButton>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Numero</TableCell>
+                    <TableCell>Descripcion</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {preguntas.map((pregunta) => (
+                    <TableRow key={pregunta.id}>
+                      <TableCell>{pregunta.id}</TableCell>
+                      <TableCell>{pregunta.descripcion}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Modal>
+          <ListItem button onClick={() => handleOpen("secciones")}>
+            Secciones
+          </ListItem>
+          <Modal open={open && selectedList === "secciones"} onClose={handleClose}>
+            <TableContainer>
+              <IconButton
+                aria-label="close"
+                className={classes.closeButton}
+                onClick={handleClose}
+              >
+                <CloseIcon />
+              </IconButton>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Numero</TableCell>
+                    <TableCell>Seccion</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {secciones.map((seccion) => (
+                    <TableRow key={seccion.id}>
+                      <TableCell>{seccion.id}</TableCell>
+                      <TableCell>{seccion.descripcion}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Modal>
+          <ListItem button onClick={() => handleOpen("claves")}>
+            Claves
+          </ListItem>
+          <Modal open={open && selectedList === "claves"} onClose={handleClose}>
+            <TableContainer>
+              <IconButton
+                aria-label="close"
+                className={classes.closeButton}
+                onClick={handleClose}
+              >
+                <CloseIcon />
+              </IconButton>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Dependencia</TableCell>
+                    <TableCell>Claves</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {claves.map((clave) => (
+                    <TableRow key={clave.id}>
+                      <TableCell>{clave.dependencia.nombreDependencia}</TableCell>
+                      <TableCell>{clave.clave}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Modal>
+        </List>
+      </Drawer>
 
+
+      <div className={classes.container}>
+        <Grid item xs={12} sm={4} lg={3}>
+          <div className={classes.form}>
+            <h2>Crear Dependencia</h2>
+
+            <form onSubmit={handleDependenciaSubmit}>
+              <TextField
+                className={classes.textField}
+                label="Dependencia"
+                value={dependenciaNombre}
+                onChange={(event) => setDependenciaNombre(event.target.value)}
+                error={errorDependencia}
+
+              />
               <Button
                 className={classes.button}
                 variant="contained"
                 color="primary"
                 type="submit"
               >
-                Crear Pregunta
+                Crear Dependencia
               </Button>
-            </Grid>
-            {alertaPregunta && (
-              <Alert severity="success">
-                ¡La pregunta se creó correctamente!
-              </Alert>
-            )}
-          </form>
-        </div>
-      </Grid>
-    </div>
+              {alertaDependencia && (
+                <Alert severity="success">
+                  ¡La dependencia se creó correctamente!
+                </Alert>
+              )}
+            </form>
+          </div>
+        </Grid>
+
+        <Grid item xs={12} sm={4} lg={3}>
+          <div className={classes.form}>
+            <h2>Crear Clave</h2>
+            <form onSubmit={handleClaveSubmit}>
+              <TextField
+                className={classes.textField}
+                label="Clave"
+                value={clave}
+                onChange={(event) => setClave(event.target.value)}
+                error={errorClave && !clave.trim()}
+
+              />
+              <Select
+                labelId="dependencia-select-label"
+                id="dependencia-select"
+                value={dependenciaId}
+                onChange={(event) => setDependenciaId(event.target.value)}
+              >
+                {dependencias.map((dependencia) => (
+                  <MenuItem key={dependencia.id} value={dependencia.id}>
+                    {dependencia.nombreDependencia}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Button
+                className={classes.button}
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Crear Clave
+              </Button>
+              {alertaClave && (
+                <Alert severity="success">¡La clave se creó correctamente!</Alert>
+              )}
+            </form>
+          </div>
+        </Grid>
+
+        <Grid item xs={12} sm={4} lg={3}>
+          <div className={classes.form}>
+            <h2>Crear Sección</h2>
+            <form onSubmit={handleSeccionSubmit}>
+              <TextField
+                className={classes.textField}
+                label="Descripción"
+                value={seccionDescripcion}
+                onChange={(event) => setSeccionDescripcion(event.target.value)}
+                error={errorSeccion && !seccionDescripcion.trim()}
+
+              />
+              <Button
+                className={classes.button}
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Crear Sección
+              </Button>
+              {alertaSeccion && (
+                <Alert severity="success">
+                  ¡La sección se creó correctamente!
+                </Alert>
+              )}
+            </form>
+          </div>
+        </Grid>
+
+        <Grid item xs={12} sm={4} lg={3}>
+          <div className={classes.form}>
+            <h2>Crear Pregunta</h2>
+            <form onSubmit={handlePreguntaSubmit}>
+              <TextField
+                className={classes.textField}
+                label="Pregunta"
+                value={pregunta}
+                onChange={(event) => setPregunta(event.target.value)}
+                error={errorPregunta}
+              />
+              <div>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={tieneComentario}
+                      onChange={(event) => setTieneComentario(event.target.checked)}
+                    />
+                  }
+                  label="Tiene Comentario"
+                />
+              </div>
+              <div>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={tieneExpresion}
+                      onChange={(event) => setTieneExpresion(event.target.checked)}
+                    />
+                  }
+                  label="Tiene Expresion"
+                />
+              </div>
+              <div>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={tieneCalificaciones}
+                      onChange={(event) => setTieneCalificaciones(event.target.checked)}
+                    />
+                  }
+                  label="Tiene Calificaciones"
+                />
+              </div>
+              <div>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={tieneGrado}
+                      onChange={(event) => setTieneGrado(event.target.checked)}
+                    />
+                  }
+                  label="Tiene Grado"
+                />
+              </div>
+              <div>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={tieneClasificaciones}
+                      onChange={(event) => setTieneClasificaciones(event.target.checked)}
+                    />
+                  }
+                  label="Tiene Clasificaciones"
+                />
+              </div>
+              <Grid item xs={12} sm={6} lg={4}>
+                <FormControl
+                  error={errorPregunta && seccionId === ""}
+                  className={classes.textField}
+                >
+                  <InputLabel>Seleccionar Sección</InputLabel>
+                  <Select
+                    labelId="seccion-select-label"
+                    id="seccion-select"
+                    value={seccionId}
+                    onChange={(event) => setSeccionId(event.target.value)}
+                    error={errorPregunta && seccionId === ""}
+                  >
+                    <MenuItem value="">
+                      <em>Seleccionar</em>
+                    </MenuItem>
+                    {secciones.map((seccion) => (
+                      <MenuItem key={seccion.id} value={seccion.id}>
+                        {seccion.descripcion}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errorPregunta && seccionId === "" && (
+                    <FormHelperText>Seleccione una sección</FormHelperText>
+                  )}
+                </FormControl>
+
+                <Button
+                  className={classes.button}
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                >
+                  Crear Pregunta
+                </Button>
+              </Grid>
+              {alertaPregunta && (
+                <Alert severity="success">
+                  ¡La pregunta se creó correctamente!
+                </Alert>
+              )}
+            </form>
+          </div>
+        </Grid>
+      </div>
     </div>
   );
 };
