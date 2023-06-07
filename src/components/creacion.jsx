@@ -11,14 +11,17 @@ import Grid from "@material-ui/core/Grid";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Checkbox from "@material-ui/core/Checkbox";
 import  FormControlLabel  from '@material-ui/core/FormControlLabel';
-
-
+import Drawer from "@material-ui/core/Drawer";
+import ListItem from "@material-ui/core/ListItem";
+import List from "@material-ui/core/List";
 
 const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
-    alignItems: "center",
+    alignItems: "flex-start",  // Ajusta la alineación vertical según tus necesidades
     padding: theme.spacing(3),
+    boxSizing: "border-box",  // Asegura que el padding esté incluido en el ancho total
+    marginLeft: 140,  // Asegura que haya suficiente espacio para el ancho del drawer
   },
   form: {
     display: "flex",
@@ -35,12 +38,19 @@ const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(2),
   },
+  drawer: {
+    width: 240,
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    width: 140,
+    textAlign: "center",
+  },
 }));
 
 const Creaciones = () => {
   const classes = useStyles();
   const [seccionDescripcion, setSeccionDescripcion] = useState("");
-  const [preguntaDescripcion, setPreguntaDescripcion] = useState("");
   const [tieneComentario, setTieneComentario] = useState(false);
   const [tieneExpresion, setTieneExpresion] = useState(false);
   const [tieneCalificaciones, setTieneCalificaciones] = useState(false);
@@ -266,6 +276,30 @@ const Creaciones = () => {
   };
 
   return (
+    <div>
+    <Drawer
+      className={classes.drawer}
+      variant="permanent"
+      classes={{
+        paper: classes.drawerPaper,
+      }}
+    >
+      <List>
+        <ListItem button component="a" href="http://localhost:3000/dependencias">
+          Dependencias
+        </ListItem>
+        <ListItem button component="a" href="http://localhost:3000/preguntas">
+          Preguntas
+        </ListItem>
+        <ListItem button component="a" href="http://localhost:3000/secciones">
+          Secciones
+        </ListItem>
+        <ListItem button component="a" href="http://localhost:3000/claves">
+          Claves
+        </ListItem>
+      </List>
+    </Drawer>
+
     <div className={classes.container}>
       <Grid item xs={12} sm={4} lg={3}>
         <div className={classes.form}>
@@ -475,6 +509,7 @@ const Creaciones = () => {
           </form>
         </div>
       </Grid>
+    </div>
     </div>
   );
 };
