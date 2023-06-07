@@ -54,17 +54,17 @@ const Buscador = () => {
       }
     };
 
-    obtenerPreguntas(); 
-    obtenerDependencias(); 
+    obtenerPreguntas();
+    obtenerDependencias();
   }, []);
 
   const handleBuscarRespuestas = async () => {
     try {
       let url = 'http://localhost:3000/respuestas';
-  
+
       const preguntaId = selectedPregunta !== undefined && selectedPregunta !== '' ? parseInt(selectedPregunta) : null;
       const dependenciaId = selectedDependencia !== undefined && selectedDependencia !== '' ? parseInt(selectedDependencia) : null;
-  
+
       if (preguntaId && dependenciaId) {
         url += `/${preguntaId}/${dependenciaId}`;
       } else if (preguntaId) {
@@ -72,7 +72,7 @@ const Buscador = () => {
       } else if (dependenciaId) {
         url += `/dependencia/${dependenciaId}`;
       }
-  
+
       const response = await fetch(url);
       const data = await response.json();
       setRespuestas(data);
@@ -81,7 +81,7 @@ const Buscador = () => {
       console.error('Error al buscar respuestas:', error);
     }
   };
-  
+
   const handlePreguntaChange = (event) => {
     setSelectedPregunta(event.target.value);
     console.log('Pregunta seleccionada:', event.target.value);
@@ -100,10 +100,9 @@ const Buscador = () => {
     setSortConfig({ field, direction });
   };
 
-  // Verificar si respuestas es un array antes de recorrerlo
   const sortedRespuestas =
-  Array.isArray(respuestas) && respuestas.length > 0
-    ? respuestas.sort((a, b) => {
+    Array.isArray(respuestas) && respuestas.length > 0
+      ? respuestas.sort((a, b) => {
         const aValue = a[sortConfig.field] || '';
         const bValue = b[sortConfig.field] || '';
 
@@ -113,7 +112,7 @@ const Buscador = () => {
           return bValue.toString().localeCompare(aValue.toString());
         }
       })
-    : [];
+      : [];
 
   return (
     <div>
@@ -169,132 +168,129 @@ const Buscador = () => {
               color="primary"
               onClick={handleBuscarRespuestas}
               fullWidth
-              size="small"
-              
-            >
+              size="small">
               Buscar
             </Button>
           </Grid>
         </Grid>
-        </Container>
+      </Container>
 
-        <Table>
-          <TableHead>
-            <TableRow>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>
+              <TableSortLabel
+                active={sortConfig.field === 'id'}
+                direction={sortConfig.field === 'id' ? sortConfig.direction : 'asc'}
+                onClick={() => handleSort('id')}
+              >
+                ID
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortConfig.field === 'createdAt'}
+                direction={sortConfig.field === 'createdAt' ? sortConfig.direction : 'asc'}
+                onClick={() => handleSort('createdAt')}
+              >
+                Fecha
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortConfig.field === 'dependenciaId'}
+                direction={sortConfig.field === 'dependenciaId' ? sortConfig.direction : 'asc'}
+                onClick={() => handleSort('dependenciaId')}
+              >
+                Dependencia
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortConfig.field === 'edad'}
+                direction={sortConfig.field === 'edad' ? sortConfig.direction : 'asc'}
+                onClick={() => handleSort('edad')}
+              >
+                Edad
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortConfig.field === 'genero'}
+                direction={sortConfig.field === 'genero' ? sortConfig.direction : 'asc'}
+                onClick={() => handleSort('genero')}
+              >
+                Género
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortConfig.field === 'expresion'}
+                direction={sortConfig.field === 'expresion' ? sortConfig.direction : 'asc'}
+                onClick={() => handleSort('expresion')}
+              >
+                Expresion
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortConfig.field === 'calificaciones'}
+                direction={sortConfig.field === 'calificaciones' ? sortConfig.direction : 'asc'}
+                onClick={() => handleSort('calificaciones')}
+              >
+                Calificaciones
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortConfig.field === 'clasificaciones'}
+                direction={sortConfig.field === 'clasificaciones' ? sortConfig.direction : 'asc'}
+                onClick={() => handleSort('clasificaciones')}
+              >
+                Clasificaciones
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortConfig.field === 'grado'}
+                direction={sortConfig.field === 'grado' ? sortConfig.direction : 'asc'}
+                onClick={() => handleSort('grado')}
+              >
+                Grado
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortConfig.field === 'comentarios'}
+                direction={sortConfig.field === 'comentarios' ? sortConfig.direction : 'asc'}
+                onClick={() => handleSort('comentarios')}
+              >
+                Comentarios
+              </TableSortLabel>
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {sortedRespuestas && sortedRespuestas.map((respuesta) => (
+            <TableRow key={respuesta.id}>
+              <TableCell>{respuesta.id}</TableCell>
+              <TableCell>{respuesta.createdAt}</TableCell>
+              <TableCell>{respuesta.dependenciaId}</TableCell>
+              <TableCell>{respuesta.edad}</TableCell>
+              <TableCell>{respuesta.genero}</TableCell>
+              <TableCell>{respuesta.expresion}</TableCell>
+              <TableCell>{respuesta.calificaciones}</TableCell>
+              <TableCell>{respuesta.clasificaciones}</TableCell>
+              <TableCell>{respuesta.grado}</TableCell>
               <TableCell>
-                <TableSortLabel
-                  active={sortConfig.field === 'id'}
-                  direction={sortConfig.field === 'id' ? sortConfig.direction : 'asc'}
-                  onClick={() => handleSort('id')}
-                >
-                  ID
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={sortConfig.field === 'createdAt'}
-                  direction={sortConfig.field === 'createdAt' ? sortConfig.direction : 'asc'}
-                  onClick={() => handleSort('createdAt')}
-                >
-                  Fecha
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={sortConfig.field === 'dependenciaId'}
-                  direction={sortConfig.field === 'dependenciaId' ? sortConfig.direction : 'asc'}
-                  onClick={() => handleSort('dependenciaId')}
-                >
-                  Dependencia
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={sortConfig.field === 'edad'}
-                  direction={sortConfig.field === 'edad' ? sortConfig.direction : 'asc'}
-                  onClick={() => handleSort('edad')}
-                >
-                  Edad
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={sortConfig.field === 'genero'}
-                  direction={sortConfig.field === 'genero' ? sortConfig.direction : 'asc'}
-                  onClick={() => handleSort('genero')}
-                >
-                  Género
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={sortConfig.field === 'expresion'}
-                  direction={sortConfig.field === 'expresion' ? sortConfig.direction : 'asc'}
-                  onClick={() => handleSort('expresion')}
-                >
-                  Expresion
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={sortConfig.field === 'calificaciones'}
-                  direction={sortConfig.field === 'calificaciones' ? sortConfig.direction : 'asc'}
-                  onClick={() => handleSort('calificaciones')}
-                >
-                  Calificaciones
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={sortConfig.field === 'clasificaciones'}
-                  direction={sortConfig.field === 'clasificaciones' ? sortConfig.direction : 'asc'}
-                  onClick={() => handleSort('clasificaciones')}
-                >
-                  Clasificaciones
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={sortConfig.field === 'grado'}
-                  direction={sortConfig.field === 'grado' ? sortConfig.direction : 'asc'}
-                  onClick={() => handleSort('grado')}
-                >
-                  Grado
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={sortConfig.field === 'comentarios'}
-                  direction={sortConfig.field === 'comentarios' ? sortConfig.direction : 'asc'}
-                  onClick={() => handleSort('comentarios')}
-                >
-                  Comentarios
-                </TableSortLabel>
+                {respuesta.comentarios && respuesta.comentarios.map((comentario) => (
+                  <div key={comentario.id}>{comentario.comentario}</div>
+                ))}
               </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-          {sortedRespuestas && sortedRespuestas.map((respuesta) => (
-  <TableRow key={respuesta.id}>
-    <TableCell>{respuesta.id}</TableCell>
-    <TableCell>{respuesta.createdAt}</TableCell>
-    <TableCell>{respuesta.dependenciaId}</TableCell>
-    <TableCell>{respuesta.edad}</TableCell>
-    <TableCell>{respuesta.genero}</TableCell>
-    <TableCell>{respuesta.expresion}</TableCell>
-    <TableCell>{respuesta.calificaciones}</TableCell>
-    <TableCell>{respuesta.clasificaciones}</TableCell>
-    <TableCell>{respuesta.grado}</TableCell>
-    <TableCell>
-      {respuesta.comentarios && respuesta.comentarios.map((comentario) => (
-        <div key={comentario.id}>{comentario.comentario}</div>
-      ))}
-    </TableCell>
-  </TableRow>
-))}
-          </TableBody>
-        </Table>
-    
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };
