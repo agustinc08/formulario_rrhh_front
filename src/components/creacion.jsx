@@ -24,38 +24,81 @@ import {
   TableRow,
   TableCell,
   TableContainer,
+  Box,
 } from '@material-ui/core';
+import "../components/global.css";
 
 const useStyles = makeStyles((theme) => ({
-  container: {
-    display: "flex",
-    alignItems: "flex-start",  // Ajusta la alineación vertical según tus necesidades
-    padding: theme.spacing(3),
-    boxSizing: "border-box",  // Asegura que el padding esté incluido en el ancho total
-    marginLeft: 140,  // Asegura que haya suficiente espacio para el ancho del drawer
+  divMain:{
+    '& h2, & .MuiListItem-root': {
+      fontFamily: 'Roboto, sans-serif',
+    },
+    '& h2':{
+      marginBottom: 0
+    }
   },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: theme.spacing(2),
-    padding: theme.spacing(2),
-  },
-  textField: {
-    margin: theme.spacing(1),
-    width: "70% !important",
-  },
-  button: {
-    margin: theme.spacing(2),
-  },
+
   drawer: {
-    width: 240,
+    width: 140,
     flexShrink: 0,
   },
   drawerPaper: {
     width: 140,
     textAlign: "center",
+  },
+
+  gridPrincipal:{
+    height: '85vh',
+    margin: '0 auto',
+    [theme.breakpoints.up('sm')]: {
+      margin: '0 5%',
+    },
+    [theme.breakpoints.up('md')]: {
+      margin: '0 7%',
+    },
+    [theme.breakpoints.up('lg')]: {
+      margin: '0 10%',
+    },
+  },
+  gridIzquierdo: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  gridDerecho: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  boxIzquierdo: {
+    flex: '1',
+  },
+  boxDerecho: {
+    flex: '1',
+  },
+  boxForm: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    padding: theme.spacing(2),
+    marginTop: "30px",
+  },
+  form: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  textField: {
+    margin: theme.spacing(2),
+    width: "70%",
+  },
+  button: {
+    margin: theme.spacing(2),
+    width: "80%"
+  },
+  cardCreacion:{
+    [theme.breakpoints.up('xs', 'sm' )]: {
+      paddingTop: "0px !important",
+    },
   },
 }));
 
@@ -321,7 +364,7 @@ const Creaciones = () => {
   };
 
   return (
-    <div>
+    <div className={classes.divMain} style={{display:"flex"}}>
       <Drawer
         className={classes.drawer}
         variant="permanent"
@@ -454,88 +497,91 @@ const Creaciones = () => {
       </Drawer>
 
 
-      <div className={classes.container}>
-        <Grid item xs={12} sm={4} lg={3}>
-          <div className={classes.form}>
-            <h2>Crear Dependencia</h2>
+      <Grid container spacing={6} className={classes.gridPrincipal}>
+        <Grid item xs={12} sm={12} md={6} className={`${classes.cardCreacion} ${classes.gridIzquierdo}`}>
+            <Box className={`${classes.boxForm} ${classes.boxIzquierdo}`} boxShadow={8} borderRadius={7}>
+              <form onSubmit={handleDependenciaSubmit} className={classes.form}>
+                <h2>Crear Dependencia</h2>
+                <TextField
+                  className={classes.textField}
+                  label="Dependencia"
+                  value={dependenciaNombre}
+                  onChange={(event) => setDependenciaNombre(event.target.value)}
+                  error={errorDependencia}
 
-            <form onSubmit={handleDependenciaSubmit}>
-              <TextField
-                className={classes.textField}
-                label="Dependencia"
-                value={dependenciaNombre}
-                onChange={(event) => setDependenciaNombre(event.target.value)}
-                error={errorDependencia}
+                />
+                <Button
+                  className={classes.button}
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                >
+                  Crear Dependencia
+                </Button>
+                {alertaDependencia && (
+                  <Alert severity="success">
+                    ¡La dependencia se creó correctamente!
+                  </Alert>
+                )}
+              </form>
+            </Box>
 
-              />
-              <Button
-                className={classes.button}
-                variant="contained"
-                color="primary"
-                type="submit"
-              >
-                Crear Dependencia
-              </Button>
-              {alertaDependencia && (
-                <Alert severity="success">
-                  ¡La dependencia se creó correctamente!
-                </Alert>
-              )}
-            </form>
-          </div>
+          
+            <Box className={`${classes.boxForm} ${classes.boxIzquierdo}`} boxShadow={8} borderRadius={7}>
+              <form onSubmit={handleClaveSubmit} className={classes.form}>
+                <h2>Crear Clave</h2>
+                <TextField
+                  className={classes.textField}
+                  label="Clave"
+                  value={clave}
+                  onChange={(event) => setClave(event.target.value)}
+                  error={errorClave && !clave.trim()}
+                />
+                <InputLabel style={{display: "flex", justifyContent: "start"}}>Dependencia</InputLabel>
+                <Select
+                  labelId="dependencia-select-label"
+                  id="dependencia-select"
+                  value={dependenciaId}
+                  onChange={(event) => setDependenciaId(event.target.value)}
+                  style={{width:"70%"}}
+                >
+                  {dependencias.map((dependencia) => (
+                    <MenuItem key={dependencia.id} value={dependencia.id}>
+                      {dependencia.nombreDependencia}
+                    </MenuItem>
+                  ))}
+                </Select>
+
+                <Button
+                  className={classes.button}
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                >
+                  Crear Clave
+                </Button>
+                {alertaClave && (
+                  <Alert severity="success">¡La clave se creó correctamente!</Alert>
+                )}
+              </form>
+            </Box>
+          
+
         </Grid>
+       
 
-        <Grid item xs={12} sm={4} lg={3}>
-          <div className={classes.form}>
-            <h2>Crear Clave</h2>
-            <form onSubmit={handleClaveSubmit}>
-              <TextField
-                className={classes.textField}
-                label="Clave"
-                value={clave}
-                onChange={(event) => setClave(event.target.value)}
-                error={errorClave && !clave.trim()}
-
-              />
-              <Select
-                labelId="dependencia-select-label"
-                id="dependencia-select"
-                value={dependenciaId}
-                onChange={(event) => setDependenciaId(event.target.value)}
-              >
-                {dependencias.map((dependencia) => (
-                  <MenuItem key={dependencia.id} value={dependencia.id}>
-                    {dependencia.nombreDependencia}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Button
-                className={classes.button}
-                variant="contained"
-                color="primary"
-                type="submit"
-              >
-                Crear Clave
-              </Button>
-              {alertaClave && (
-                <Alert severity="success">¡La clave se creó correctamente!</Alert>
-              )}
-            </form>
-          </div>
-        </Grid>
-
-        <Grid item xs={12} sm={4} lg={3}>
-          <div className={classes.form}>
-            <h2>Crear Sección</h2>
-            <form onSubmit={handleSeccionSubmit}>
+        <Grid item xs={12} sm={12} md={6} className={`${classes.cardCreacion} ${classes.gridDerecho}`}>
+          <Box className={`${classes.boxForm} ${classes.boxDerecho}`} boxShadow={8} borderRadius={7}>
+            <form onSubmit={handleSeccionSubmit} className={classes.form}>
+              <h2>Crear Sección</h2>
               <TextField
                 className={classes.textField}
                 label="Descripción"
                 value={seccionDescripcion}
                 onChange={(event) => setSeccionDescripcion(event.target.value)}
                 error={errorSeccion && !seccionDescripcion.trim()}
-
               />
+
               <Button
                 className={classes.button}
                 variant="contained"
@@ -544,19 +590,16 @@ const Creaciones = () => {
               >
                 Crear Sección
               </Button>
-              {alertaSeccion && (
-                <Alert severity="success">
-                  ¡La sección se creó correctamente!
-                </Alert>
-              )}
+                {alertaSeccion && (
+                  <Alert severity="success">
+                    ¡La sección se creó correctamente!
+                  </Alert>
+                )}
             </form>
-          </div>
-        </Grid>
-
-        <Grid item xs={12} sm={4} lg={3}>
-          <div className={classes.form}>
-            <h2>Crear Pregunta</h2>
-            <form onSubmit={handlePreguntaSubmit}>
+          </Box>
+          <Box className={`${classes.boxForm} ${classes.boxDerecho}`} boxShadow={8} borderRadius={10} >
+            <form onSubmit={handlePreguntaSubmit} className={classes.form}>
+              <h2>Crear Pregunta</h2>
               <TextField
                 className={classes.textField}
                 label="Pregunta"
@@ -619,12 +662,11 @@ const Creaciones = () => {
                   label="Tiene Clasificaciones"
                 />
               </div>
-              <Grid item xs={12} sm={6} lg={4}>
                 <FormControl
                   error={errorPregunta && seccionId === ""}
                   className={classes.textField}
                 >
-                  <InputLabel>Seleccionar Sección</InputLabel>
+                  <InputLabel>Sección</InputLabel>
                   <Select
                     labelId="seccion-select-label"
                     id="seccion-select"
@@ -654,16 +696,17 @@ const Creaciones = () => {
                 >
                   Crear Pregunta
                 </Button>
-              </Grid>
+              
               {alertaPregunta && (
                 <Alert severity="success">
                   ¡La pregunta se creó correctamente!
                 </Alert>
               )}
             </form>
-          </div>
+          </Box>
         </Grid>
-      </div>
+      </Grid>
+      
     </div>
   );
 };
