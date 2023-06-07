@@ -6,18 +6,12 @@ import {
   Select,
   MenuItem,
   Grid,
-  makeStyles,
   Box,
 } from '@material-ui/core';
-import "../components/global.css";
+import "../css/global.css";
 import { Bar, Pie, Doughnut, PolarArea } from 'react-chartjs-2';
+import useStyles from "../styles/estadisticasStyle";
 
-
-const useStyles = makeStyles((theme) => ({
-  titulo: {
-    marginTop: 20,
-  },
-}));
 
 const Estadisticas = () => {
   const classes = useStyles();

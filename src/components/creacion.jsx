@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Select from "@material-ui/core/Select";
@@ -17,7 +16,6 @@ import List from "@material-ui/core/List";
 import Modal from "@material-ui/core/Modal";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-import Backdrop from "@material-ui/core/Backdrop";
 import { Paper } from '@material-ui/core';
 import {
   Table,
@@ -28,93 +26,8 @@ import {
   TableContainer,
   Box,
 } from '@material-ui/core';
-import "../components/global.css";
-
-const useStyles = makeStyles((theme) => ({
-  divMain: {
-    '& h2, & .MuiListItem-root': {
-      fontFamily: 'Roboto, sans-serif',
-    },
-    '& h2': {
-      marginBottom: 0
-    }
-  },
-  modal: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    width: 400,
-    maxHeight: "80vh",
-    overflowY: "auto",
-    padding: theme.spacing(2),
-    position: "relative",
-  },
-  drawer: {
-    width: 140,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    width: 140,
-    textAlign: "center",
-  },
-
-  gridPrincipal: {
-    height: '85vh',
-    margin: '0 auto',
-    [theme.breakpoints.up('sm')]: {
-      margin: '0 5%',
-    },
-    [theme.breakpoints.up('md')]: {
-      margin: '0 7%',
-    },
-    [theme.breakpoints.up('lg')]: {
-      margin: '0 10%',
-    },
-  },
-  gridIzquierdo: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  gridDerecho: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  boxIzquierdo: {
-    flex: '1',
-  },
-  boxDerecho: {
-    flex: '1',
-  },
-  boxForm: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    padding: theme.spacing(2),
-    marginTop: "30px",
-  },
-  form: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  textField: {
-    margin: theme.spacing(2),
-    width: "70%",
-  },
-  button: {
-    margin: theme.spacing(2),
-    width: "80%"
-  },
-  cardCreacion: {
-    [theme.breakpoints.up('xs', 'sm')]: {
-      paddingTop: "0px !important",
-    },
-  },
-}));
+import "../css/global.css";
+import useStyles from '../styles/creacionStyle';
 
 const Creaciones = () => {
   const classes = useStyles();
@@ -133,18 +46,18 @@ const Creaciones = () => {
   const [clave, setClave] = useState("");
   const [pregunta, setPregunta] = useState("");
   const [dependenciaNombre, setDependenciaNombre] = useState("");
-  const [error, setError] = useState("");
+  const [setError] = useState("");
   const [errorDependencia, setErrorDependencia] = useState(false);
   const [errorClave, setErrorClave] = useState(false);
   const [errorSeccion, setErrorSeccion] = useState(false);
   const [errorPregunta, setErrorPregunta] = useState(false);
   const [alertaDependencia, setAlertaDependencia] = useState(false);
-  const [alertaClave, setAlertaClave] = useState(false);
+  const [alertaClave ] = useState(false);
   const [alertaSeccion, setAlertaSeccion] = useState(false);
   const [alertaPregunta, setAlertaPregunta] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedList, setSelectedList] = useState([]);
-  const [showAlert, setShowAlert] = useState(true);
+  const [ setShowAlert ] = useState(true);
 
 
   useEffect(() => {
@@ -255,7 +168,6 @@ const Creaciones = () => {
           // Aquí puedes realizar acciones adicionales, como mostrar un mensaje en la interfaz
         } else if (response.status === 409) {
           throw new Error("La dependencia ya tiene clave");
-          setError("la dependencia tiene clave");
         } else {
           throw new Error("Error al crear la clave");
         }

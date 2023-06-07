@@ -6,7 +6,6 @@ import {
   Select,
   MenuItem,
   Button,
-  makeStyles,
   FormControl,
   InputLabel,
   Box,
@@ -20,19 +19,8 @@ import {
   TableCell,
   TableSortLabel,
 } from '@material-ui/core';
-import "../components/global.css";
-
-
-const useStyles = makeStyles((theme) => ({
-  titulo: {
-    marginTop: 20,
-  },
-  centrar: {
-    display:"flex",
-    alignItems:"center",
-    justifyContent:"center",
-  },
-}));
+import "../css/global.css";
+import useStyles from "../styles/buscadorStyle";
 
 const Buscador = () => {
   const [preguntas, setPreguntas] = useState([]);

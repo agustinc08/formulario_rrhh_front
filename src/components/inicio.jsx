@@ -12,8 +12,8 @@ import {
   Divider,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import "../components/global.css";
-import "../components/inicio.css";
+import "../css/global.css";
+import "../css/inicio.css";
 import { isLoggedIn } from "../auth";
 import Login from "./login";
 import { useHistory } from "react-router-dom";
