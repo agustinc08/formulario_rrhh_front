@@ -11,21 +11,19 @@ import {
   Switch,
   Redirect,
 } from "react-router-dom";
-
+import { setLoginData } from "./auth"; // Importar la función setLoginData
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(
     sessionStorage.getItem("isLoggedIn") === "true"
   );
   const rol = sessionStorage.getItem("rol");
-
-  function handleLogin(username, password) {
+  function handleLogin(username, password, rol) {
     // Autenticación de usuario y contraseña
-
-    // Asignación del rol (ejemplo, asumiendo que todos los usuarios "dependencia" tienen el mismo rol y todos los usuarios "admin" tienen el mismo rol)
-    let rol = username === "dependencia" ? "dependencia" : "admin";
-    login(username, password, rol);
-
+  
+    setLoginData(username, password, rol);
+    setIsLoggedIn(true);
+  
     // Otros pasos después del inicio de sesión
   }
 

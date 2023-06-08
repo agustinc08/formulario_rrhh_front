@@ -54,7 +54,7 @@ function Login({ onLogin }) {
         sessionStorage.setItem("dependencia", dependencia.nombreDependencia);
         // Llama a la función onLogin pasada como prop desde App.js
         // para actualizar el estado isLoggedIn
-        onLogin(dependencia.nombreDependencia, clave.clave);
+        onLogin(dependencia.nombreDependencia, clave.clave, dependencia.rol === "dependencia" ? "dependencia" : "admin");
         history.push("/inicio");
       } else {
         setErrorMessage("La clave es incorrecta para esta dependencia.");
