@@ -122,7 +122,7 @@ const Buscador = () => {
           }
         })
       : [];
-
+console.log()
   return (
     <div>
       <Container>
@@ -291,10 +291,12 @@ const Buscador = () => {
               <TableCell>{respuesta.dependenciaId}</TableCell>
               <TableCell>{respuesta.edad}</TableCell>
               <TableCell>{respuesta.genero}</TableCell>
-              {respuesta.expresion }
-              {respuesta.calificaciones }   
-              {respuesta.clasificaciones}
-              {respuesta.grado}
+              <TableCell>
+                {respuesta.expresion}
+                {respuesta.calificaciones}
+                {respuesta.clasificaciones}
+                {respuesta.grado}
+              </TableCell>
               <TableCell>
                 {respuesta.comentarios &&
                   respuesta.comentarios.map((comentario) => (
