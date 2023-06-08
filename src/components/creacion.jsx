@@ -27,6 +27,7 @@ import {
   Box,
 } from '@material-ui/core';
 import "../css/global.css";
+import "../css/creacion.css";
 import useStyles from '../styles/creacionStyle';
 
 const Creaciones = () => {
@@ -320,7 +321,7 @@ const Creaciones = () => {
         }}
       >
         <List>
-          <ListItem button onClick={() => handleOpen("dependencias")}>
+          <ListItem className="listaCreacion" button onClick={() => handleOpen("dependencias")}>
             Dependencias
           </ListItem>
           <Modal open={open && selectedList === "dependencias"} onClose={handleClose} className={classes.modal}>
@@ -336,8 +337,8 @@ const Creaciones = () => {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Numero</TableCell>
-                      <TableCell>Nombre de la Dependencia</TableCell>
+                      <TableCell>Número</TableCell>
+                      <TableCell>Dependencia</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -352,7 +353,7 @@ const Creaciones = () => {
               </TableContainer>
             </Paper>
           </Modal>
-          <ListItem button onClick={() => handleOpen("preguntas")}>
+          <ListItem className="listaCreacion" button onClick={() => handleOpen("preguntas")}>
             Preguntas
           </ListItem>
           <Modal open={open && selectedList === "preguntas"} onClose={handleClose} className={classes.modal}>
@@ -368,8 +369,8 @@ const Creaciones = () => {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Numero</TableCell>
-                      <TableCell>Descripcion</TableCell>
+                      <TableCell>Número</TableCell>
+                      <TableCell>Descripción</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -384,7 +385,7 @@ const Creaciones = () => {
               </TableContainer>
             </Paper>
           </Modal>
-          <ListItem button onClick={() => handleOpen("secciones")}>
+          <ListItem className="listaCreacion" button onClick={() => handleOpen("secciones")}>
             Secciones
           </ListItem>
           <Modal open={open && selectedList === "secciones"} onClose={handleClose} className={classes.modal}>
@@ -400,8 +401,8 @@ const Creaciones = () => {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Numero</TableCell>
-                      <TableCell>Seccion</TableCell>
+                      <TableCell>Número</TableCell>
+                      <TableCell>Sección</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -416,7 +417,7 @@ const Creaciones = () => {
               </TableContainer>
             </Paper>
           </Modal>
-          <ListItem button onClick={() => handleOpen("claves")}>
+          <ListItem className="listaCreacion" button onClick={() => handleOpen("claves")}>
             Claves
           </ListItem>
           <Modal open={open && selectedList === "claves"} onClose={handleClose} className={classes.modal}>
@@ -501,7 +502,7 @@ const Creaciones = () => {
                 onChange={(event) => setClave(event.target.value)}
                 error={errorClave && !clave.trim()}
               />
-              <InputLabel style={{ display: "flex", justifyContent: "start" }}>Dependencia</InputLabel>
+              <InputLabel style={{marginTop: "20px", width:"100%", paddingLeft:"15%"}}>Dependencia</InputLabel>
               <Select
                 labelId="dependencia-select-label"
                 id="dependencia-select"
@@ -521,6 +522,7 @@ const Creaciones = () => {
                 variant="contained"
                 color="primary"
                 type="submit"
+                style={{marginTop:"10%"}}
               >
                 Crear Clave
               </Button>
@@ -591,60 +593,63 @@ const Creaciones = () => {
                 error={errorPregunta}
               />
               <div>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={tieneComentario}
-                      onChange={(event) => setTieneComentario(event.target.checked)}
-                    />
-                  }
-                  label="Tiene Comentario"
-                />
+                <div>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={tieneComentario}
+                        onChange={(event) => setTieneComentario(event.target.checked)}
+                      />
+                    }
+                    label="Tiene Comentario"
+                  />
+                </div>
+                <div>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={tieneExpresion}
+                        onChange={(event) => setTieneExpresion(event.target.checked)}
+                      />
+                    }
+                    label="Tiene Expresion"
+                  />
+                </div>
+                <div>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={tieneCalificaciones}
+                        onChange={(event) => setTieneCalificaciones(event.target.checked)}
+                      />
+                    }
+                    label="Tiene Calificaciones"
+                  />
+                </div>
+                <div>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={tieneGrado}
+                        onChange={(event) => setTieneGrado(event.target.checked)}
+                      />
+                    }
+                    label="Tiene Grado"
+                  />
+                </div>
+                <div>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={tieneClasificaciones}
+                        onChange={(event) => setTieneClasificaciones(event.target.checked)}
+                      />
+                    }
+                    label="Tiene Clasificaciones"
+                  />
+                </div>
               </div>
-              <div>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={tieneExpresion}
-                      onChange={(event) => setTieneExpresion(event.target.checked)}
-                    />
-                  }
-                  label="Tiene Expresion"
-                />
-              </div>
-              <div>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={tieneCalificaciones}
-                      onChange={(event) => setTieneCalificaciones(event.target.checked)}
-                    />
-                  }
-                  label="Tiene Calificaciones"
-                />
-              </div>
-              <div>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={tieneGrado}
-                      onChange={(event) => setTieneGrado(event.target.checked)}
-                    />
-                  }
-                  label="Tiene Grado"
-                />
-              </div>
-              <div>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={tieneClasificaciones}
-                      onChange={(event) => setTieneClasificaciones(event.target.checked)}
-                    />
-                  }
-                  label="Tiene Clasificaciones"
-                />
-              </div>
+
               <FormControl
                 error={errorPregunta && seccionId === ""}
                 className={classes.textField}
