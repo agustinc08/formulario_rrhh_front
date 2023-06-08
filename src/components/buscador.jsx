@@ -292,8 +292,7 @@ const Buscador = () => {
               <TableCell>{respuesta.edad}</TableCell>
               <TableCell>{respuesta.genero}</TableCell>
               {respuesta.expresion }
-              {respuesta.calificaciones }
-              
+              {respuesta.calificaciones }   
               {respuesta.clasificaciones}
               {respuesta.grado}
               <TableCell>
