@@ -19,6 +19,11 @@ function Login({ onLogin }) {
   const [errorMessage, setErrorMessage] = useState("");
   const history = useHistory();
 
+  React.useEffect(() => {
+    fetchDependencias();
+    fetchClaves();
+  }, []);
+
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
   };
@@ -74,11 +79,6 @@ function Login({ onLogin }) {
     const data = await response.json();
     setClaves(data);
   };
-
-  React.useEffect(() => {
-    fetchDependencias();
-    fetchClaves();
-  }, []);
 
   return (
     <div className={classes.container}>

@@ -41,6 +41,64 @@ function Preguntas() {
   const [snackbarSeverity, setSnackbarSeverity] = useState("");
   const [error, setError] = useState(false);
 
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetch("http://localhost:3000/dependencias");
+      const data = await response.json();
+      setDependencias(data);
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    async function cargarSecciones() {
+      try {
+        const { data } = await axios.get("http://localhost:3000/secciones");
+        setSecciones(data);
+        setSeccionId(data[0]?.id); // Establecer la primera sección como sección actual
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    cargarSecciones();
+  }, []);
+
+  useEffect(() => {
+    async function cargarPreguntasPorSeccion() {
+      if (seccionId) {
+        try {
+          const { data } = await axios.get(
+            `http://localhost:3000/preguntas/${seccionId}`
+          );
+
+          // Actualizar el estado preguntasPorSeccion con las nuevas preguntas
+          setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
+            ...prevPreguntasPorSeccion,
+            [seccionId]: data,
+          }));
+
+          // Establecer la página actual como la primera página
+          setCurrentPage(1);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    }
+    cargarPreguntasPorSeccion();
+  }, [seccionId]);
+
+  useEffect(() => {
+    if (preguntasPorSeccion[seccionId]) {
+      const startIndex = (currentPage - 1) * 5;
+      const endIndex = startIndex + 5;
+      const slicedPreguntas = preguntasPorSeccion[seccionId]?.slice(
+        startIndex,
+        endIndex
+      );
+      setPreguntas(slicedPreguntas);
+    }
+  }, [preguntasPorSeccion, seccionId, currentPage]);
+
   function handleEdadChange(event) {
     setEdad(event.target.value);
   }
@@ -178,64 +236,6 @@ function Preguntas() {
       setOpenSnackbar(true);
     }
   }
-
-  useEffect(() => {
-    async function fetchData() {
-      const response = await fetch("http://localhost:3000/dependencias");
-      const data = await response.json();
-      setDependencias(data);
-    }
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    async function cargarSecciones() {
-      try {
-        const { data } = await axios.get("http://localhost:3000/secciones");
-        setSecciones(data);
-        setSeccionId(data[0]?.id); // Establecer la primera sección como sección actual
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    cargarSecciones();
-  }, []);
-
-  useEffect(() => {
-    async function cargarPreguntasPorSeccion() {
-      if (seccionId) {
-        try {
-          const { data } = await axios.get(
-            `http://localhost:3000/preguntas/${seccionId}`
-          );
-
-          // Actualizar el estado preguntasPorSeccion con las nuevas preguntas
-          setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
-            ...prevPreguntasPorSeccion,
-            [seccionId]: data,
-          }));
-
-          // Establecer la página actual como la primera página
-          setCurrentPage(1);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    }
-    cargarPreguntasPorSeccion();
-  }, [seccionId]);
-
-  useEffect(() => {
-    if (preguntasPorSeccion[seccionId]) {
-      const startIndex = (currentPage - 1) * 5;
-      const endIndex = startIndex + 5;
-      const slicedPreguntas = preguntasPorSeccion[seccionId]?.slice(
-        startIndex,
-        endIndex
-      );
-      setPreguntas(slicedPreguntas);
-    }
-  }, [preguntasPorSeccion, seccionId, currentPage]);
 
   return (
     <Container>

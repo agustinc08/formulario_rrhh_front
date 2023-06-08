@@ -1,14 +1,14 @@
-import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
-
 const PrivateRoute = ({ component: Component, ...rest }) => {
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  const isLoggedIn = sessionStorage.getItem(AUTH_TOKEN_KEY) === 'true';
+  const rol = sessionStorage.getItem("rol");
+
+  const hasAccess = rol === "dependencia" || rol === "admin";
 
   return (
     <Route
       {...rest}
       render={(props) =>
-        isLoggedIn ? (
+        isLoggedIn && hasAccess ? (
           <Component {...props} />
         ) : (
           <Redirect
@@ -24,5 +24,3 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     />
   );
 };
-
-export default PrivateRoute;

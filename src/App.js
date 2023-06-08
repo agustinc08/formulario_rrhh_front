@@ -9,7 +9,7 @@ import {
   BrowserRouter as Router,
   Route,
   Switch,
-  Redirect, 
+  Redirect,
 } from "react-router-dom";
 
 
@@ -17,12 +17,16 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(
     sessionStorage.getItem("isLoggedIn") === "true"
   );
+  const rol = sessionStorage.getItem("rol");
 
   function handleLogin(username, password) {
-    // No es necesario verificar los valores de usuario y contraseña aquí
-    setIsLoggedIn(true);
-    sessionStorage.setItem("isLoggedIn", "true");
-    sessionStorage.setItem("dependencia", username);
+    // Autenticación de usuario y contraseña
+
+    // Asignación del rol (ejemplo, asumiendo que todos los usuarios "dependencia" tienen el mismo rol y todos los usuarios "admin" tienen el mismo rol)
+    let rol = username === "dependencia" ? "dependencia" : "admin";
+    login(username, password, rol);
+
+    // Otros pasos después del inicio de sesión
   }
 
   return (
@@ -38,13 +42,25 @@ function App() {
           {isLoggedIn ? <Preguntas /> : <Redirect to="/login" />}
         </Route>
         <Route exact path="/creacion">
-          {isLoggedIn ? <Creacion /> : <Redirect to="/login" />}
+          {isLoggedIn && rol === "admin" ? (
+            <Creacion />
+          ) : (
+            isLoggedIn ? <Redirect to="/inicio" /> : <Redirect to="/login" />
+          )}
         </Route>
         <Route exact path="/buscador">
-          {isLoggedIn ? <Buscador /> : <Redirect to="/login" />}
+          {isLoggedIn && rol === "admin" ? (
+            <Buscador />
+          ) : (
+            isLoggedIn ? <Redirect to="/inicio" /> : <Redirect to="/login" />
+          )}
         </Route>
         <Route exact path="/estadisticas">
-          {isLoggedIn ? <Estadisticas /> : <Redirect to="/login" />}
+          {isLoggedIn && rol === "admin" ? (
+            <Estadisticas />
+          ) : (
+            isLoggedIn ? <Redirect to="/inicio" /> : <Redirect to="/login" />
+          )}
         </Route>
         <Route exact path="/login">
           {isLoggedIn ? (
