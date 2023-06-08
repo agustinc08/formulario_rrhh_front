@@ -40,6 +40,7 @@ function Preguntas() {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("");
   const [error, setError] = useState(false);
+  const [preguntasSinSeleccion, setPreguntasSinSeleccion] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -113,7 +114,7 @@ function Preguntas() {
 
   function handleComentarioChange(event, preguntaId) {
     const { value } = event.target;
-
+  
     setComentarios((prevComentarios) => ({
       ...prevComentarios,
       [preguntaId]: value,
@@ -179,17 +180,31 @@ function Preguntas() {
   async function enviarRespuestas(event) {
     event.preventDefault();
     const respuestasData = [];
-
+  
     // Verificar si alguna pregunta no tiene opción seleccionada
     const preguntaSinSeleccion = preguntas.find((pregunta) => {
       const respuesta = respuestas[pregunta.id];
       return !respuesta || Object.keys(respuesta).length === 0;
     });
-
+  
     if (preguntaSinSeleccion) {
       setError(true);
-      return; // Detener el envío del formulario
+      setPreguntasSinSeleccion(true);
+      return;
     }
+  
+    const preguntaSinComentario = preguntas.find((pregunta) => {
+      const tieneComentario = pregunta.tieneComentario;
+      const comentario = comentarios[pregunta.id];
+      return tieneComentario && (!comentario || comentario.trim() === "");
+    });
+  
+    if (preguntaSinComentario) {
+      setError(true);
+      setPreguntasSinSeleccion(false);
+      return;
+    }
+  
 
     // Iterar sobre preguntasPorSeccion
     for (const seccionId in preguntasPorSeccion) {
@@ -247,11 +262,16 @@ function Preguntas() {
       </Typography>
       <Divider />
       <form onSubmit={enviarRespuestas}>
-        {error && (
-          <Typography variant="body1" color="error">
-            Por favor, selecciona una opción en todas las preguntas.
-          </Typography>
-        )}
+  {error && (
+    <Typography variant="body1" color="error">
+      Por favor, selecciona una opción en todas las preguntas.
+    </Typography>
+  )}
+  {preguntasSinSeleccion && (
+    <Typography variant="body1" color="error">
+      Por favor, selecciona una opción en todas las preguntas.
+    </Typography>
+  )}
         {isFirstPage && (
           <>
             <Grid container spacing={3}>
