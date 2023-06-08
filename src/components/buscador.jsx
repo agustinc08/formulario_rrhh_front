@@ -131,7 +131,6 @@ console.log()
             variant="h3"
             align="center"
             gutterBottom
-            sx={{ paddingTop: 40 }}
           >
             Buscador de Respuestas
           </Typography>
@@ -192,7 +191,7 @@ console.log()
         </Grid>
       </Container>
 
-      <Table>
+      <Table style={{marginTop: "2em"}}>
         <TableHead>
           <TableRow>
             <TableCell>

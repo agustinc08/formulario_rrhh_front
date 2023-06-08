@@ -41,6 +41,8 @@ function Preguntas() {
   const [snackbarSeverity, setSnackbarSeverity] = useState("");
   const [error, setError] = useState(false);
   const [preguntasSinSeleccion, setPreguntasSinSeleccion] = useState(false);
+  const [preguntasSinResponder, setPreguntasSinResponder] = useState({});
+
 
   useEffect(() => {
     async function fetchData() {
@@ -182,26 +184,24 @@ function Preguntas() {
     const respuestasData = [];
   
     // Verificar si alguna pregunta no tiene opción seleccionada
-    const preguntaSinSeleccion = preguntas.find((pregunta) => {
-      const respuesta = respuestas[pregunta.id];
-      return !respuesta || Object.keys(respuesta).length === 0;
-    });
+    let preguntasSinResponder = {};
   
-    if (preguntaSinSeleccion) {
-      setError(true);
-      setPreguntasSinSeleccion(true);
-      return;
+    for (const seccionId in preguntasPorSeccion) {
+      const preguntas = preguntasPorSeccion[seccionId];
+      const preguntaSinRespuesta = preguntas.find((pregunta) => {
+        const respuesta = respuestas[pregunta.id];
+        return !respuesta || Object.values(respuesta).every(value => value === "");
+      });
+  
+      if (preguntaSinRespuesta) {
+        preguntasSinResponder[seccionId] = preguntaSinRespuesta.id;
+      }
     }
   
-    const preguntaSinComentario = preguntas.find((pregunta) => {
-      const tieneComentario = pregunta.tieneComentario;
-      const comentario = comentarios[pregunta.id];
-      return tieneComentario && (!comentario || comentario.trim() === "");
-    });
-  
-    if (preguntaSinComentario) {
+    if (Object.keys(preguntasSinResponder).length > 0) {
       setError(true);
-      setPreguntasSinSeleccion(false);
+      setPreguntasSinSeleccion(true);
+      setPreguntasSinResponder(preguntasSinResponder);
       return;
     }
   
@@ -269,7 +269,7 @@ function Preguntas() {
   )}
   {preguntasSinSeleccion && (
     <Typography variant="body1" color="error">
-      Por favor, selecciona una opción en todas las preguntas.
+     
     </Typography>
   )}
         {isFirstPage && (
