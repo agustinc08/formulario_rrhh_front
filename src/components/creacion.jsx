@@ -52,13 +52,12 @@ const Creaciones = () => {
   const [errorSeccion, setErrorSeccion] = useState(false);
   const [errorPregunta, setErrorPregunta] = useState(false);
   const [alertaDependencia, setAlertaDependencia] = useState(false);
-  const [alertaClave ] = useState(false);
+  const [alertaClave] = useState(false);
   const [alertaSeccion, setAlertaSeccion] = useState(false);
   const [alertaPregunta, setAlertaPregunta] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedList, setSelectedList] = useState([]);
-  const [ setShowAlert ] = useState(true);
-
+  const [showAlert, setShowAlert] = useState(true);
 
   useEffect(() => {
     fetchSecciones();
@@ -474,7 +473,7 @@ const Creaciones = () => {
               >
                 Crear Dependencia
               </Button>
-              {alertaDependencia && (
+              {alertaDependencia && showAlert && (
                 <Alert severity="success">
                   ¡La dependencia se creó correctamente!
                   <IconButton
@@ -525,7 +524,7 @@ const Creaciones = () => {
               >
                 Crear Clave
               </Button>
-              {alertaClave && (
+              {alertaClave && showAlert &&(
                 <Alert severity="success">¡La clave se creó correctamente!
                   <IconButton
                     aria-label="close"
@@ -565,7 +564,7 @@ const Creaciones = () => {
               >
                 Crear Sección
               </Button>
-              {alertaSeccion && (
+              {alertaSeccion && showAlert && (
                 <Alert severity="success">
                   ¡La sección se creó correctamente!
                   <IconButton
@@ -681,7 +680,7 @@ const Creaciones = () => {
                 Crear Pregunta
               </Button>
 
-              {alertaPregunta && (
+              {alertaPregunta && showAlert && (
                 <Alert severity="success">
                   ¡La pregunta se creó correctamente!
                   <IconButton
