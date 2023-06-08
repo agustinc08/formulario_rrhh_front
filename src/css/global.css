@@ -15,9 +15,17 @@
     height: 100vh;
 }
 
+th{
+  font-size: 18px !important;
+}
+td{
+  font-size: 16px !important;
+}
+
+
 ::-webkit-scrollbar {
   width: 10px;
-  height: 10px; /* Ajusta el valor de la altura según tus preferencias */
+  height: 10px;
   border-radius: 10px;
 }
   

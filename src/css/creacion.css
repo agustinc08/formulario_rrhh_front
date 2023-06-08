@@ -1,18 +1,11 @@
-th{
-    font-size: 18px !important;
-  }
-  td{
-    font-size: 16px !important;
-  }
-  
-  .listaCreacion{
+.listaCreacion{
     margin-top: 20px !important;
     padding-top: 8px !important;
     padding-bottom: 8px !important;
     transition: 0.3s !important;
-  }
+}
   
-  .listaCreacion:hover{
+.listaCreacion:hover{
     background-color: #3F51B5 !important;
     color: white !important;
-  }
+}
