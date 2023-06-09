@@ -34,6 +34,7 @@ const Creaciones = () => {
   const classes = useStyles();
   const [seccionDescripcion, setSeccionDescripcion] = useState("");
   const [tieneComentario, setTieneComentario] = useState(false);
+  const [comentarioDescripcion, setComentarioDescripcion] = useState("");
   const [tieneExpresion, setTieneExpresion] = useState(false);
   const [tieneCalificaciones, setTieneCalificaciones] = useState(false);
   const [tieneClasificaciones, setTieneClasificaciones] = useState(false);
@@ -267,6 +268,7 @@ const Creaciones = () => {
       descripcion: pregunta,
       seccionId: seccionId,
       tieneComentario: tieneComentario,
+      comentarioDescripcion: comentarioDescripcion,
       tieneExpresion: tieneExpresion,
       tieneCalificaciones: tieneCalificaciones,
       tieneClasificaciones: tieneClasificaciones,
@@ -287,6 +289,7 @@ const Creaciones = () => {
         descripcion: descripcion,
         seccionId: seccionId,
         tieneComentario: tieneComentario, // Pasar el valor booleano directamente
+        comentarioDescripcion,
         tieneExpresion: tieneExpresion, // Pasar el valor booleano directamente
         tieneCalificaciones: tieneCalificaciones, // Pasar el valor booleano directamente
         tieneClasificaciones: tieneClasificaciones, // Pasar el valor booleano directamente
@@ -502,7 +505,7 @@ const Creaciones = () => {
                 onChange={(event) => setClave(event.target.value)}
                 error={errorClave && !clave.trim()}
               />
-              <InputLabel style={{marginTop: "20px", width:"100%", paddingLeft:"15%"}}>Dependencia</InputLabel>
+              <InputLabel style={{ marginTop: "20px", width: "100%", paddingLeft: "15%" }}>Dependencia</InputLabel>
               <Select
                 labelId="dependencia-select-label"
                 id="dependencia-select"
@@ -522,11 +525,11 @@ const Creaciones = () => {
                 variant="contained"
                 color="primary"
                 type="submit"
-                style={{marginTop:"10%"}}
+                style={{ marginTop: "10%" }}
               >
                 Crear Clave
               </Button>
-              {alertaClave && showAlert &&(
+              {alertaClave && showAlert && (
                 <Alert severity="success">¡La clave se creó correctamente!
                   <IconButton
                     aria-label="close"
@@ -598,12 +601,22 @@ const Creaciones = () => {
                     control={
                       <Checkbox
                         checked={tieneComentario}
-                        onChange={(event) => setTieneComentario(event.target.checked)}
+                        onChange={(e) => setTieneComentario(e.target.checked)}
                       />
                     }
                     label="Tiene Comentario"
                   />
                 </div>
+                {tieneComentario && (  // Renderizar el campo de comentarioDescripcion solo si tieneComentario es true
+                  <TextField
+                    label="Descripción del Comentario"
+                    value={comentarioDescripcion}
+                    onChange={(e) => setComentarioDescripcion(e.target.value)}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                  />
+                )}
                 <div>
                   <FormControlLabel
                     control={

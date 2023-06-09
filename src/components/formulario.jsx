@@ -180,63 +180,69 @@ function Preguntas() {
   };
 
   function validarFormulario() {
-    for (const seccionId in preguntasPorSeccion) {
+    const seccionesKeys = Object.keys(preguntasPorSeccion);
+  
+    for (let i = 1; i < seccionesKeys.length - 1; i++) {
+      const seccionId = seccionesKeys[i];
       const preguntas = preguntasPorSeccion[seccionId];
-      const preguntaSinRespuesta = preguntas.some(pregunta => !respuestas[pregunta.id]);
+      const preguntaSinRespuesta = preguntas.some((pregunta) => {
+        const respuesta = respuestas[pregunta.id];
+        return (
+          !respuesta || Object.values(respuesta).every((value) => value === "")
+        );
+      });
   
       if (preguntaSinRespuesta) {
-        return false; // Hay una pregunta sin respuesta
+        return false; // Hay una pregunta sin respuesta en una sección intermedia
       }
     }
   
     return true; // Todas las preguntas tienen respuesta
   }
-
+  
   async function enviarRespuestas(event) {
     event.preventDefault();
+  
+    if (!validarFormulario()) {
+      setError(true);
+      return; // No enviar el formulario si hay preguntas sin respuesta
+    }
+  
     const respuestasData = [];
-
+  
     // Verificar si alguna pregunta no tiene opción seleccionada
     let preguntasSinResponder = {};
-
+  
     for (const seccionId in preguntasPorSeccion) {
       const preguntas = preguntasPorSeccion[seccionId];
       const preguntaSinRespuesta = preguntas.find((pregunta) => {
         const respuesta = respuestas[pregunta.id];
-        return !respuesta || Object.values(respuesta).every((value) => value === "");
+        const comentario = comentarios[pregunta.id];
+        return (
+          !respuesta ||
+          Object.values(respuesta).every((value) => value === "") ||
+          (pregunta.tieneComentario && !comentario)
+        );
       });
-
+  
       if (preguntaSinRespuesta) {
         preguntasSinResponder[seccionId] = preguntaSinRespuesta.id;
       }
     }
-    
-
+  
     if (Object.keys(preguntasSinResponder).length > 0) {
       setError(true);
       setPreguntasSinSeleccion(true);
       setPreguntasSinResponder(preguntasSinResponder);
-
-      if (preguntasSinResponder) {
-        setError(true);
-        setPreguntasSinSeleccion(true);
-        setPreguntasSinResponder(preguntasSinResponder);
-      
-        // Establecer el mensaje de error apropiado
-        setSnackbarMessage("Por favor, selecciona una opción en todas las preguntas.");
-        setSnackbarSeverity("error");
-      
-        if (!validarFormulario()) {
-          setError(true);
-          return; // No enviar el formulario si hay preguntas sin respuesta
-        }
-      
-        // Establecer la primera pregunta sin respuesta como pregunta actual
-        setPreguntaActual(preguntasSinResponder[Object.keys(preguntasSinResponder)[0]]);
-        return;
-      }
+  
+      // Establecer el mensaje de error apropiado
+      setSnackbarMessage("Por favor, selecciona una opción en todas las preguntas.");
+      setSnackbarSeverity("error");
+  
+      // Establecer la primera pregunta sin respuesta como pregunta actual
+      setPreguntaActual(preguntasSinResponder[Object.keys(preguntasSinResponder)[0]]);
+      return;
     }
-    
     // Iterar sobre preguntasPorSeccion
     for (const seccionId in preguntasPorSeccion) {
       const preguntas = preguntasPorSeccion[seccionId];
