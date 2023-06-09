@@ -54,7 +54,7 @@ const Creaciones = () => {
   const [errorSeccion, setErrorSeccion] = useState(false);
   const [errorPregunta, setErrorPregunta] = useState(false);
   const [alertaDependencia, setAlertaDependencia] = useState(false);
-  const [alertaClave] = useState(false);
+  const [alertaClave,setAlertaClave] = useState(false);
   const [alertaSeccion, setAlertaSeccion] = useState(false);
   const [alertaPregunta, setAlertaPregunta] = useState(false);
   const [open, setOpen] = useState(false);
@@ -119,7 +119,11 @@ const Creaciones = () => {
       return;
     }
     crearSeccion(seccionDescripcion);
+
+    // Reiniciar los campos después de enviar el formulario
+    setSeccionDescripcion("");
   };
+
   const handleOpen = (list) => {
     setSelectedList(list);
     setOpen(true);
@@ -145,7 +149,7 @@ const Creaciones = () => {
   const handleClaveSubmit = (event) => {
     if (event) {
       event.preventDefault();
-    };
+    }
 
     const verificarDependencia = (dependenciaId) => {
       const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
@@ -170,8 +174,11 @@ const Creaciones = () => {
       return;
     }
 
-    verificarDependencia(dependenciaId); // Verificar si la dependencia ya tiene clave
-  };
+    verificarDependencia(dependenciaId);
+    setClave("");
+    setDependenciaId("");
+  };// Verificar si la dependencia ya tiene clave
+
 
   const crearClave = (clave, dependenciaId) => {
     fetch("http://localhost:3000/claves", {
@@ -187,6 +194,9 @@ const Creaciones = () => {
       .then((response) => {
         if (response.ok) {
           console.log("Clave creada correctamente");
+          setAlertaClave(true);
+          setClave("");
+          setDependenciaId("")
           // Aquí puedes realizar acciones adicionales, como mostrar un mensaje en la interfaz
         } else if (response.status === 409) {
           throw new Error("La dependencia ya tiene clave");
@@ -216,10 +226,8 @@ const Creaciones = () => {
       .then((response) => {
         if (response.ok) {
           console.log("Dependencia creada:", nombre);
-          setAlertaDependencia(true);
           setDependenciaNombre("");
-          setErrorDependencia(true);
-          //window.location.reload();
+          setAlertaDependencia(true);
         } else {
           throw new Error("Error al crear la dependencia.");
         }
@@ -241,10 +249,8 @@ const Creaciones = () => {
       .then((response) => {
         if (response.ok) {
           console.log("Sección creada:", descripcion);
-          setAlertaSeccion(true);
           setSeccionDescripcion("");
-          setErrorSeccion(true);
-          //window.location.reload();
+          setAlertaSeccion(true);
         } else {
           throw new Error("Error al crear la sección.");
         }
@@ -277,6 +283,16 @@ const Creaciones = () => {
       tieneClasificaciones: tieneClasificaciones,
       tieneGrado: tieneGrado
     });
+
+    // Reiniciar los campos después de enviar el formulario
+    setPregunta("");
+    setSeccionId("");
+    setTieneComentario(false);
+    setDescripcionComentario("");
+    setTieneExpresion(false);
+    setTieneCalificaciones(false);
+    setTieneClasificaciones(false);
+    setTieneGrado(false);
   };
 
   const crearPregunta = ({
@@ -501,16 +517,10 @@ const Creaciones = () => {
           <Box className={`${classes.boxForm} ${classes.boxIzquierdo}`} boxShadow={8} borderRadius={7}>
             <form onSubmit={handleClaveSubmit} className={classes.form}>
               <h2>Crear Clave</h2>
-              <TextField
-                className={classes.textField}
-                label="Clave"
-                value={clave}
-                onChange={(event) => setClave(event.target.value)}
-                error={errorClave && !clave.trim()}
-              />
               <InputLabel style={{ marginTop: "20px", width: "100%", paddingLeft: "15%" }}>Dependencia</InputLabel>
               <Select
                 labelId="dependencia-select-label"
+                label="Dependencia"
                 id="dependencia-select"
                 value={dependenciaId}
                 onChange={(event) => setDependenciaId(event.target.value)}
@@ -522,7 +532,13 @@ const Creaciones = () => {
                   </MenuItem>
                 ))}
               </Select>
-
+              <TextField
+                className={classes.textField}
+                label="Clave"
+                value={clave}
+                onChange={(event) => setClave(event.target.value)}
+                error={errorClave && !clave.trim()}
+              />
               <Button
                 className={classes.button}
                 variant="contained"
@@ -690,6 +706,20 @@ const Creaciones = () => {
                 {errorPregunta && seccionId === "" && (
                   <FormHelperText>Seleccione una sección</FormHelperText>
                 )}
+                 {alertaSeccion && showAlert && (
+                <Alert severity="success">
+                  ¡La Seccion se creó correctamente!
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={handleCloseAlert}
+                    className={classes.closeButton}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                </Alert>
+              )}
               </FormControl>
 
               <Button
