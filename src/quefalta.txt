@@ -5,13 +5,13 @@
 
 //estadisticas : hacer funcionalidadesesta(echo un beta de como seria.)
 
-//creacion , retoques varios : mejorar vistas de modals,  hacer validaciones de erorres. cuando terminas de crear hay un bug que te muestra el input en rojo(ni idea porque es.)
-//  
+//creacion , retoques varios : mejorar vistas de modals, hacer validaciones de erorres(claves,validar si ya hay una dependencia con el mismonombre )
+// agregado de validaciones en preguntas y , arreglos de solo poder elegir una respuesta. ademas de poder elejir los comentarios.  
 
 //buscador: retoques , agregado de comentarios , no mucho casi terminado.
 
 //login : terminado(con los requerimientos pedidos.)
 
-//pros : esta casi listo , queda solamente gran parte de validaciones y retoques, buildea bien en front y back , solamente con probar que ande inicio ya el back estaria casi listo por ahora.
+//pros : esta muy avanzado. , queda solamente gran parte de validaciones y retoques, buildea bien en front y back. 
 
-//contras : errores varios dificiles de solucionar. 
+//contras : errores varios dificiles de solucionar mas que nada en /formulario, los demas son erroers basicos muy solucionables. 

@@ -69,10 +69,14 @@ const Buscador = () => {
         selectedPregunta !== undefined && selectedPregunta !== ""
           ? parseInt(selectedPregunta)
           : null;
-      const dependenciaId =
-        selectedDependencia !== undefined && selectedDependencia !== ""
-          ? parseInt(selectedDependencia)
-          : null;
+
+      let dependenciaId = null;
+      if (selectedDependencia !== "") {
+        const dependencia = dependencias.find(
+          (dep) => dep.nombreDependencia === selectedDependencia
+        );
+        dependenciaId = dependencia ? dependencia.id : null;
+      }
 
       if (preguntaId && dependenciaId) {
         url += `/${preguntaId}/${dependenciaId}`;
@@ -82,9 +86,20 @@ const Buscador = () => {
         url += `/dependencia/${dependenciaId}`;
       }
 
+      const transformarRespuestas = (respuestas) => {
+        return respuestas.map((respuesta) => {
+          const dependencia = dependencias.find(
+            (dep) => dep.id === respuesta.dependenciaId
+          );
+          const nombreDependencia = dependencia ? dependencia.nombreDependencia : "";
+          return { ...respuesta, nombreDependencia };
+        });
+      };
+
       const response = await fetch(url);
       const data = await response.json();
-      setRespuestas(data);
+      const respuestasTransformadas = transformarRespuestas(data);
+      setRespuestas(respuestasTransformadas);
       console.log("Respuestas obtenidas:", data);
     } catch (error) {
       console.error("Error al buscar respuestas:", error);
@@ -112,17 +127,17 @@ const Buscador = () => {
   const sortedRespuestas =
     Array.isArray(respuestas) && respuestas.length > 0
       ? respuestas.sort((a, b) => {
-          const aValue = a[sortConfig.field] || "";
-          const bValue = b[sortConfig.field] || "";
+        const aValue = a[sortConfig.field] || "";
+        const bValue = b[sortConfig.field] || "";
 
-          if (sortConfig.direction === "asc") {
-            return aValue.toString().localeCompare(bValue.toString());
-          } else {
-            return bValue.toString().localeCompare(aValue.toString());
-          }
-        })
+        if (sortConfig.direction === "asc") {
+          return aValue.toString().localeCompare(bValue.toString());
+        } else {
+          return bValue.toString().localeCompare(aValue.toString());
+        }
+      })
       : [];
-console.log()
+  console.log()
   return (
     <div>
       <Container>
@@ -170,7 +185,7 @@ console.log()
                 <MenuItem value="">Todas las dependencias</MenuItem>
                 {dependencias.length > 0 &&
                   dependencias.map((dependencia) => (
-                    <MenuItem key={dependencia.id} value={dependencia.id}>
+                    <MenuItem key={dependencia.id} value={dependencia.nombreDependencia}>
                       {dependencia.nombreDependencia}
                     </MenuItem>
                   ))}
@@ -191,7 +206,7 @@ console.log()
         </Grid>
       </Container>
 
-      <Table style={{marginTop: "2em"}}>
+      <Table style={{ marginTop: "2em" }}>
         <TableHead>
           <TableRow>
             <TableCell>
@@ -287,7 +302,7 @@ console.log()
             <TableRow key={respuesta.id}>
               <TableCell>{respuesta.id}</TableCell>
               <TableCell>{respuesta.createdAt}</TableCell>
-              <TableCell>{respuesta.dependenciaId}</TableCell>
+              <TableCell>{respuesta.nombreDependencia}</TableCell>
               <TableCell>{respuesta.edad}</TableCell>
               <TableCell>{respuesta.genero}</TableCell>
               <TableCell>
