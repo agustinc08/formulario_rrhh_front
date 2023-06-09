@@ -312,7 +312,7 @@ function Preguntas() {
         {isFirstPage && (
           <>
             <Grid container spacing={3}>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <FormControl
                   error={error}
                   variant="outlined"
@@ -334,7 +334,7 @@ function Preguntas() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <FormControl variant="outlined" fullWidth size="small">
                   <InputLabel>Género</InputLabel>
                   <Select
@@ -350,7 +350,7 @@ function Preguntas() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <FormControl variant="outlined" fullWidth size="small">
                   <InputLabel>Dependencia</InputLabel>
                   <Select
@@ -375,7 +375,7 @@ function Preguntas() {
         <Box height={50} />
         <Grid container spacing={2}>
           {preguntasPorSeccion[seccionId]?.map((pregunta) => (
-            <Grid item xs={12} sm={6} md={6} key={pregunta.id}>
+            <Grid item xs={12} md={6} key={pregunta.id}>
               .
               <ListItem>
                 <Box
