@@ -312,7 +312,7 @@ function Preguntas() {
         {isFirstPage && (
           <>
             <Grid container spacing={3}>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <FormControl
                   error={error}
                   variant="outlined"
@@ -334,7 +334,7 @@ function Preguntas() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <FormControl variant="outlined" fullWidth size="small">
                   <InputLabel>Género</InputLabel>
                   <Select
@@ -350,7 +350,7 @@ function Preguntas() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <FormControl variant="outlined" fullWidth size="small">
                   <InputLabel>Dependencia</InputLabel>
                   <Select
@@ -375,11 +375,11 @@ function Preguntas() {
         <Box height={50} />
         <Grid container spacing={2}>
           {preguntasPorSeccion[seccionId]?.map((pregunta) => (
-            <Grid item xs={12} sm={6} md={6} key={pregunta.id}>
-              .
-              <ListItem>
+            <Grid item xs={12} md={6} key={pregunta.id}>
+              
+              <ListItem style={{ height: '100%' }}>
                 <Box
-                  className="pregunta"
+                  className={classes.pregunta}
                   display="flex"
                   flexDirection="column"
                   boxShadow={6}
@@ -387,11 +387,10 @@ function Preguntas() {
                   p={2}
                   mb={2}
                   width={"100%"}
-                  height={"300px"}
                   value={pregunta.id}
                 >
                   <Typography>
-                    <Box sx={{ fontSize: 18, paddingTop: 10 }}>
+                    <Box sx={{ fontSize: 18, paddingTop: "1%" }}>
                       {pregunta.descripcion}
                     </Box>
                   </Typography>
@@ -498,10 +497,11 @@ function Preguntas() {
                     )}
                     {pregunta.tieneComentario && (
                       <Grid item xs={12}>
-                        <Typography variant="body1">
+                        <Typography variant="body1" style={{marginTop: "2%"}}>
                           {pregunta.descripcionComentario}
                         </Typography>
                         <TextField
+                          style={{marginTop: "2%"}}
                           name="comentario"
                           label="Comentario"
                           value={comentarios[pregunta.id] || ""}

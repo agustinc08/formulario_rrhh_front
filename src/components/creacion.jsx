@@ -726,7 +726,7 @@ const Creaciones = () => {
                 </div>
                 {tieneComentario && (  // Renderizar el campo de descripcionComentario solo si tieneComentario es true
                   <TextField
-                    label="Descripción del Comentario"
+                    label="Descripción"
                     value={descripcionComentario}
                     onChange={(e) => setDescripcionComentario(e.target.value)}
                     variant="outlined"
