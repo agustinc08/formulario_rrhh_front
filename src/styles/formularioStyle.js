@@ -26,22 +26,7 @@ const useStyles = makeStyles((theme) => ({
       marginTop: "15px",
     },
     pregunta: {
-      boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
-      padding: theme.spacing(2),
-      margin: theme.spacing(2),
-      borderRadius: "5px",
-      fontFamily: "Roboto, sans-serif",
-      fontWeight: "normal",
-      width: "100px",
-      height: "250px",
-      overflow: "hidden",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: "#fff",
-      color: "#333",
-      border: "1px solid #ccc",
-      lineHeight: "120px",
+      height: "100%"
     },
     enviarButton: {
       marginTop: theme.spacing(2),
