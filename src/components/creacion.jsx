@@ -62,6 +62,7 @@ const Creaciones = () => {
   const [showAlert, setShowAlert] = useState(true);
   const [alertaDependenciaExistente, setAlertaDependenciaExistente] = useState(false);
   const [alertaSeccionExistente, setAlertaSeccionExistente] = useState(false);
+  const [alertaClaveExistente, setAlertaClaveExistente] = useState(false);
 
   useEffect(() => {
     fetchSecciones();
@@ -69,6 +70,15 @@ const Creaciones = () => {
     fetchPreguntas(); // Fetch 'preguntas' data
     fetchClaves(); // Fetch 'claves' data
   }, []);
+
+  useEffect(() => {
+    if (dependencias.length > 0 && dependenciaId) {
+      const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
+      if (dependencia && dependencia.clave) {
+        setAlertaClaveExistente(true);
+      }
+    }
+  }, [dependencias, dependenciaId]);
 
   const fetchPreguntas = () => {
     fetch("http://localhost:3000/preguntas")
@@ -116,6 +126,10 @@ const Creaciones = () => {
 
   const handleCloseAlertaDependenciaExistente = () => {
     setAlertaDependenciaExistente(false);
+  };
+
+  const handleCloseAlertaClaveExistente = () => {
+    setAlertaClaveExistente(false);
   };
 
   const handleSeccionSubmit = (event) => {
@@ -181,40 +195,45 @@ const Creaciones = () => {
   };
 
   const handleClaveSubmit = (event) => {
-    if (event) {
-      event.preventDefault();
-    }
-
-    const verificarDependencia = (dependenciaId) => {
-      const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
-      if (dependencia && dependencia.clave) {
-        setAlertaDependencia(true);
-      } else {
-        setAlertaDependencia(false);
-        crearClave(clave, dependenciaId); // Llama a crearClave solo cuando no hay alerta de dependencia
-      }
-    };
-
+    event.preventDefault();
     if (clave.trim() === "") {
       setErrorClave(true);
       setError("Debe ingresar una clave");
       return;
     }
-
+  
     if (!dependenciaId) {
       setErrorClave(true);
       setErrorDependencia(true);
       setError("Debe ingresar una Dependencia.");
       return;
     }
-
-    verificarDependencia(dependenciaId);
+  
+    const existeClave = claves.some((cl) => cl.clave.toLowerCase() === clave.toLowerCase());
+    if (existeClave) {
+      setAlertaClaveExistente(true);
+      return;
+    }
+  
+    const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
+    if (dependencia && dependencia.clave) {
+      setAlertaClaveExistente(true);
+      return;
+    }
+  
+    crearClave(clave, dependenciaId);
     setClave("");
     setDependenciaId("");
-  };// Verificar si la dependencia ya tiene clave
+  };
 
 
   const crearClave = (clave, dependenciaId) => {
+    const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
+    if (dependencia && dependencia.clave) {
+      setAlertaClaveExistente(true);
+      return;
+    }
+  
     fetch("http://localhost:3000/claves", {
       method: "POST",
       headers: {
@@ -230,7 +249,8 @@ const Creaciones = () => {
           console.log("Clave creada correctamente");
           setAlertaClave(true);
           setClave("");
-          setDependenciaId("")
+          setErrorClave(false); // Establecer el estado de error a false
+          setDependenciaId("");
           // Aquí puedes realizar acciones adicionales, como mostrar un mensaje en la interfaz
         } else if (response.status === 409) {
           throw new Error("La dependencia ya tiene clave");
@@ -242,13 +262,17 @@ const Creaciones = () => {
         // Manejar el error y mostrarlo en pantalla
         if (error.message === "La dependencia ya tiene clave") {
           console.error("Error: La dependencia ya tiene clave asignada");
+          setErrorClave(true);
+          setAlertaClaveExistente(true);
+          setAlertaClave(false); // Desactivar la alerta de clave
           // Aquí puedes realizar acciones adicionales, como mostrar un mensaje en la interfaz
         } else {
-          console.error("Error: " + error.message);
+          console.error("Error al crear la clave:", error.message);
+          // Aquí puedes manejar otros errores y mostrar mensajes en la interfaz
         }
       });
   };
-
+  
   const crearDependencia = (nombre) => {
     fetch("http://localhost:3000/dependencias", {
       method: "POST",
@@ -273,9 +297,6 @@ const Creaciones = () => {
       .catch((error) => {
         console.error(error);
         if (error.message === "Ya existe una dependencia con el mismo nombre") {
-          setErrorDependencia(false);
-          setAlertaDependencia(false);
-          setAlertaDependenciaExistente(true); // Activar la alerta de dependencia existente
         } else {
           setErrorDependencia(true);
         }
@@ -608,7 +629,8 @@ const Creaciones = () => {
                 Crear Clave
               </Button>
               {alertaClave && showAlert && (
-                <Alert severity="success">¡La clave se creó correctamente!
+                <Alert severity="success">
+                  ¡La Clave se creó correctamente!
                   <IconButton
                     aria-label="close"
                     color="inherit"
@@ -617,8 +639,21 @@ const Creaciones = () => {
                     className={classes.closeButton}
                   >
                     <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                </Alert>
+              )}
+              {alertaClaveExistente && (
+                <Alert severity="error">Ya existe una Clave para esta Dependencia.
+                 <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={handleCloseAlertaClaveExistente}
+                    open={alertaClaveExistente}
+                    className={classes.closeButton}
+                  >
+                    <CloseIcon fontSize="inherit" />
                   </IconButton></Alert>
-
               )}
             </form>
           </Box>
