@@ -105,7 +105,7 @@ const Buscador = () => {
 
           let edadFormateada = "";
           if (respuesta.edad === "MAS_45") {
-            edadFormateada = "Más 45";
+            edadFormateada = "Más de 45";
           } else if (respuesta.edad === "DESDE_18_A_45") {
             edadFormateada = "Desde 18 a 45";
           }
