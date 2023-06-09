@@ -102,8 +102,15 @@ const Buscador = () => {
           const minutos = fecha.getMinutes();
           const segundos = fecha.getSeconds();
           const fechaFormateada = `${dia}/${mes}/${año} ${hora}:${minutos}:${segundos}`;
+
+          let edadFormateada = "";
+          if (respuesta.edad === "MAS_45") {
+            edadFormateada = "Más 45";
+          } else if (respuesta.edad === "DESDE_18_A_45") {
+            edadFormateada = "Desde 18 a 45";
+          }
       
-          return { ...respuesta, nombreDependencia, fechaFormateada };
+          return { ...respuesta, nombreDependencia, fechaFormateada, edadFormateada };
         });
       };
       
@@ -314,7 +321,7 @@ const Buscador = () => {
               <TableCell>{respuesta.id}</TableCell>
               <TableCell>{respuesta.fechaFormateada}</TableCell>
               <TableCell>{respuesta.nombreDependencia}</TableCell>
-              <TableCell>{respuesta.edad}</TableCell>
+              <TableCell>{respuesta.edadFormateada}</TableCell>
               <TableCell>{respuesta.genero}</TableCell>
               <TableCell>
                 {respuesta.expresion}
