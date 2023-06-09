@@ -156,6 +156,7 @@ const Creaciones = () => {
     crearSeccion(seccionDescripcion);
     setSeccionDescripcion("");
   };
+  
 
   const handleOpen = (list) => {
     setSelectedList(list);
