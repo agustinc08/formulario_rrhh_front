@@ -34,7 +34,7 @@ const Creaciones = () => {
   const classes = useStyles();
   const [seccionDescripcion, setSeccionDescripcion] = useState("");
   const [tieneComentario, setTieneComentario] = useState(false);
-  const [comentarioDescripcion, setComentarioDescripcion] = useState("");
+  const [descripcionComentario, setDescripcionComentario] = useState("");
   const [tieneExpresion, setTieneExpresion] = useState(false);
   const [tieneCalificaciones, setTieneCalificaciones] = useState(false);
   const [tieneClasificaciones, setTieneClasificaciones] = useState(false);
@@ -108,6 +108,18 @@ const Creaciones = () => {
       .catch((error) => console.log(error));
   };
 
+  const handleComentarioCheckboxChange = (event) => {
+    setTieneComentario(event.target.checked);
+  };
+
+  const handleSeccionSubmit = (event) => {
+    event.preventDefault();
+    if (seccionDescripcion.trim() === "") {
+      setErrorSeccion(true);
+      return;
+    }
+    crearSeccion(seccionDescripcion);
+  };
   const handleOpen = (list) => {
     setSelectedList(list);
     setOpen(true);
@@ -121,20 +133,29 @@ const Creaciones = () => {
     setShowAlert(false);
   };
 
-  const verificarDependencia = (dependenciaId) => {
-    const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
-    if (dependencia && dependencia.clave) {
-      setAlertaDependencia(true);
-    } else {
-      setAlertaDependencia(false);
-      crearClave(clave, dependenciaId); // Llama a crearClave solo cuando no hay alerta de dependencia
+  const handleDependenciaSubmit = (event) => {
+    event.preventDefault();
+    if (dependenciaNombre.trim() === "") {
+      setErrorDependencia(true);
+      return;
     }
+    crearDependencia(dependenciaNombre);
   };
 
   const handleClaveSubmit = (event) => {
     if (event) {
       event.preventDefault();
-    }
+    };
+
+    const verificarDependencia = (dependenciaId) => {
+      const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
+      if (dependencia && dependencia.clave) {
+        setAlertaDependencia(true);
+      } else {
+        setAlertaDependencia(false);
+        crearClave(clave, dependenciaId); // Llama a crearClave solo cuando no hay alerta de dependencia
+      }
+    };
 
     if (clave.trim() === "") {
       setErrorClave(true);
@@ -184,15 +205,6 @@ const Creaciones = () => {
       });
   };
 
-  const handleDependenciaSubmit = (event) => {
-    event.preventDefault();
-    if (dependenciaNombre.trim() === "") {
-      setErrorDependencia(true);
-      return;
-    }
-    crearDependencia(dependenciaNombre);
-  };
-
   const crearDependencia = (nombre) => {
     fetch("http://localhost:3000/dependencias", {
       method: "POST",
@@ -216,15 +228,6 @@ const Creaciones = () => {
         console.error(error);
         setErrorDependencia(true);
       });
-  };
-
-  const handleSeccionSubmit = (event) => {
-    event.preventDefault();
-    if (seccionDescripcion.trim() === "") {
-      setErrorSeccion(true);
-      return;
-    }
-    crearSeccion(seccionDescripcion);
   };
 
   const crearSeccion = (descripcion) => {
@@ -268,7 +271,7 @@ const Creaciones = () => {
       descripcion: pregunta,
       seccionId: seccionId,
       tieneComentario: tieneComentario,
-      comentarioDescripcion: comentarioDescripcion,
+      descripcionComentario: descripcionComentario,
       tieneExpresion: tieneExpresion,
       tieneCalificaciones: tieneCalificaciones,
       tieneClasificaciones: tieneClasificaciones,
@@ -289,7 +292,7 @@ const Creaciones = () => {
         descripcion: descripcion,
         seccionId: seccionId,
         tieneComentario: tieneComentario, // Pasar el valor booleano directamente
-        comentarioDescripcion,
+        descripcionComentario: descripcionComentario,
         tieneExpresion: tieneExpresion, // Pasar el valor booleano directamente
         tieneCalificaciones: tieneCalificaciones, // Pasar el valor booleano directamente
         tieneClasificaciones: tieneClasificaciones, // Pasar el valor booleano directamente
@@ -601,17 +604,17 @@ const Creaciones = () => {
                     control={
                       <Checkbox
                         checked={tieneComentario}
-                        onChange={(e) => setTieneComentario(e.target.checked)}
+                        onChange={handleComentarioCheckboxChange}
                       />
                     }
                     label="Tiene Comentario"
                   />
                 </div>
-                {tieneComentario && (  // Renderizar el campo de comentarioDescripcion solo si tieneComentario es true
+                {tieneComentario && (  // Renderizar el campo de descripcionComentario solo si tieneComentario es true
                   <TextField
                     label="Descripción del Comentario"
-                    value={comentarioDescripcion}
-                    onChange={(e) => setComentarioDescripcion(e.target.value)}
+                    value={descripcionComentario}
+                    onChange={(e) => setDescripcionComentario(e.target.value)}
                     variant="outlined"
                     margin="normal"
                     fullWidth
