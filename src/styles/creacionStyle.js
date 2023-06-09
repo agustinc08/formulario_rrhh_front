@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     },
     modalContent: {
       backgroundColor: "white",
-      width: 400,
+      width: "60%",
       maxHeight: "80vh",
       overflowY: "auto",
       padding: theme.spacing(2),
