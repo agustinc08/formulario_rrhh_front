@@ -20,6 +20,24 @@ import Pagination from "@material-ui/lab/Pagination";
 import "../css/global.css";
 import useStyles from "../styles/formularioStyle";
 
+function cargarPreguntasPorSeccion(seccionId, setPreguntasPorSeccion, setCurrentPage, setPreguntaActual) {
+  if (seccionId) {
+    axios
+      .get(`http://localhost:3000/preguntas/${seccionId}`)
+      .then((response) => {
+        setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
+          ...prevPreguntasPorSeccion,
+          [seccionId]: response.data,
+        }));
+        setCurrentPage(1);
+        setPreguntaActual(response.data[0]?.id); // Establecer la primera pregunta como pregunta actual
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+}
+
 function Preguntas() {
   const classes = useStyles();
   const [preguntas, setPreguntas] = useState([]);
@@ -44,12 +62,14 @@ function Preguntas() {
   const [preguntasSinResponder, setPreguntasSinResponder] = useState({});
   const [preguntaActual, setPreguntaActual] = useState(null);
 
-
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch("http://localhost:3000/dependencias");
-      const data = await response.json();
-      setDependencias(data);
+      try {
+        const { data } = await axios.get("http://localhost:3000/dependencias");
+        setDependencias(data);
+      } catch (error) {
+        console.error(error);
+      }
     }
     fetchData();
   }, []);
@@ -68,24 +88,9 @@ function Preguntas() {
   }, []);
 
   useEffect(() => {
-    async function cargarPreguntasPorSeccion() {
-      if (seccionId) {
-        try {
-          const { data } = await axios.get(`http://localhost:3000/preguntas/${seccionId}`);
-          setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
-            ...prevPreguntasPorSeccion,
-            [seccionId]: data,
-          }));
-          setCurrentPage(1);
-          setPreguntaActual(data[0]?.id); // Establecer la primera pregunta como pregunta actual
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    }
-    cargarPreguntasPorSeccion();
+    cargarPreguntasPorSeccion(seccionId, setPreguntasPorSeccion, setCurrentPage, setPreguntaActual);
   }, [seccionId, setPreguntaActual]);
-
+  
   useEffect(() => {
     if (preguntasPorSeccion[seccionId]) {
       const startIndex = (currentPage - 1) * 5;
@@ -95,8 +100,10 @@ function Preguntas() {
         endIndex
       );
       setPreguntas(slicedPreguntas);
+    } else {
+      cargarPreguntasPorSeccion();
     }
-  }, [preguntasPorSeccion, seccionId, currentPage]);
+  }, [seccionId, setPreguntaActual, preguntaActual]);
 
   function handleEdadChange(event) {
     setEdad(event.target.value);
@@ -179,70 +186,57 @@ function Preguntas() {
     setOpenSnackbar(false);
   };
 
-  function validarFormulario() {
-    const seccionesKeys = Object.keys(preguntasPorSeccion);
-  
-    for (let i = 1; i < seccionesKeys.length - 1; i++) {
-      const seccionId = seccionesKeys[i];
-      const preguntas = preguntasPorSeccion[seccionId];
-      const preguntaSinRespuesta = preguntas.some((pregunta) => {
-        const respuesta = respuestas[pregunta.id];
-        return (
-          !respuesta || Object.values(respuesta).every((value) => value === "")
-        );
-      });
-  
-      if (preguntaSinRespuesta) {
-        return false; // Hay una pregunta sin respuesta en una sección intermedia
+  function validarPreguntasSinResponder() {
+    for (const pregunta of preguntas) {
+      const respuesta = respuestas[pregunta.id];
+      const comentario = comentarios[pregunta.id];
+      if (
+        !respuesta ||
+        Object.values(respuesta).every((value) => value === "") ||
+        (pregunta.tieneComentario && !comentario)
+      ) {
+        return pregunta.id;
       }
     }
-  
-    return true; // Todas las preguntas tienen respuesta
+    return null;
   }
-  
+
   async function enviarRespuestas(event) {
     event.preventDefault();
-  
-    if (!validarFormulario()) {
-      setError(true);
-      return; // No enviar el formulario si hay preguntas sin respuesta
-    }
-  
     const respuestasData = [];
-  
-    // Verificar si alguna pregunta no tiene opción seleccionada
-    let preguntasSinResponder = {};
-  
-    for (const seccionId in preguntasPorSeccion) {
-      const preguntas = preguntasPorSeccion[seccionId];
-      const preguntaSinRespuesta = preguntas.find((pregunta) => {
-        const respuesta = respuestas[pregunta.id];
-        const comentario = comentarios[pregunta.id];
-        return (
-          !respuesta ||
-          Object.values(respuesta).every((value) => value === "") ||
-          (pregunta.tieneComentario && !comentario)
-        );
-      });
-  
-      if (preguntaSinRespuesta) {
-        preguntasSinResponder[seccionId] = preguntaSinRespuesta.id;
-      }
-    }
-  
-    if (Object.keys(preguntasSinResponder).length > 0) {
+    const preguntaSinResponder = validarPreguntasSinResponder();
+
+    if (preguntaSinResponder) {
       setError(true);
-      setPreguntasSinSeleccion(true);
-      setPreguntasSinResponder(preguntasSinResponder);
-  
-      // Establecer el mensaje de error apropiado
-      setSnackbarMessage("Por favor, selecciona una opción en todas las preguntas.");
-      setSnackbarSeverity("error");
-  
-      // Establecer la primera pregunta sin respuesta como pregunta actual
-      setPreguntaActual(preguntasSinResponder[Object.keys(preguntasSinResponder)[0]]);
+      setPreguntaActual(preguntaSinResponder);
       return;
     }
+
+    const preguntasSinSeleccion = {};
+    for (const pregunta of preguntas) {
+      const respuesta = respuestas[pregunta.id];
+      const comentario = comentarios[pregunta.id];
+      if (
+        !respuesta ||
+        Object.values(respuesta).every((value) => value === "") ||
+        (pregunta.tieneComentario && !comentario)
+      ) {
+        preguntasSinSeleccion[pregunta.id] = true;
+      }
+    }
+
+    if (Object.keys(preguntasSinSeleccion).length > 0) {
+      setError(true);
+      setPreguntasSinSeleccion(true);
+      setPreguntasSinResponder(preguntasSinSeleccion);
+      setSnackbarMessage(
+        "Por favor, selecciona una opción en todas las preguntas."
+      );
+      setSnackbarSeverity("error");
+      setPreguntaActual(Object.keys(preguntasSinSeleccion)[0]);
+      return;
+    }
+
     // Iterar sobre preguntasPorSeccion
     for (const seccionId in preguntasPorSeccion) {
       const preguntas = preguntasPorSeccion[seccionId];
@@ -305,9 +299,7 @@ function Preguntas() {
           </Typography>
         )}
         {preguntasSinSeleccion && (
-          <Typography variant="body1" color="error">
-
-          </Typography>
+          <Typography variant="body1" color="error"></Typography>
         )}
         {isFirstPage && (
           <>
@@ -376,8 +368,7 @@ function Preguntas() {
         <Grid container spacing={2}>
           {preguntasPorSeccion[seccionId]?.map((pregunta) => (
             <Grid item xs={12} md={6} key={pregunta.id}>
-              
-              <ListItem style={{ height: '100%' }}>
+              <ListItem style={{ height: "100%" }}>
                 <Box
                   className={classes.pregunta}
                   display="flex"
@@ -497,15 +488,17 @@ function Preguntas() {
                     )}
                     {pregunta.tieneComentario && (
                       <Grid item xs={12}>
-                        <Typography variant="body1" style={{marginTop: "2%"}}>
+                        <Typography variant="body1" style={{ marginTop: "2%" }}>
                           {pregunta.descripcionComentario}
                         </Typography>
                         <TextField
-                          style={{marginTop: "2%"}}
+                          style={{ marginTop: "2%" }}
                           name="comentario"
                           label="Comentario"
                           value={comentarios[pregunta.id] || ""}
-                          onChange={(event) => handleComentarioChange(event, pregunta.id)}
+                          onChange={(event) =>
+                            handleComentarioChange(event, pregunta.id)
+                          }
                           fullWidth
                           multiline
                           rows={4}
@@ -535,7 +528,7 @@ function Preguntas() {
           </MuiAlert>
         </Snackbar>
         <Box display="flex" justifyContent="center">
-          {isLastPage && (
+          {isLastPage && validarPreguntasSinResponder && (
             <Button
               variant="contained"
               color="primary"
