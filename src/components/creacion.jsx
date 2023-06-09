@@ -54,12 +54,14 @@ const Creaciones = () => {
   const [errorSeccion, setErrorSeccion] = useState(false);
   const [errorPregunta, setErrorPregunta] = useState(false);
   const [alertaDependencia, setAlertaDependencia] = useState(false);
-  const [alertaClave,setAlertaClave] = useState(false);
+  const [alertaClave, setAlertaClave] = useState(false);
   const [alertaSeccion, setAlertaSeccion] = useState(false);
   const [alertaPregunta, setAlertaPregunta] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedList, setSelectedList] = useState([]);
   const [showAlert, setShowAlert] = useState(true);
+  const [alertaDependenciaExistente, setAlertaDependenciaExistente] = useState(false);
+  const [alertaSeccionExistente, setAlertaSeccionExistente] = useState(false);
 
   useEffect(() => {
     fetchSecciones();
@@ -112,15 +114,32 @@ const Creaciones = () => {
     setTieneComentario(event.target.checked);
   };
 
+  const handleCloseAlertaDependenciaExistente = () => {
+    setAlertaDependenciaExistente(false);
+  };
+
   const handleSeccionSubmit = (event) => {
     event.preventDefault();
     if (seccionDescripcion.trim() === "") {
       setErrorSeccion(true);
       return;
     }
-    crearSeccion(seccionDescripcion);
 
-    // Reiniciar los campos después de enviar el formulario
+    // Verificar si ya existe una sección con el mismo nombre
+    const existeSeccion = secciones.some(
+      (seccion) =>
+        seccion.descripcion.toLowerCase() ===
+        seccionDescripcion.trim().toLowerCase()
+    );
+
+    if (existeSeccion) {
+      setErrorSeccion(true);
+      setAlertaSeccion(false); // Desactivar la alerta si ya existe una sección con el mismo nombre
+      setAlertaSeccionExistente(true); // Activar la alerta de sección existente
+      return;
+    }
+
+    crearSeccion(seccionDescripcion);
     setSeccionDescripcion("");
   };
 
@@ -143,6 +162,21 @@ const Creaciones = () => {
       setErrorDependencia(true);
       return;
     }
+
+    // Verificar si ya existe una dependencia con el mismo nombre
+    const existeDependencia = dependencias.some(
+      (dependencia) =>
+        dependencia.nombreDependencia.toLowerCase() ===
+        dependenciaNombre.trim().toLowerCase()
+    );
+
+    if (existeDependencia) {
+      setErrorDependencia(true);
+      setAlertaDependencia(false); // Desactivar la alerta si ya existe una dependencia con el mismo nombre
+      setAlertaDependenciaExistente(true); // Activar la alerta de dependencia existente
+      return;
+    }
+
     crearDependencia(dependenciaNombre);
   };
 
@@ -226,15 +260,25 @@ const Creaciones = () => {
       .then((response) => {
         if (response.ok) {
           console.log("Dependencia creada:", nombre);
+          setAlertaDependencia(true)
           setDependenciaNombre("");
-          setAlertaDependencia(true);
+         setErrorDependencia(false);
+          setAlertaDependenciaExistente(false); // Desactivar la alerta de dependencia existente
+        } else if (response.status === 409) {
+          throw new Error("Ya existe una dependencia con el mismo nombre");
         } else {
           throw new Error("Error al crear la dependencia.");
         }
       })
       .catch((error) => {
         console.error(error);
-        setErrorDependencia(true);
+        if (error.message === "Ya existe una dependencia con el mismo nombre") {
+          setErrorDependencia(false);
+          setAlertaDependencia(false);
+          setAlertaDependenciaExistente(true); // Activar la alerta de dependencia existente
+        } else {
+          setErrorDependencia(true);
+        }
       });
   };
 
@@ -249,8 +293,10 @@ const Creaciones = () => {
       .then((response) => {
         if (response.ok) {
           console.log("Sección creada:", descripcion);
-          setSeccionDescripcion("");
           setAlertaSeccion(true);
+          setSeccionDescripcion("");
+          setErrorSeccion(false); // Establecer el estado de error a false
+          setAlertaSeccionExistente(false);
         } else {
           throw new Error("Error al crear la sección.");
         }
@@ -307,12 +353,12 @@ const Creaciones = () => {
       body: JSON.stringify({
         descripcion: descripcion,
         seccionId: seccionId,
-        tieneComentario: tieneComentario, // Pasar el valor booleano directamente
+        tieneComentario: tieneComentario,
         descripcionComentario: descripcionComentario,
-        tieneExpresion: tieneExpresion, // Pasar el valor booleano directamente
-        tieneCalificaciones: tieneCalificaciones, // Pasar el valor booleano directamente
-        tieneClasificaciones: tieneClasificaciones, // Pasar el valor booleano directamente
-        tieneGrado: tieneGrado, // Pasar el valor booleano directamente
+        tieneExpresion: tieneExpresion,
+        tieneCalificaciones: tieneCalificaciones,
+        tieneClasificaciones: tieneClasificaciones,
+        tieneGrado: tieneGrado,
       }),
     })
       .then((response) => {
@@ -510,6 +556,19 @@ const Creaciones = () => {
                   </IconButton>
                 </Alert>
               )}
+              {alertaDependenciaExistente && (
+                <Alert severity="error">Ya existe una Dependencia con el mismo nombre, intentelo denuevo.
+                 <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={handleCloseAlertaDependenciaExistente}
+                    open={alertaDependenciaExistente}
+                    className={classes.closeButton}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton></Alert>
+              )}
             </form>
           </Box>
 
@@ -601,6 +660,9 @@ const Creaciones = () => {
                     <CloseIcon fontSize="inherit" />
                   </IconButton>
                 </Alert>
+              )}
+               {alertaSeccionExistente && (
+                <Alert severity="error">Ya existe una Seccion con el mismo nombre, intentelo denuevo.</Alert>
               )}
             </form>
           </Box>
@@ -706,20 +768,20 @@ const Creaciones = () => {
                 {errorPregunta && seccionId === "" && (
                   <FormHelperText>Seleccione una sección</FormHelperText>
                 )}
-                 {alertaSeccion && showAlert && (
-                <Alert severity="success">
-                  ¡La Seccion se creó correctamente!
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    size="small"
-                    onClick={handleCloseAlert}
-                    className={classes.closeButton}
-                  >
-                    <CloseIcon fontSize="inherit" />
-                  </IconButton>
-                </Alert>
-              )}
+                {alertaSeccion && showAlert && (
+                  <Alert severity="success">
+                    ¡La Seccion se creó correctamente!
+                    <IconButton
+                      aria-label="close"
+                      color="inherit"
+                      size="small"
+                      onClick={handleCloseAlert}
+                      className={classes.closeButton}
+                    >
+                      <CloseIcon fontSize="inherit" />
+                    </IconButton>
+                  </Alert>
+                )}
               </FormControl>
 
               <Button

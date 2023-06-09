@@ -92,10 +92,21 @@ const Buscador = () => {
             (dep) => dep.id === respuesta.dependenciaId
           );
           const nombreDependencia = dependencia ? dependencia.nombreDependencia : "";
-          return { ...respuesta, nombreDependencia };
+      
+          // Formatear la fecha a día/mes/año hora:minutos:segundos
+          const fecha = new Date(respuesta.createdAt);
+          const dia = fecha.getDate();
+          const mes = fecha.getMonth() + 1;
+          const año = fecha.getFullYear();
+          const hora = fecha.getHours();
+          const minutos = fecha.getMinutes();
+          const segundos = fecha.getSeconds();
+          const fechaFormateada = `${dia}/${mes}/${año} ${hora}:${minutos}:${segundos}`;
+      
+          return { ...respuesta, nombreDependencia, fechaFormateada };
         });
       };
-
+      
       const response = await fetch(url);
       const data = await response.json();
       const respuestasTransformadas = transformarRespuestas(data);
@@ -301,7 +312,7 @@ const Buscador = () => {
           {sortedRespuestas.map((respuesta) => (
             <TableRow key={respuesta.id}>
               <TableCell>{respuesta.id}</TableCell>
-              <TableCell>{respuesta.createdAt}</TableCell>
+              <TableCell>{respuesta.fechaFormateada}</TableCell>
               <TableCell>{respuesta.nombreDependencia}</TableCell>
               <TableCell>{respuesta.edad}</TableCell>
               <TableCell>{respuesta.genero}</TableCell>
