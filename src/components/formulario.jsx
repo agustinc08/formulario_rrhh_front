@@ -116,7 +116,7 @@ function Preguntas() {
 
   function handleComentarioChange(event, preguntaId) {
     const { value } = event.target;
-  
+
     setComentarios((prevComentarios) => ({
       ...prevComentarios,
       [preguntaId]: value,
@@ -182,29 +182,29 @@ function Preguntas() {
   async function enviarRespuestas(event) {
     event.preventDefault();
     const respuestasData = [];
-  
+
     // Verificar si alguna pregunta no tiene opción seleccionada
     let preguntasSinResponder = {};
-  
+
     for (const seccionId in preguntasPorSeccion) {
       const preguntas = preguntasPorSeccion[seccionId];
       const preguntaSinRespuesta = preguntas.find((pregunta) => {
         const respuesta = respuestas[pregunta.id];
         return !respuesta || Object.values(respuesta).every(value => value === "");
       });
-  
+
       if (preguntaSinRespuesta) {
         preguntasSinResponder[seccionId] = preguntaSinRespuesta.id;
       }
     }
-  
+
     if (Object.keys(preguntasSinResponder).length > 0) {
       setError(true);
       setPreguntasSinSeleccion(true);
       setPreguntasSinResponder(preguntasSinResponder);
       return;
     }
-  
+
 
     // Iterar sobre preguntasPorSeccion
     for (const seccionId in preguntasPorSeccion) {
@@ -262,16 +262,16 @@ function Preguntas() {
       </Typography>
       <Divider />
       <form onSubmit={enviarRespuestas}>
-  {error && (
-    <Typography variant="body1" color="error">
-      Por favor, selecciona una opción en todas las preguntas.
-    </Typography>
-  )}
-  {preguntasSinSeleccion && (
-    <Typography variant="body1" color="error">
-     
-    </Typography>
-  )}
+        {error && (
+          <Typography variant="body1" color="error">
+            Por favor, selecciona una opción en todas las preguntas.
+          </Typography>
+        )}
+        {preguntasSinSeleccion && (
+          <Typography variant="body1" color="error">
+
+          </Typography>
+        )}
         {isFirstPage && (
           <>
             <Grid container spacing={3}>
@@ -460,16 +460,19 @@ function Preguntas() {
                     )}
                     {pregunta.tieneComentario && (
                       <Grid item xs={12}>
+                        <Typography variant="body1">
+                          {pregunta.comentarios.descripcion}
+                        </Typography>
                         <TextField
                           name="comentario"
                           label="Comentario"
                           value={comentarios[pregunta.id] || ""}
-                          onChange={(event) =>
-                            handleComentarioChange(event, pregunta.id)
-                          }
-                          error={error}
+                          onChange={(event) => handleComentarioChange(event, pregunta.id)}
                           fullWidth
                           multiline
+                          rows={4}
+                          variant="outlined"
+                          required
                         />
                       </Grid>
                     )}

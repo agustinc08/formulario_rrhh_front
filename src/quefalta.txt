@@ -1,0 +1,17 @@
+//formulario: agregar descripcion a los comentarios , arreglar que se manda el formulario aunque no tenga todas las preguntas contestadas. hacer validaciones de erorres.
+//
+
+//inicio , hardcodeado a base , crear tabla inicio con descripcion , subDescripcion , enlazado con secciones para mostrar y descripcionSecciones y titulo y subtitutlo.
+
+//estadisticas : hacer funcionalidadesesta(echo un beta de como seria.)
+
+//creacion , retoques varios : mejorar vistas de modals,  hacer validaciones de erorres. cuando terminas de crear hay un bug que te muestra el input en rojo(ni idea porque es.)
+//  
+
+//buscador: retoques , agregado de comentarios , no mucho casi terminado.
+
+//login : terminado(con los requerimientos pedidos.)
+
+//pros : esta casi listo , queda solamente gran parte de validaciones y retoques, buildea bien en front y back , solamente con probar que ande inicio ya el back estaria casi listo por ahora.
+
+//contras : errores varios dificiles de solucionar. 
