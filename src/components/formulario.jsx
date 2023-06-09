@@ -42,6 +42,7 @@ function Preguntas() {
   const [error, setError] = useState(false);
   const [preguntasSinSeleccion, setPreguntasSinSeleccion] = useState(false);
   const [preguntasSinResponder, setPreguntasSinResponder] = useState({});
+  const [preguntaActual, setPreguntaActual] = useState(null);
 
 
   useEffect(() => {
@@ -70,25 +71,20 @@ function Preguntas() {
     async function cargarPreguntasPorSeccion() {
       if (seccionId) {
         try {
-          const { data } = await axios.get(
-            `http://localhost:3000/preguntas/${seccionId}`
-          );
-
-          // Actualizar el estado preguntasPorSeccion con las nuevas preguntas
+          const { data } = await axios.get(`http://localhost:3000/preguntas/${seccionId}`);
           setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
             ...prevPreguntasPorSeccion,
             [seccionId]: data,
           }));
-
-          // Establecer la página actual como la primera página
           setCurrentPage(1);
+          setPreguntaActual(data[0]?.id); // Establecer la primera pregunta como pregunta actual
         } catch (error) {
           console.error(error);
         }
       }
     }
     cargarPreguntasPorSeccion();
-  }, [seccionId]);
+  }, [seccionId, setPreguntaActual]);
 
   useEffect(() => {
     if (preguntasPorSeccion[seccionId]) {
@@ -133,6 +129,7 @@ function Preguntas() {
         expresion: value,
       },
     }));
+    setPreguntaActual(null); // Reiniciar pregunta actual
   }
 
   function handleCalificacionesChange(event, preguntaId) {
@@ -145,6 +142,7 @@ function Preguntas() {
         calificaciones: value,
       },
     }));
+    setPreguntaActual(null); // Reiniciar pregunta actual
   }
 
   function handleClasificacionesChange(event, preguntaId) {
@@ -157,6 +155,7 @@ function Preguntas() {
         clasificaciones: value,
       },
     }));
+    setPreguntaActual(null); // Reiniciar pregunta actual
   }
 
   function handleGradoChange(event, preguntaId) {
@@ -169,6 +168,7 @@ function Preguntas() {
         grado: value,
       },
     }));
+    setPreguntaActual(null); // Reiniciar pregunta actual
   }
 
   const handleSnackbarClose = (event, reason) => {
@@ -178,6 +178,19 @@ function Preguntas() {
 
     setOpenSnackbar(false);
   };
+
+  function validarFormulario() {
+    for (const seccionId in preguntasPorSeccion) {
+      const preguntas = preguntasPorSeccion[seccionId];
+      const preguntaSinRespuesta = preguntas.some(pregunta => !respuestas[pregunta.id]);
+  
+      if (preguntaSinRespuesta) {
+        return false; // Hay una pregunta sin respuesta
+      }
+    }
+  
+    return true; // Todas las preguntas tienen respuesta
+  }
 
   async function enviarRespuestas(event) {
     event.preventDefault();
@@ -190,22 +203,40 @@ function Preguntas() {
       const preguntas = preguntasPorSeccion[seccionId];
       const preguntaSinRespuesta = preguntas.find((pregunta) => {
         const respuesta = respuestas[pregunta.id];
-        return !respuesta || Object.values(respuesta).every(value => value === "");
+        return !respuesta || Object.values(respuesta).every((value) => value === "");
       });
 
       if (preguntaSinRespuesta) {
         preguntasSinResponder[seccionId] = preguntaSinRespuesta.id;
       }
     }
+    
 
     if (Object.keys(preguntasSinResponder).length > 0) {
       setError(true);
       setPreguntasSinSeleccion(true);
       setPreguntasSinResponder(preguntasSinResponder);
-      return;
+
+      if (preguntasSinResponder) {
+        setError(true);
+        setPreguntasSinSeleccion(true);
+        setPreguntasSinResponder(preguntasSinResponder);
+      
+        // Establecer el mensaje de error apropiado
+        setSnackbarMessage("Por favor, selecciona una opción en todas las preguntas.");
+        setSnackbarSeverity("error");
+      
+        if (!validarFormulario()) {
+          setError(true);
+          return; // No enviar el formulario si hay preguntas sin respuesta
+        }
+      
+        // Establecer la primera pregunta sin respuesta como pregunta actual
+        setPreguntaActual(preguntasSinResponder[Object.keys(preguntasSinResponder)[0]]);
+        return;
+      }
     }
-
-
+    
     // Iterar sobre preguntasPorSeccion
     for (const seccionId in preguntasPorSeccion) {
       const preguntas = preguntasPorSeccion[seccionId];
@@ -339,6 +370,7 @@ function Preguntas() {
         <Grid container spacing={2}>
           {preguntasPorSeccion[seccionId]?.map((pregunta) => (
             <Grid item xs={12} sm={6} md={6} key={pregunta.id}>
+              .
               <ListItem>
                 <Box
                   className="pregunta"
@@ -461,7 +493,7 @@ function Preguntas() {
                     {pregunta.tieneComentario && (
                       <Grid item xs={12}>
                         <Typography variant="body1">
-                          {pregunta.comentarios.descripcion}
+                          {pregunta.descripcionComentario}
                         </Typography>
                         <TextField
                           name="comentario"
