@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {
   Typography,
@@ -19,6 +19,7 @@ import MuiAlert from "@material-ui/lab/Alert";
 import Pagination from "@material-ui/lab/Pagination";
 import "../css/global.css";
 import useStyles from "../styles/formularioStyle";
+import { useHistory } from "react-router-dom";
 
 function Preguntas() {
   const classes = useStyles();
@@ -44,6 +45,8 @@ function Preguntas() {
   const [preguntasSinResponder, setPreguntasSinResponder] = useState({});
   const [preguntaActual, setPreguntaActual] = useState(null);
   const [preguntasRequierenComentario, setPreguntaRequierenComentario] = useState(false);
+  const history = useHistory();
+  const redirectTimer = useRef(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -289,6 +292,9 @@ function Preguntas() {
       setSnackbarMessage("El formulario fue enviado correctamente.");
       setSnackbarSeverity("success");
       setOpenSnackbar(true);
+      redirectTimer.current = setTimeout(() => {
+        history.push("/inicio");
+      }, 2000);
     } catch (error) {
       console.error(error);
       setSnackbarMessage(
