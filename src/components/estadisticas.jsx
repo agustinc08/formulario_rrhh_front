@@ -7,6 +7,7 @@ import {
   MenuItem,
   Grid,
   Box,
+  Divider,
 } from '@material-ui/core';
 import "../css/global.css";
 import { Bar, Pie, Doughnut, PolarArea } from 'react-chartjs-2';
@@ -193,12 +194,15 @@ const Estadisticas = () => {
   };
 
   return (
-    <Grid container justifyContent="center" alignItems="center">
-      <Grid item xs={12} sm={6} md={3}>
-        <Typography variant="h4" align="center" className={classes.titulo}>
-          Estadísticas
-        </Typography>
-        <Box m={4}>
+    <Grid container  justifyContent="center" alignItems="center">
+      <Grid item xs={12}>
+          <Typography variant="h4" align="center" className={classes.titulo}>
+            Estadísticas
+          </Typography>
+          <Divider />
+      </Grid>
+      <Grid item xs={12} md={4}>
+        <Box mx={4}>
         <FormControl variant="standard" fullWidth size="small">
               <InputLabel>Pregunta</InputLabel>
               <Select
@@ -217,7 +221,9 @@ const Estadisticas = () => {
               </Select>
             </FormControl>
         </Box>
-        <Box m={4}>
+      </Grid>
+      <Grid item xs={12} md={4}>
+        <Box mx={4}>
         <FormControl variant="standard" fullWidth size="small">
               <InputLabel>Dependencia</InputLabel>
               <Select
@@ -238,60 +244,72 @@ const Estadisticas = () => {
         </Box>
       </Grid>
 
-      <Grid item xs={12} sm={6} md={3}>
-        {respuestaData && (
-          <div>
-            <Typography variant="h6" align="center">
-              Respuestas
-            </Typography>
-            <Bar data={respuestaData} />
-          </div>
-        )}
+
+      <Grid item xs={12} md={5}>
+        <Box mx={3} my={5}>
+          {respuestaData && (
+            <div>
+              <Typography variant="h6" align="center">
+                Respuestas
+              </Typography>
+              <Bar data={respuestaData} />
+            </div>
+          )}
+        </Box>
       </Grid>
 
-      <Grid item xs={12} sm={6} md={3}>
-        {edadData && (
-          <div>
-            <Typography variant="h6" align="center">
-              Edad
-            </Typography>
-            <Pie data={edadData} />
-          </div>
-        )}
+      <Grid item xs={12} md={5}>
+        <Box mx={3} my={5}>
+          {edadData && (
+            <div>
+              <Typography variant="h6" align="center">
+                Edad
+              </Typography>
+              <Pie data={edadData} />
+            </div>
+          )}
+        </Box>
       </Grid>
 
-      <Grid item xs={12} sm={6} md={3}>
-        {generoData && (
-          <div>
-            <Typography variant="h6" align="center">
-              Género
-            </Typography>
-            <Doughnut data={generoData} />
-          </div>
-        )}
+      <Grid item xs={12} md={5}>
+        <Box mx={3} my={5}>
+          {generoData && (
+            <div>
+              <Typography variant="h6" align="center">
+                Género
+              </Typography>
+              <Doughnut data={generoData} />
+            </div>
+          )}
+        </Box>
       </Grid>
 
-      <Grid item xs={12} sm={6} md={3}>
-        {clasificacionData && (
-          <div>
-            <Typography variant="h6" align="center">
-              Clasificación
-            </Typography>
-            <PolarArea data={clasificacionData} />
-          </div>
-        )}
+      <Grid item xs={12} md={5}>
+        <Box mx={3} my={5}>
+          {clasificacionData && (
+            <div>
+              <Typography variant="h6" align="center">
+                Clasificación
+              </Typography>
+              <PolarArea data={clasificacionData} />
+            </div>
+          )}
+        </Box>
       </Grid>
 
-      <Grid item xs={12} sm={6} md={3}>
-        {calificacionData && (
-          <div>
-            <Typography variant="h6" align="center">
-              Calificación
-            </Typography>
-            <Pie data={calificacionData} />
-          </div>
-        )}
+      <Grid item xs={12} md={5}>
+        <Box mx={3} my={5}>
+          {calificacionData && (
+            <div>
+              <Typography variant="h6" align="center">
+                Calificación
+              </Typography>
+              <Pie data={calificacionData} />
+            </div>
+          )}
+        </Box>
       </Grid>
+      
     </Grid>
   );
 };
