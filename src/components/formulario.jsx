@@ -43,7 +43,7 @@ function Preguntas() {
   const [preguntasSinSeleccion, setPreguntasSinSeleccion] = useState(false);
   const [preguntasSinResponder, setPreguntasSinResponder] = useState({});
   const [preguntaActual, setPreguntaActual] = useState(null);
-  const [preguntasSinComentario, setPreguntasSinComentario] = useState(false);
+  const [preguntasRequierenComentario, setPreguntaRequierenComentario] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -193,10 +193,10 @@ function Preguntas() {
     let preguntasSinComentario = false;
     let preguntasSinSeleccion = {};
   
-    // Verificar si hay preguntas sin comentario
+    // Verificar si hay preguntas sin comentario o con comentario vacío
     for (const preguntaId in comentarios) {
       const comentario = comentarios[preguntaId];
-      if (!comentario) {
+      if (!comentario && preguntasRequierenComentario.includes(preguntaId)) {
         preguntasSinComentario = true;
         break;
       }
@@ -249,12 +249,24 @@ function Preguntas() {
           grado,
         } = respuestas[preguntaId] || {};
   
+        const comentario = tieneComentario ? comentarios[preguntaId] || null : null;
+  
+        if (tieneComentario && !comentario) {
+          setError(true);
+          setSnackbarMessage(
+            "Por favor, proporciona un comentario en las preguntas que lo requieran."
+          );
+          setSnackbarSeverity("error");
+          setOpenSnackbar(true);
+          throw new Error("Faltan comentarios en las preguntas requeridas.");
+        }
+  
         return {
           preguntaId,
           dependenciaId: parseInt(dependencia),
           respuestaText:
             expresion || calificaciones || clasificaciones || grado,
-          comentario: tieneComentario ? comentarios[preguntaId] || null : null,
+          comentario,
         };
       });
   
@@ -286,7 +298,7 @@ function Preguntas() {
       setOpenSnackbar(true);
     }
   }
-
+  
   return (
     <Container>
       <Typography variant="h4" className={classes.tituloPregunta}>
