@@ -453,7 +453,7 @@ function Preguntas() {
                             <MenuItem value="CASI_SIEMPRE">
                               CASI SIEMPRE
                             </MenuItem>
-                            <MenuItem value="A_VECES">A VECES</MenuItem>
+                            <MenuItem value="AVECES">A VECES</MenuItem>
                             <MenuItem value="CASI_NUNCA">CASI NUNCA</MenuItem>
                             <MenuItem value="NUNCA">NUNCA</MenuItem>
                           </Select>

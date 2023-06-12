@@ -64,6 +64,17 @@ const Creaciones = () => {
     useState(false);
   const [alertaSeccionExistente, setAlertaSeccionExistente] = useState(false);
   const [alertaClaveExistente, setAlertaClaveExistente] = useState(false);
+  const [tituloPrincipal, setTituloPrincipal] = useState("");
+  const [introduccionDescripcion, setIntroduccionDescripcion] = useState("");
+  const [objetivoDescripcion, setObjetivoDescripcion] = useState("");
+  const [parrafo, setParrafo] = useState("");
+  const [errorTituloPrincipal, setErrorTituloPrincipal] = useState(false);
+  const [errorIntroduccionDescripcion, setErrorIntroduccionDescripcion] =
+    useState(false);
+  const [errorObjetivoDescripcion, setErrorObjetivoDescripcion] =
+    useState(false);
+  const [errorParrafo, setErrorParrafo] = useState(false);
+  const [alertaInicio, setAlertaInicio] = useState(false);
 
   useEffect(() => {
     fetchSecciones();
@@ -238,7 +249,7 @@ const Creaciones = () => {
       setAlertaClaveExistente(true);
       return;
     }
-  
+
     fetch("http://localhost:3000/claves", {
       method: "POST",
       headers: {
@@ -399,6 +410,79 @@ const Creaciones = () => {
       .catch((error) => {
         console.error(error);
         setErrorPregunta(true);
+      });
+  };
+
+  const handleInicioSubmit = (event) => {
+    event.preventDefault();
+    if (tituloPrincipal.trim() === "") {
+      setErrorTituloPrincipal(true);
+      return;
+    }
+    if (introduccionDescripcion.trim() === "") {
+      setErrorIntroduccionDescripcion(true);
+      return;
+    }
+    if (objetivoDescripcion.trim() === "") {
+      setErrorObjetivoDescripcion(true);
+      return;
+    }
+    if (parrafo.trim() === "") {
+      setErrorParrafo(true);
+      return;
+    }
+
+    crearInicio({
+      tituloPrincipal: tituloPrincipal,
+      introduccionDescripcion: introduccionDescripcion,
+      objetivoDescripcion: objetivoDescripcion,
+      parrafo: parrafo,
+    });
+
+    // Reiniciar los campos después de enviar el formulario
+    setTituloPrincipal("");
+    setIntroduccionDescripcion("");
+    setObjetivoDescripcion("");
+    setParrafo("");
+  };
+
+  const crearInicio = ({
+    tituloPrincipal,
+    introduccionDescripcion,
+    objetivoDescripcion,
+    parrafo,
+  }) => {
+    fetch("http://localhost:3000/inicio", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        tituloPrincipal: tituloPrincipal,
+        introduccionDescripcion: introduccionDescripcion,
+        objetivoDescripcion: objetivoDescripcion,
+        parrafo: parrafo,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log("Inicio creado:", tituloPrincipal);
+          setAlertaInicio(true);
+          setTituloPrincipal("");
+          setIntroduccionDescripcion("");
+          setObjetivoDescripcion("");
+          setParrafo("");
+          setErrorTituloPrincipal(false); // Establecer el estado de error a false
+          setErrorIntroduccionDescripcion(false);
+          setErrorObjetivoDescripcion(false);
+          setErrorParrafo(false);
+          //window.location.reload();
+        } else {
+          throw new Error("Error al crear el inicio.");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
       });
   };
 
@@ -576,7 +660,65 @@ const Creaciones = () => {
           </Modal>
         </List>
       </Drawer>
-
+      {/* <Grid container spacing={6} className={classes.gridPrincipal}>
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={6}
+          className={`${classes.cardCreacion} ${classes.gridIzquierdo}`}
+        >
+          <Box
+            className={`${classes.boxForm} ${classes.boxIzquierdo}`}
+            boxShadow={8}
+            borderRadius={7}
+          >
+            <form onSubmit={handleInicioSubmit} className={classes.form}>
+              <h2>Crear Inicio</h2>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    type="text"
+                    placeholder="Título principal"
+                    value={tituloPrincipal}
+                    onChange={(e) => setTituloPrincipal(e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    type="text"
+                    placeholder="Descripción de introducción"
+                    value={introduccionDescripcion}
+                    onChange={(e) => setIntroduccionDescripcion(e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    type="text"
+                    placeholder="Descripción de objetivo"
+                    value={objetivoDescripcion}
+                    onChange={(e) => setObjetivoDescripcion(e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    placeholder="Párrafo"
+                    value={parrafo}
+                    onChange={(e) => setParrafo(e.target.value)}
+                  ></TextField>
+                </Grid>
+                <Grid item xs={12}>
+                  <button type="submit">Crear Inicio</button>
+                </Grid>
+              </Grid>
+              {errorTituloPrincipal && <p className={classes.error}></p>}
+              {alertaInicio && (
+                <p className={classes.alerta}>Inicio creado correctamente</p>
+              )}
+            </form>
+          </Box>
+        </Grid>
+      </Grid> */}
       <Grid container spacing={6} className={classes.gridPrincipal}>
         <Grid
           item

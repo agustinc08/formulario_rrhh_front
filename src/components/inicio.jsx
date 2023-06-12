@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Typography,
@@ -17,153 +17,98 @@ import "../css/inicio.css";
 import { isLoggedIn } from "../auth";
 import Login from "./login";
 import { useHistory } from "react-router-dom";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    padding: theme.spacing(2),
-  },
-  sectionTitle: {
-    marginBottom: theme.spacing(2),
-  },
-  table: {
-    marginTop: theme.spacing(2),
-  },
-  subtitulo: {
-    fontSize: "22px !important",
-    marginBottom: "10px",
-    marginTop: "20px",
-  },
-  tituloPrincipal: {
-    fontSize: "46px !important",
-    textAlign: "center",
-    marginTop:"10px",
-  },
-
-}));
+import useStyles from "../styles/inicioStyle";
 
 function Inicio() {
   const classes = useStyles();
   const history = useHistory();
+  const [inicioData, setInicioData] = useState(null);
+  const [secciones, setSecciones] = useState([]);
+
+  useEffect(() => {
+    const fetchInicioData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/inicio");
+        const data = await response.json();
+        setInicioData(data);
+      } catch (error) {
+        console.log("Error fetching inicio data:", error);
+      }
+    };
+
+    const fetchSecciones = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/secciones");
+        const data = await response.json();
+        setSecciones(data);
+      } catch (error) {
+        console.log("Error fetching secciones:", error);
+      }
+    };
+
+    fetchInicioData();
+    fetchSecciones();
+  }, []);
 
   const handleButtonClick = () => {
-    history.push("/formulario"); // dirige al usuario al formulario de preguntas
+    history.push("/formulario"); // directs the user to the form page
   };
 
   return (
     <Container>
       {isLoggedIn() ? (
         <>
-          <Typography variant="h1" className={classes.tituloPrincipal}>
-            Relevamiento Fuero Civil - 2023
-            <Divider></Divider>
-          </Typography>
-          <Typography variant="h2" className={classes.subtitulo}>
-            INTRODUCCIÓN
-          </Typography>
-          <Typography variant="body1" className="parrafo">
-            <span className="sangria">El </span>
-              presente relevamiento general tiene como finalidad conocer
-            aspectos del trabajo cotidiano en las distintas dependencias del
-            fuero para desarrollar acciones en los temas que así lo requieran,
-            con el fin de mejorar el clima laboral, la comunicación,
-            coordinación de tareas, entre otras. Es importante relevar también
-            los efectos de las modificaciones que introdujeron la pandemia y el
-            ASPO en relación a las formas de funcionamiento.
-          </Typography>
-          <Typography variant="body1" className="parrafo">
-            <span className="sangria">Participará </span>
-            todo el personal que se viene desempeñando en el Fuero
-            Civil de manera interina, suplente, contratada, provisional o
-            efectiva y cuente con más de un mes de antigüedad en el cargo.
-          </Typography>
-          <Typography variant="h2" className={classes.subtitulo}>
-            OBJETIVOS
-          </Typography>
-          <Typography variant="body1" className="parrafo">
-            <span className="sangria">El </span>
-            presente relevamiento tiene como objetivo sistematizar
-            información actualizada y pertinente, con el fin de identificar los
-            principales determinantes en los procesos de trabajo y sus efectos
-            en las personas que las llevan adelante, las tareas que desarrollan
-            y el funcionamiento de las dependencias. Esta instancia forma parte
-            de un proceso de trabajo más amplio, cuya finalidad es el
-            mejoramiento de las dimensiones que se detallan a continuación en
-            los equipos de trabajo y las distintas dependencias.
-          </Typography>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell className="titulo-tabla">Sección</TableCell>
-                <TableCell className="titulo-tabla">Descripción</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell className="texto-tabla">Clima laboral</TableCell>
-                <TableCell className="texto-tabla">
-                  Preguntas sobre el clima laboral en la dependencia.
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="texto-tabla">Violencia/agresión externa</TableCell>
-                <TableCell className="texto-tabla">
-                  Preguntas sobre la violencia y la agresión externa en el lugar
-                  de trabajo.
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="texto-tabla">
-                  Relaciones interpersonales en el grupo de trabajo
-                </TableCell>
-                <TableCell className="texto-tabla">
-                  Preguntas sobre las relaciones interpersonales en el grupo de
-                  trabajo.
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="texto-tabla">Infraestructura</TableCell>
-                <TableCell className="texto-tabla">
-                  Preguntas sobre la infraestructura en la dependencia.
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="texto-tabla">Tareas y formas de trabajo</TableCell>
-                <TableCell className="texto-tabla">
-                  Preguntas sobre las tareas y formas de trabajo en la
-                  dependencia.
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="texto-tabla">Comunicación</TableCell>
-                <TableCell className="texto-tabla">
-                  Preguntas sobre la comunicación en la dependencia.
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-          <div className="separar">
-            <Typography variant="body1" className="parrafo">
-              <span className="sangria">A </span>
-              continuación, encontrarán una serie de preguntas les pedimos que
-              respondan con la mayor sinceridad posible; marcando la alternativa
-              que mejor describa lo que usted siente y piensa. No existen
-              respuestas correctas o incorrectas, solo es información acerca de
-              “su opinión sobre el tema”. La encuesta es obligatoria, anónima y
-              confidencial. El relevamiento busca sistematizar información
-              actualizada, por lo que le solicitamos centre sus respuestas en el
-              período 2022 y 2023.
-            </Typography>
-            <Box height={50} />
-            <Box className="botonContainer">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleButtonClick}
-              >
-                ir a preguntas
-              </Button>
-            </Box>
-          </div>
+          {inicioData && (
+            <>
+              <Typography variant="h1" className={classes.tituloPrincipal}>
+                {inicioData.tituloPrincipal}
+                <Divider></Divider>
+              </Typography>
+              <Typography variant="h2" className={classes.subtitulo}>
+                INTRODUCCIÓN
+              </Typography>
+              <Typography variant="body1" className="parrafo">
+                {inicioData.introduccionDescripcion}
+              </Typography>
+              <Typography variant="h2" className={classes.subtitulo}>
+                OBJETIVOS
+              </Typography>
+              <Typography variant="body1" className="parrafo">
+                {inicioData.objetivoDescripcion}
+              </Typography>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell className="titulo-tabla">Sección</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {secciones.map((seccion) => (
+                    <TableRow key={seccion.id}>
+                      <TableCell className="texto-tabla">
+                        {seccion.descripcion}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="separar">
+                <Typography variant="body1" className="parrafo">
+                  {inicioData.parrafo}
+                </Typography>
+                <Box height={50} />
+                <Box className="botonContainer">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleButtonClick}
+                  >
+                    ir a preguntas
+                  </Button>
+                </Box>
+              </div>
+            </>
+          )}
         </>
       ) : (
         <Login />
