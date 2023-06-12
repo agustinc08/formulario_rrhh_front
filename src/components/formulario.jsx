@@ -20,24 +20,6 @@ import Pagination from "@material-ui/lab/Pagination";
 import "../css/global.css";
 import useStyles from "../styles/formularioStyle";
 
-function cargarPreguntasPorSeccion(seccionId, setPreguntasPorSeccion, setCurrentPage, setPreguntaActual) {
-  if (seccionId) {
-    axios
-      .get(`http://localhost:3000/preguntas/${seccionId}`)
-      .then((response) => {
-        setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
-          ...prevPreguntasPorSeccion,
-          [seccionId]: response.data,
-        }));
-        setCurrentPage(1);
-        setPreguntaActual(response.data[0]?.id); // Establecer la primera pregunta como pregunta actual
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
-}
-
 function Preguntas() {
   const classes = useStyles();
   const [preguntas, setPreguntas] = useState([]);
@@ -61,6 +43,7 @@ function Preguntas() {
   const [preguntasSinSeleccion, setPreguntasSinSeleccion] = useState(false);
   const [preguntasSinResponder, setPreguntasSinResponder] = useState({});
   const [preguntaActual, setPreguntaActual] = useState(null);
+  const [preguntasSinComentario, setPreguntasSinComentario] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -186,45 +169,62 @@ function Preguntas() {
     setOpenSnackbar(false);
   };
 
-  function validarPreguntasSinResponder() {
-    for (const pregunta of preguntas) {
-      const respuesta = respuestas[pregunta.id];
-      const comentario = comentarios[pregunta.id];
-      if (
-        !respuesta ||
-        Object.values(respuesta).every((value) => value === "") ||
-        (pregunta.tieneComentario && !comentario)
-      ) {
-        return pregunta.id;
-      }
+  async function cargarPreguntasPorSeccion(seccionId, setPreguntasPorSeccion, setCurrentPage, setPreguntaActual) {
+    if (seccionId) {
+      axios
+        .get(`http://localhost:3000/preguntas/${seccionId}`)
+        .then((response) => {
+          setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
+            ...prevPreguntasPorSeccion,
+            [seccionId]: response.data,
+          }));
+          setCurrentPage(1);
+          setPreguntaActual(response.data[0]?.id); // Establecer la primera pregunta como pregunta actual
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
-    return null;
   }
-
+  
   async function enviarRespuestas(event) {
     event.preventDefault();
     const respuestasData = [];
-    const preguntaSinResponder = validarPreguntasSinResponder();
-
-    if (preguntaSinResponder) {
-      setError(true);
-      setPreguntaActual(preguntaSinResponder);
-      return;
-    }
-
-    const preguntasSinSeleccion = {};
-    for (const pregunta of preguntas) {
-      const respuesta = respuestas[pregunta.id];
-      const comentario = comentarios[pregunta.id];
-      if (
-        !respuesta ||
-        Object.values(respuesta).every((value) => value === "") ||
-        (pregunta.tieneComentario && !comentario)
-      ) {
-        preguntasSinSeleccion[pregunta.id] = true;
+    let preguntasSinComentario = false;
+    let preguntasSinSeleccion = {};
+  
+    // Verificar si hay preguntas sin comentario
+    for (const preguntaId in comentarios) {
+      const comentario = comentarios[preguntaId];
+      if (!comentario) {
+        preguntasSinComentario = true;
+        break;
       }
     }
-
+  
+    if (preguntasSinComentario) {
+      setError(true);
+      setSnackbarMessage(
+        "Por favor, proporciona un comentario en las preguntas que lo requieran."
+      );
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
+      return;
+    }
+  
+    // Verificar si hay preguntas sin selección
+    for (const preguntaId in respuestas) {
+      const respuesta = respuestas[preguntaId];
+      if (
+        !respuesta.expresion &&
+        !respuesta.calificaciones &&
+        !respuesta.clasificaciones &&
+        !respuesta.grado
+      ) {
+        preguntasSinSeleccion[preguntaId] = true;
+      }
+    }
+  
     if (Object.keys(preguntasSinSeleccion).length > 0) {
       setError(true);
       setPreguntasSinSeleccion(true);
@@ -236,15 +236,19 @@ function Preguntas() {
       setPreguntaActual(Object.keys(preguntasSinSeleccion)[0]);
       return;
     }
-
+  
     // Iterar sobre preguntasPorSeccion
     for (const seccionId in preguntasPorSeccion) {
       const preguntas = preguntasPorSeccion[seccionId];
       const respuestasSeccion = preguntas.map((pregunta) => {
         const { id: preguntaId, tieneComentario } = pregunta;
-        const { expresion, calificaciones, clasificaciones, grado } =
-          respuestas[preguntaId] || {};
-
+        const {
+          expresion,
+          calificaciones,
+          clasificaciones,
+          grado,
+        } = respuestas[preguntaId] || {};
+  
         return {
           preguntaId,
           dependenciaId: parseInt(dependencia),
@@ -253,17 +257,17 @@ function Preguntas() {
           comentario: tieneComentario ? comentarios[preguntaId] || null : null,
         };
       });
-
+  
       // Agregar respuestas de la sección actual a respuestasData
       respuestasData.push(...respuestasSeccion);
     }
-
+  
     const createRespuestaDto = {
       respuestas: respuestasData,
       edad,
       genero,
     };
-
+  
     try {
       const response = await axios.post(
         "http://localhost:3000/respuestas",
@@ -528,7 +532,7 @@ function Preguntas() {
           </MuiAlert>
         </Snackbar>
         <Box display="flex" justifyContent="center">
-          {isLastPage && validarPreguntasSinResponder && (
+          {isLastPage && (
             <Button
               variant="contained"
               color="primary"
