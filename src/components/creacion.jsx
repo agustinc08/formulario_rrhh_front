@@ -9,14 +9,14 @@ import Alert from "@material-ui/lab/Alert";
 import Grid from "@material-ui/core/Grid";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Drawer from "@material-ui/core/Drawer";
 import ListItem from "@material-ui/core/ListItem";
 import List from "@material-ui/core/List";
 import Modal from "@material-ui/core/Modal";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-import { Paper } from '@material-ui/core';
+import { Paper } from "@material-ui/core";
 import {
   Table,
   TableHead,
@@ -25,10 +25,10 @@ import {
   TableCell,
   TableContainer,
   Box,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import "../css/global.css";
 import "../css/creacion.css";
-import useStyles from '../styles/creacionStyle';
+import useStyles from "../styles/creacionStyle";
 
 const Creaciones = () => {
   const classes = useStyles();
@@ -60,7 +60,8 @@ const Creaciones = () => {
   const [open, setOpen] = useState(false);
   const [selectedList, setSelectedList] = useState([]);
   const [showAlert, setShowAlert] = useState(true);
-  const [alertaDependenciaExistente, setAlertaDependenciaExistente] = useState(false);
+  const [alertaDependenciaExistente, setAlertaDependenciaExistente] =
+    useState(false);
   const [alertaSeccionExistente, setAlertaSeccionExistente] = useState(false);
   const [alertaClaveExistente, setAlertaClaveExistente] = useState(false);
 
@@ -106,7 +107,6 @@ const Creaciones = () => {
       })
       .catch((error) => console.log(error));
   };
-
 
   const fetchDependencias = () => {
     fetch("http://localhost:3000/dependencias")
@@ -156,7 +156,6 @@ const Creaciones = () => {
     crearSeccion(seccionDescripcion);
     setSeccionDescripcion("");
   };
-  
 
   const handleOpen = (list) => {
     setSelectedList(list);
@@ -168,6 +167,10 @@ const Creaciones = () => {
   };
 
   const handleCloseAlert = () => {
+    setAlertaDependencia(false);
+    setAlertaClave(false);
+    setAlertaSeccion(false);
+    setAlertaPregunta(false);
     setShowAlert(false);
   };
 
@@ -202,31 +205,32 @@ const Creaciones = () => {
       setError("Debe ingresar una clave");
       return;
     }
-  
+
     if (!dependenciaId) {
       setErrorClave(true);
       setErrorDependencia(true);
       setError("Debe ingresar una Dependencia.");
       return;
     }
-  
-    const existeClave = claves.some((cl) => cl.clave.toLowerCase() === clave.toLowerCase());
+
+    const existeClave = claves.some(
+      (cl) => cl.clave.toLowerCase() === clave.toLowerCase()
+    );
     if (existeClave) {
       setAlertaClaveExistente(true);
       return;
     }
-  
+
     const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
     if (dependencia && dependencia.clave) {
       setAlertaClaveExistente(true);
       return;
     }
-  
+
     crearClave(clave, dependenciaId);
     setClave("");
     setDependenciaId("");
   };
-
 
   const crearClave = (clave, dependenciaId) => {
     const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
@@ -273,7 +277,7 @@ const Creaciones = () => {
         }
       });
   };
-  
+
   const crearDependencia = (nombre) => {
     fetch("http://localhost:3000/dependencias", {
       method: "POST",
@@ -285,9 +289,9 @@ const Creaciones = () => {
       .then((response) => {
         if (response.ok) {
           console.log("Dependencia creada:", nombre);
-          setAlertaDependencia(true)
+          setAlertaDependencia(true);
           setDependenciaNombre("");
-         setErrorDependencia(false);
+          setErrorDependencia(false);
           setAlertaDependenciaExistente(false); // Desactivar la alerta de dependencia existente
         } else if (response.status === 409) {
           throw new Error("Ya existe una dependencia con el mismo nombre");
@@ -349,7 +353,7 @@ const Creaciones = () => {
       tieneExpresion: tieneExpresion,
       tieneCalificaciones: tieneCalificaciones,
       tieneClasificaciones: tieneClasificaciones,
-      tieneGrado: tieneGrado
+      tieneGrado: tieneGrado,
     });
 
     // Reiniciar los campos después de enviar el formulario
@@ -363,10 +367,7 @@ const Creaciones = () => {
     setTieneGrado(false);
   };
 
-  const crearPregunta = ({
-    descripcion,
-    seccionId,
-  }) => {
+  const crearPregunta = ({ descripcion, seccionId }) => {
     fetch("http://localhost:3000/preguntas", {
       method: "POST",
       headers: {
@@ -411,10 +412,18 @@ const Creaciones = () => {
         }}
       >
         <List>
-          <ListItem className="listaCreacion" button onClick={() => handleOpen("dependencias")}>
+          <ListItem
+            className="listaCreacion"
+            button
+            onClick={() => handleOpen("dependencias")}
+          >
             Dependencias
           </ListItem>
-          <Modal open={open && selectedList === "dependencias"} onClose={handleClose} className={classes.modal}>
+          <Modal
+            open={open && selectedList === "dependencias"}
+            onClose={handleClose}
+            className={classes.modal}
+          >
             <Paper className={classes.modalContent}>
               <TableContainer>
                 <IconButton
@@ -443,10 +452,18 @@ const Creaciones = () => {
               </TableContainer>
             </Paper>
           </Modal>
-          <ListItem className="listaCreacion" button onClick={() => handleOpen("preguntas")}>
+          <ListItem
+            className="listaCreacion"
+            button
+            onClick={() => handleOpen("preguntas")}
+          >
             Preguntas
           </ListItem>
-          <Modal open={open && selectedList === "preguntas"} onClose={handleClose} className={classes.modal}>
+          <Modal
+            open={open && selectedList === "preguntas"}
+            onClose={handleClose}
+            className={classes.modal}
+          >
             <Paper className={classes.modalContent}>
               <TableContainer>
                 <IconButton
@@ -475,10 +492,18 @@ const Creaciones = () => {
               </TableContainer>
             </Paper>
           </Modal>
-          <ListItem className="listaCreacion" button onClick={() => handleOpen("secciones")}>
+          <ListItem
+            className="listaCreacion"
+            button
+            onClick={() => handleOpen("secciones")}
+          >
             Secciones
           </ListItem>
-          <Modal open={open && selectedList === "secciones"} onClose={handleClose} className={classes.modal}>
+          <Modal
+            open={open && selectedList === "secciones"}
+            onClose={handleClose}
+            className={classes.modal}
+          >
             <Paper className={classes.modalContent}>
               <TableContainer>
                 <IconButton
@@ -507,10 +532,18 @@ const Creaciones = () => {
               </TableContainer>
             </Paper>
           </Modal>
-          <ListItem className="listaCreacion" button onClick={() => handleOpen("claves")}>
+          <ListItem
+            className="listaCreacion"
+            button
+            onClick={() => handleOpen("claves")}
+          >
             Claves
           </ListItem>
-          <Modal open={open && selectedList === "claves"} onClose={handleClose} className={classes.modal}>
+          <Modal
+            open={open && selectedList === "claves"}
+            onClose={handleClose}
+            className={classes.modal}
+          >
             <Paper className={classes.modalContent}>
               <TableContainer>
                 <IconButton
@@ -530,7 +563,9 @@ const Creaciones = () => {
                   <TableBody>
                     {claves.map((clave) => (
                       <TableRow key={clave.id}>
-                        <TableCell>{clave.dependencia.nombreDependencia}</TableCell>
+                        <TableCell>
+                          {clave.dependencia.nombreDependencia}
+                        </TableCell>
                         <TableCell>{clave.clave}</TableCell>
                       </TableRow>
                     ))}
@@ -542,10 +577,19 @@ const Creaciones = () => {
         </List>
       </Drawer>
 
-
       <Grid container spacing={6} className={classes.gridPrincipal}>
-        <Grid item xs={12} sm={12} md={6} className={`${classes.cardCreacion} ${classes.gridIzquierdo}`}>
-          <Box className={`${classes.boxForm} ${classes.boxIzquierdo}`} boxShadow={8} borderRadius={7}>
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={6}
+          className={`${classes.cardCreacion} ${classes.gridIzquierdo}`}
+        >
+          <Box
+            className={`${classes.boxForm} ${classes.boxIzquierdo}`}
+            boxShadow={8}
+            borderRadius={7}
+          >
             <form onSubmit={handleDependenciaSubmit} className={classes.form}>
               <h2>Crear Dependencia</h2>
               <TextField
@@ -554,7 +598,6 @@ const Creaciones = () => {
                 value={dependenciaNombre}
                 onChange={(event) => setDependenciaNombre(event.target.value)}
                 error={errorDependencia}
-
               />
               <Button
                 className={classes.button}
@@ -579,8 +622,10 @@ const Creaciones = () => {
                 </Alert>
               )}
               {alertaDependenciaExistente && (
-                <Alert severity="error">Ya existe una Dependencia con el mismo nombre, intentelo denuevo.
-                 <IconButton
+                <Alert severity="error">
+                  Ya existe una Dependencia con el mismo nombre, intentelo
+                  denuevo.
+                  <IconButton
                     aria-label="close"
                     color="inherit"
                     size="small"
@@ -589,16 +634,24 @@ const Creaciones = () => {
                     className={classes.closeButton}
                   >
                     <CloseIcon fontSize="inherit" />
-                  </IconButton></Alert>
+                  </IconButton>
+                </Alert>
               )}
             </form>
           </Box>
 
-
-          <Box className={`${classes.boxForm} ${classes.boxIzquierdo}`} boxShadow={8} borderRadius={7}>
+          <Box
+            className={`${classes.boxForm} ${classes.boxIzquierdo}`}
+            boxShadow={8}
+            borderRadius={7}
+          >
             <form onSubmit={handleClaveSubmit} className={classes.form}>
               <h2>Crear Clave</h2>
-              <InputLabel style={{ marginTop: "20px", width: "100%", paddingLeft: "15%" }}>Dependencia</InputLabel>
+              <InputLabel
+                style={{ marginTop: "20px", width: "100%", paddingLeft: "15%" }}
+              >
+                Dependencia
+              </InputLabel>
               <Select
                 labelId="dependencia-select-label"
                 label="Dependencia"
@@ -629,7 +682,7 @@ const Creaciones = () => {
               >
                 Crear Clave
               </Button>
-              {alertaClave && showAlert && (
+              {alertaClave && (
                 <Alert severity="success">
                   ¡La Clave se creó correctamente!
                   <IconButton
@@ -644,8 +697,9 @@ const Creaciones = () => {
                 </Alert>
               )}
               {alertaClaveExistente && (
-                <Alert severity="error">Ya existe una Clave para esta Dependencia.
-                 <IconButton
+                <Alert severity="error">
+                  Ya existe una Clave para esta Dependencia.
+                  <IconButton
                     aria-label="close"
                     color="inherit"
                     size="small"
@@ -654,17 +708,25 @@ const Creaciones = () => {
                     className={classes.closeButton}
                   >
                     <CloseIcon fontSize="inherit" />
-                  </IconButton></Alert>
+                  </IconButton>
+                </Alert>
               )}
             </form>
           </Box>
-
-
         </Grid>
 
-
-        <Grid item xs={12} sm={12} md={6} className={`${classes.cardCreacion} ${classes.gridDerecho}`}>
-          <Box className={`${classes.boxForm} ${classes.boxDerecho}`} boxShadow={8} borderRadius={7}>
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={6}
+          className={`${classes.cardCreacion} ${classes.gridDerecho}`}
+        >
+          <Box
+            className={`${classes.boxForm} ${classes.boxDerecho}`}
+            boxShadow={8}
+            borderRadius={7}
+          >
             <form onSubmit={handleSeccionSubmit} className={classes.form}>
               <h2>Crear Sección</h2>
               <TextField
@@ -683,7 +745,7 @@ const Creaciones = () => {
               >
                 Crear Sección
               </Button>
-              {alertaSeccion && showAlert && (
+              {alertaSeccion && (
                 <Alert severity="success">
                   ¡La sección se creó correctamente!
                   <IconButton
@@ -697,12 +759,18 @@ const Creaciones = () => {
                   </IconButton>
                 </Alert>
               )}
-               {alertaSeccionExistente && (
-                <Alert severity="error">Ya existe una Seccion con el mismo nombre, intentelo denuevo.</Alert>
+              {alertaSeccionExistente && (
+                <Alert severity="error">
+                  Ya existe una Seccion con el mismo nombre, intentelo denuevo.
+                </Alert>
               )}
             </form>
           </Box>
-          <Box className={`${classes.boxForm} ${classes.boxDerecho}`} boxShadow={8} borderRadius={10} >
+          <Box
+            className={`${classes.boxForm} ${classes.boxDerecho}`}
+            boxShadow={8}
+            borderRadius={10}
+          >
             <form onSubmit={handlePreguntaSubmit} className={classes.form}>
               <h2>Crear Pregunta</h2>
               <TextField
@@ -724,7 +792,7 @@ const Creaciones = () => {
                     label="Tiene Comentario"
                   />
                 </div>
-                {tieneComentario && (  // Renderizar el campo de descripcionComentario solo si tieneComentario es true
+                {tieneComentario && ( // Renderizar el campo de descripcionComentario solo si tieneComentario es true
                   <TextField
                     label="Descripción"
                     value={descripcionComentario}
@@ -739,7 +807,9 @@ const Creaciones = () => {
                     control={
                       <Checkbox
                         checked={tieneExpresion}
-                        onChange={(event) => setTieneExpresion(event.target.checked)}
+                        onChange={(event) =>
+                          setTieneExpresion(event.target.checked)
+                        }
                       />
                     }
                     label="Tiene Expresion"
@@ -750,7 +820,9 @@ const Creaciones = () => {
                     control={
                       <Checkbox
                         checked={tieneCalificaciones}
-                        onChange={(event) => setTieneCalificaciones(event.target.checked)}
+                        onChange={(event) =>
+                          setTieneCalificaciones(event.target.checked)
+                        }
                       />
                     }
                     label="Tiene Calificaciones"
@@ -761,7 +833,9 @@ const Creaciones = () => {
                     control={
                       <Checkbox
                         checked={tieneGrado}
-                        onChange={(event) => setTieneGrado(event.target.checked)}
+                        onChange={(event) =>
+                          setTieneGrado(event.target.checked)
+                        }
                       />
                     }
                     label="Tiene Grado"
@@ -772,7 +846,9 @@ const Creaciones = () => {
                     control={
                       <Checkbox
                         checked={tieneClasificaciones}
-                        onChange={(event) => setTieneClasificaciones(event.target.checked)}
+                        onChange={(event) =>
+                          setTieneClasificaciones(event.target.checked)
+                        }
                       />
                     }
                     label="Tiene Clasificaciones"
@@ -829,7 +905,7 @@ const Creaciones = () => {
                 Crear Pregunta
               </Button>
 
-              {alertaPregunta && showAlert && (
+              {alertaPregunta && (
                 <Alert severity="success">
                   ¡La pregunta se creó correctamente!
                   <IconButton
@@ -847,7 +923,6 @@ const Creaciones = () => {
           </Box>
         </Grid>
       </Grid>
-
     </div>
   );
 };
