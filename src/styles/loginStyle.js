@@ -7,7 +7,7 @@ const useStyles = makeStyles((theme) => ({
       justifyContent: 'center',
       alignItems: 'center',
       height: '100vh',
-      backgroundColor: '#E8EAF6',
+      backgroundColor: '#DCE0FE',
     },
     card: {
       display: 'flex',
