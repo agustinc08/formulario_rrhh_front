@@ -284,6 +284,7 @@ const Creaciones = () => {
           // Aquí puedes realizar acciones adicionales, como mostrar un mensaje en la interfaz
         } else {
           console.error("Error al crear la clave:", error.message);
+          setAlertaClaveExistente(true);
           // Aquí puedes manejar otros errores y mostrar mensajes en la interfaz
         }
       });
@@ -660,7 +661,7 @@ const Creaciones = () => {
           </Modal>
         </List>
       </Drawer>
-      {/* <Grid container spacing={6} className={classes.gridPrincipal}>
+      <Grid container spacing={6} className={classes.gridPrincipal}>
         <Grid
           item
           xs={12}
@@ -718,7 +719,7 @@ const Creaciones = () => {
             </form>
           </Box>
         </Grid>
-      </Grid> */}
+      </Grid>
       <Grid container spacing={6} className={classes.gridPrincipal}>
         <Grid
           item

@@ -21,11 +21,12 @@ const Estadisticas = () => {
   const [selectedDependencia, setSelectedDependencia] = useState('');
   const [selectedPregunta, setSelectedPregunta] = useState('');
 
-  const [respuestaData, setRespuestaData] = useState('');
+  const [expresionData, setExpresionData] = useState('');
   const [edadData, setEdadData] = useState('');
   const [generoData, setGeneroData] = useState('');
   const [clasificacionData, setClasificacionData] = useState('');
   const [calificacionData, setCalificacionData] = useState('');
+  const [gradoData, setGradoData] = useState('');
 
    useEffect(() => {
     const obtenerPreguntas = async () => {
@@ -60,18 +61,18 @@ const Estadisticas = () => {
         const response = await fetch(`http://localhost:3000/respuestas?dependenciaId=${selectedDependencia}&preguntaId=${selectedPregunta}`);
         const data = await response.json();
 
-        const respuestaCount = data.reduce((count, respuesta) => {
+        const expresionCount = data.reduce((count, respuesta) => {
           const respuestaExpresion = respuesta.expresion || 'NO_SE';
           count[respuestaExpresion] = (count[respuestaExpresion] || 0) + 1;
           return count;
         }, {});
 
-        setRespuestaData({
-          labels: Object.keys(respuestaCount),
+        setExpresionData({
+          labels: Object.keys(expresionCount),
           datasets: [
             {
               label: 'Respuestas',
-              data: Object.values(respuestaCount),
+              data: Object.values(expresionCount),
               backgroundColor: [
                 'rgba(75, 192, 192, 0.6)',
                 'rgba(255, 99, 132, 0.6)',
@@ -143,6 +144,29 @@ const Estadisticas = () => {
           ],
         })
 
+        const gradoCount = data.reduce((count, respuesta) => {
+          const grado = respuesta.grado || 'ALTA';
+          count[grado] = (count[grado] || 0) + 1;
+          return count;
+        }, {});
+
+        setGradoData({
+          labels: Object.keys(gradoCount),
+          datasets: [
+            {
+              label: 'grado',
+              data: Object.values(gradoCount),
+              backgroundColor: [
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(153, 102, 255, 0.6)',
+              ],
+            },
+          ],
+        })
+
         const calificacionCount = data.reduce((count, respuesta) => {
           const calificacion = respuesta.calificaciones || 'REGULAR';
           count[calificacion] = (count[calificacion] || 0) + 1;
@@ -175,7 +199,7 @@ const Estadisticas = () => {
     if (selectedDependencia && selectedPregunta) {
       fetchRespuestas();
     } else {
-      setRespuestaData(null);
+      setExpresionData(null);
       setEdadData(null);
       setGeneroData(null);
       setClasificacionData(null);
@@ -243,16 +267,14 @@ const Estadisticas = () => {
             </FormControl>
         </Box>
       </Grid>
-
-
       <Grid item xs={12} md={5}>
         <Box mx={3} my={5}>
-          {respuestaData && (
+          {generoData && (
             <div>
               <Typography variant="h6" align="center">
-                Respuestas
+                Género
               </Typography>
-              <Bar data={respuestaData} />
+              <Doughnut data={generoData} />
             </div>
           )}
         </Box>
@@ -273,12 +295,12 @@ const Estadisticas = () => {
 
       <Grid item xs={12} md={5}>
         <Box mx={3} my={5}>
-          {generoData && (
+          {expresionData && (
             <div>
               <Typography variant="h6" align="center">
-                Género
+                Expresiones
               </Typography>
-              <Doughnut data={generoData} />
+              <Bar data={expresionData} />
             </div>
           )}
         </Box>
@@ -305,6 +327,19 @@ const Estadisticas = () => {
                 Calificación
               </Typography>
               <Pie data={calificacionData} />
+            </div>
+          )}
+        </Box>
+      </Grid>
+
+      <Grid item xs={12} md={5}>
+        <Box mx={3} my={5}>
+          {gradoData && (
+            <div>
+              <Typography variant="h6" align="center">
+                Grado
+              </Typography>
+              <Pie data={gradoData} />
             </div>
           )}
         </Box>
