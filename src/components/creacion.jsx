@@ -75,12 +75,15 @@ const Creaciones = () => {
     useState(false);
   const [errorParrafo, setErrorParrafo] = useState(false);
   const [alertaInicio, setAlertaInicio] = useState(false);
+  const [inicioCreado, setInicioCreado] = useState(false);
+  const [alertaInicioExistente, setAlertaInicioExistente] = useState(false);
+  const [alertaCreacionExitosa, setAlertaCreacionExitosa] = useState(false);
 
   useEffect(() => {
     fetchSecciones();
     fetchDependencias();
-    fetchPreguntas(); // Fetch 'preguntas' data
-    fetchClaves(); // Fetch 'claves' data
+    fetchPreguntas();
+    fetchClaves();
   }, []);
 
   useEffect(() => {
@@ -129,6 +132,28 @@ const Creaciones = () => {
         setDependencias(dependenciasOrdenadas);
       })
       .catch((error) => console.log(error));
+  };
+
+  const verificarInicioCreado = () => {
+    fetch("http://localhost:3000/inicio")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.length > 0) {
+          // Mostrar alerta de error si el inicio ya está creado
+          setAlertaInicioExistente(true);
+        } else {
+          // Crear el inicio si no hay ningún inicio creado
+          crearInicio({
+            tituloPrincipal: tituloPrincipal,
+            introduccionDescripcion: introduccionDescripcion,
+            objetivoDescripcion: objetivoDescripcion,
+            parrafo: parrafo,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error al verificar el inicio creado:", error);
+      });
   };
 
   const handleComentarioCheckboxChange = (event) => {
@@ -477,13 +502,17 @@ const Creaciones = () => {
           setErrorIntroduccionDescripcion(false);
           setErrorObjetivoDescripcion(false);
           setErrorParrafo(false);
+          setInicioCreado(true);
+          setAlertaCreacionExitosa(true);
           //window.location.reload();
         } else {
           throw new Error("Error al crear el inicio.");
+          setAlertaInicioExistente(true)
         }
       })
       .catch((error) => {
         console.error(error);
+        setAlertaInicioExistente(true)
       });
   };
 
@@ -713,8 +742,22 @@ const Creaciones = () => {
                 </Grid>
               </Grid>
               {errorTituloPrincipal && <p className={classes.error}></p>}
-              {alertaInicio && (
-                <p className={classes.alerta}>Inicio creado correctamente</p>
+              {alertaCreacionExitosa && (
+                <Alert
+                  severity="success"
+                  onClose={() => setAlertaCreacionExitosa(false)}
+                >
+                  Inicio creado correctamente.
+                </Alert>
+              )}
+
+              {alertaInicioExistente && (
+                <Alert
+                  severity="error"
+                  onClose={() => setAlertaInicioExistente(false)}
+                >
+                  Ya hay un inicio creado.
+                </Alert>
               )}
             </form>
           </Box>
