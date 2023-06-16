@@ -14,4 +14,13 @@
 
 //pros : esta muy avanzado. , queda solamente gran parte de validaciones y retoques, buildea bien en front y back. 
 
-//contras : errores varios dificiles de solucionar mas que nada en /formulario, los demas son erroers basicos muy solucionables. 
+//contras : errores varios dificiles de solucionar mas que nada en /formulario, los demas son erroers basicos muy solucionables.
+
+
+//capa padre nueva FORMULARIO , que contenga todo , respuestas preguntas menu etc
+//solamente lo va a manejar el administrador , voy a tener que cambiar toda la capa de creacion ya que ,
+//dependencias ya van a venir definidas , claves tambien , no hace falta crearlas. 
+//al tener asignado el formulario voy a tener que hacer una pagina adicional llamada , eleccion , que es cuando ingresa
+//la dependencia que pueda elejir el formulario que tenga asignado . 
+// tema estadisticas , tambien va a estar asignado al formulario para que te muestre las estadisticas de dicho formulario
+//lo mismo buscador , voy a tener que hacer una capa mas que se llame formulario y que puedan elejir ellos 
