@@ -17,6 +17,9 @@ import Modal from "@material-ui/core/Modal";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import { Paper } from "@material-ui/core";
+import Input from "@material-ui/core/Input";
+import Chip from "@material-ui/core/Chip";
+import ListItemText from "@material-ui/core/ListItemText";
 import {
   Table,
   TableHead,
@@ -78,12 +81,17 @@ const Creaciones = () => {
   const [inicioCreado, setInicioCreado] = useState(false);
   const [alertaInicioExistente, setAlertaInicioExistente] = useState(false);
   const [alertaCreacionExitosa, setAlertaCreacionExitosa] = useState(false);
+  const [formularioNombre, setFormularioNombre] = useState("");
+  const [dependenciasSeleccionadas, setDependenciasSeleccionadas] = useState(
+    []
+  );
 
   useEffect(() => {
     fetchSecciones();
     fetchDependencias();
     fetchPreguntas();
     fetchClaves();
+    fetchFormulario();
   }, []);
 
   useEffect(() => {
@@ -94,6 +102,15 @@ const Creaciones = () => {
       }
     }
   }, [dependencias, dependenciaId]);
+
+  const fetchFormulario = () => {
+    fetch("http://localhost:3000/formulario")
+      .then((response) => response.json())
+      .then((data) => {
+        setSecciones(data);
+      })
+      .catch((error) => console.log(error));
+  };
 
   const fetchPreguntas = () => {
     fetch("http://localhost:3000/preguntas")
@@ -168,6 +185,51 @@ const Creaciones = () => {
     setAlertaClaveExistente(false);
   };
 
+  const handleFormularioSubmit = (event) => {
+    event.preventDefault();
+  
+    // Verifica si el nombre del formulario está vacío
+    if (formularioNombre.trim() === "") {
+      // Realiza alguna acción, como mostrar un mensaje de error
+      return;
+    }
+  
+    // Crea el formulario enviando los datos al servidor
+    crearFormulario({
+      nombre: formularioNombre,
+    });
+  
+    // Reinicia los campos después de enviar el formulario
+    setFormularioNombre("");
+    setDependenciasSeleccionadas([]);
+  };
+
+  const crearFormulario = (formularioData) => {
+    const dependenciasData = dependenciasSeleccionadas.map((nombreDependencia) => ({
+      nombreDependencia
+    }));
+  
+    formularioData.dependencias = { create: dependenciasData };
+  
+    fetch("http://localhost:3000/formulario", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formularioData),
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Realiza alguna acción después de crear el formulario, como mostrar una notificación
+        } else {
+          // Realiza alguna acción si hubo un error en la creación del formulario
+        }
+      })
+      .catch((error) => {
+        // Maneja el error en caso de que ocurra
+      });
+  };
+
   const handleSeccionSubmit = (event) => {
     event.preventDefault();
     if (seccionDescripcion.trim() === "") {
@@ -232,87 +294,6 @@ const Creaciones = () => {
     }
 
     crearDependencia(dependenciaNombre);
-  };
-
-  const handleClaveSubmit = (event) => {
-    event.preventDefault();
-    if (clave.trim() === "") {
-      setErrorClave(true);
-      setError("Debe ingresar una clave");
-      return;
-    }
-
-    if (!dependenciaId) {
-      setErrorClave(true);
-      setErrorDependencia(true);
-      setError("Debe ingresar una Dependencia.");
-      return;
-    }
-
-    const existeClave = claves.some(
-      (cl) => cl.clave.toLowerCase() === clave.toLowerCase()
-    );
-    if (existeClave) {
-      setAlertaClaveExistente(true);
-      return;
-    }
-
-    const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
-    if (dependencia && dependencia.clave) {
-      setAlertaClaveExistente(true);
-      return;
-    }
-
-    crearClave(clave, dependenciaId);
-    setClave("");
-    setDependenciaId("");
-  };
-
-  const crearClave = (clave, dependenciaId) => {
-    const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
-    if (dependencia && dependencia.clave) {
-      setAlertaClaveExistente(true);
-      return;
-    }
-
-    fetch("http://localhost:3000/claves", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        dependenciaId: dependenciaId,
-        clave: clave,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log("Clave creada correctamente");
-          setAlertaClave(true);
-          setClave("");
-          setErrorClave(false); // Establecer el estado de error a false
-          setDependenciaId("");
-          // Aquí puedes realizar acciones adicionales, como mostrar un mensaje en la interfaz
-        } else if (response.status === 409) {
-          throw new Error("La dependencia ya tiene clave");
-        } else {
-          throw new Error("Error al crear la clave");
-        }
-      })
-      .catch((error) => {
-        // Manejar el error y mostrarlo en pantalla
-        if (error.message === "La dependencia ya tiene clave") {
-          console.error("Error: La dependencia ya tiene clave asignada");
-          setErrorClave(true);
-          setAlertaClaveExistente(true);
-          setAlertaClave(false); // Desactivar la alerta de clave
-          // Aquí puedes realizar acciones adicionales, como mostrar un mensaje en la interfaz
-        } else {
-          console.error("Error al crear la clave:", error.message);
-          setAlertaClaveExistente(true);
-          // Aquí puedes manejar otros errores y mostrar mensajes en la interfaz
-        }
-      });
   };
 
   const crearDependencia = (nombre) => {
@@ -507,12 +488,12 @@ const Creaciones = () => {
           //window.location.reload();
         } else {
           throw new Error("Error al crear el inicio.");
-          setAlertaInicioExistente(true)
+          setAlertaInicioExistente(true);
         }
       })
       .catch((error) => {
         console.error(error);
-        setAlertaInicioExistente(true)
+        setAlertaInicioExistente(true);
       });
   };
 
@@ -703,6 +684,53 @@ const Creaciones = () => {
             boxShadow={8}
             borderRadius={7}
           >
+            <form onSubmit={handleFormularioSubmit}>
+              <TextField
+                label="Nombre del formulario"
+                value={formularioNombre}
+                onChange={(event) => setFormularioNombre(event.target.value)}
+              />
+
+              <FormControl>
+                <InputLabel id="dependencias-label">Dependencias</InputLabel>
+                <Select
+                  labelId="dependencias-label"
+                  multiple
+                  value={dependenciasSeleccionadas}
+                  onChange={(event) =>
+                    setDependenciasSeleccionadas(event.target.value)
+                  }
+                  input={<Input />}
+                  renderValue={(selected) => (
+                    <div>
+                      {selected.map((value) => (
+                        <Chip key={value} label={value} />
+                      ))}
+                    </div>
+                  )}
+                >
+                  {dependencias.map((dependencia) => (
+                    <MenuItem
+                      key={dependencia.id}
+                      value={dependencia.nombreDependencia}
+                    >
+                      <Checkbox
+                        checked={dependenciasSeleccionadas.includes(
+                          dependencia.nombreDependencia
+                        )}
+                      />
+                      <ListItemText primary={dependencia.nombreDependencia} />
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText>Seleccione las dependencias</FormHelperText>
+              </FormControl>
+
+              <Button type="submit" variant="contained" color="primary">
+                Crear formulario
+              </Button>
+            </form>
+
             <form onSubmit={handleInicioSubmit} className={classes.form}>
               <h2>Crear Inicio</h2>
               <Grid container spacing={2}>
@@ -817,80 +845,6 @@ const Creaciones = () => {
                     size="small"
                     onClick={handleCloseAlertaDependenciaExistente}
                     open={alertaDependenciaExistente}
-                    className={classes.closeButton}
-                  >
-                    <CloseIcon fontSize="inherit" />
-                  </IconButton>
-                </Alert>
-              )}
-            </form>
-          </Box>
-
-          <Box
-            className={`${classes.boxForm} ${classes.boxIzquierdo}`}
-            boxShadow={8}
-            borderRadius={7}
-          >
-            <form onSubmit={handleClaveSubmit} className={classes.form}>
-              <h2>Crear Clave</h2>
-              <InputLabel
-                style={{ marginTop: "20px", width: "100%", paddingLeft: "15%" }}
-              >
-                Dependencia
-              </InputLabel>
-              <Select
-                labelId="dependencia-select-label"
-                label="Dependencia"
-                id="dependencia-select"
-                value={dependenciaId}
-                onChange={(event) => setDependenciaId(event.target.value)}
-                style={{ width: "70%" }}
-              >
-                {dependencias.map((dependencia) => (
-                  <MenuItem key={dependencia.id} value={dependencia.id}>
-                    {dependencia.nombreDependencia}
-                  </MenuItem>
-                ))}
-              </Select>
-              <TextField
-                className={classes.textField}
-                label="Clave"
-                value={clave}
-                onChange={(event) => setClave(event.target.value)}
-                error={errorClave && !clave.trim()}
-              />
-              <Button
-                className={classes.button}
-                variant="contained"
-                color="primary"
-                type="submit"
-                style={{ marginTop: "10%" }}
-              >
-                Crear Clave
-              </Button>
-              {alertaClave && (
-                <Alert severity="success">
-                  ¡La Clave se creó correctamente!
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    size="small"
-                    onClick={handleCloseAlert}
-                    className={classes.closeButton}
-                  >
-                    <CloseIcon fontSize="inherit" />
-                  </IconButton>
-                </Alert>
-              )}
-              {alertaClaveExistente && (
-                <Alert severity="error">
-                  Ya existe una Clave para esta Dependencia.
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    size="small"
-                    onClick={handleCloseAlertaClaveExistente}
-                    open={alertaClaveExistente}
                     className={classes.closeButton}
                   >
                     <CloseIcon fontSize="inherit" />
