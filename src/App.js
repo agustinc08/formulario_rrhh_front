@@ -6,6 +6,7 @@ import Buscador from "./components/buscador.jsx";
 import Estadisticas from "./components/estadisticas.jsx";
 import Creacion from "./components/creacion";
 import Navbar from "./components/navBar.jsx";
+import Seleccion from "./components/selectorFormulario.jsx";
 import {
   BrowserRouter as Router,
   Route,
@@ -29,7 +30,16 @@ function App() {
     <Router>
       <Switch>
         <Route exact path="/">
-          <Redirect to="/inicio" />
+          <Redirect to="/seleccion" />
+        </Route>
+        <Route exact path="/seleccion">
+          {isLoggedIn ? (
+            <React.Fragment>
+              <Seleccion />
+            </React.Fragment>
+          ) : (
+            <Redirect to="/login" />
+          )}
         </Route>
         <Route exact path="/inicio">
           {isLoggedIn ? (
@@ -58,7 +68,7 @@ function App() {
               <Creacion />
             </React.Fragment>
           ) : isLoggedIn ? (
-            <Redirect to="/inicio" />
+            <Redirect to="/seleccion" />
           ) : (
             <Redirect to="/login" />
           )}
@@ -70,7 +80,7 @@ function App() {
               <Buscador />
             </React.Fragment>
           ) : isLoggedIn ? (
-            <Redirect to="/inicio" />
+            <Redirect to="/seleccion" />
           ) : (
             <Redirect to="/login" />
           )}
@@ -82,14 +92,14 @@ function App() {
               <Estadisticas />
             </React.Fragment>
           ) : isLoggedIn ? (
-            <Redirect to="/inicio" />
+            <Redirect to="/seleccion" />
           ) : (
             <Redirect to="/login" />
           )}
         </Route>
         <Route exact path="/login">
           {isLoggedIn ? (
-            <Redirect to="/inicio" />
+            <Redirect to="/seleccion" />
           ) : (
             <Login onLogin={handleLogin} />
           )}

@@ -45,15 +45,11 @@ const Creaciones = () => {
   const [preguntas, setPreguntas] = useState([]);
   const [claves, setClaves] = useState([]);
   const [dependencias, setDependencias] = useState([]);
+  const [formularios, setFormularios] = useState([]);
   const [dependenciaId, setDependenciaId] = useState("");
   const [secciones, setSecciones] = useState([]);
   const [seccionId, setSeccionId] = useState("");
-  const [clave, setClave] = useState("");
   const [pregunta, setPregunta] = useState("");
-  const [dependenciaNombre, setDependenciaNombre] = useState("");
-  const [setError] = useState("");
-  const [errorDependencia, setErrorDependencia] = useState(false);
-  const [errorClave, setErrorClave] = useState(false);
   const [errorSeccion, setErrorSeccion] = useState(false);
   const [errorPregunta, setErrorPregunta] = useState(false);
   const [alertaDependencia, setAlertaDependencia] = useState(false);
@@ -63,8 +59,6 @@ const Creaciones = () => {
   const [open, setOpen] = useState(false);
   const [selectedList, setSelectedList] = useState([]);
   const [showAlert, setShowAlert] = useState(true);
-  const [alertaDependenciaExistente, setAlertaDependenciaExistente] =
-    useState(false);
   const [alertaSeccionExistente, setAlertaSeccionExistente] = useState(false);
   const [alertaClaveExistente, setAlertaClaveExistente] = useState(false);
   const [tituloPrincipal, setTituloPrincipal] = useState("");
@@ -85,11 +79,10 @@ const Creaciones = () => {
   const [dependenciasSeleccionadas, setDependenciasSeleccionadas] = useState(
     []
   );
+  const [formularioId, setFormularioId] = useState("");
 
   useEffect(() => {
-    fetchSecciones();
     fetchDependencias();
-    fetchPreguntas();
     fetchClaves();
     fetchFormulario();
   }, []);
@@ -103,38 +96,11 @@ const Creaciones = () => {
     }
   }, [dependencias, dependenciaId]);
 
-  const fetchFormulario = () => {
-    fetch("http://localhost:3000/formulario")
-      .then((response) => response.json())
-      .then((data) => {
-        setSecciones(data);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const fetchPreguntas = () => {
-    fetch("http://localhost:3000/preguntas")
-      .then((response) => response.json())
-      .then((data) => {
-        setPreguntas(data);
-      })
-      .catch((error) => console.log(error));
-  };
-
   const fetchClaves = () => {
     fetch("http://localhost:3000/claves")
       .then((response) => response.json())
       .then((data) => {
         setClaves(data);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const fetchSecciones = () => {
-    fetch("http://localhost:3000/secciones")
-      .then((response) => response.json())
-      .then((data) => {
-        setSecciones(data);
       })
       .catch((error) => console.log(error));
   };
@@ -149,6 +115,22 @@ const Creaciones = () => {
         setDependencias(dependenciasOrdenadas);
       })
       .catch((error) => console.log(error));
+  };
+
+  const fetchFormulario = () => {
+    fetch("http://localhost:3000/formulario")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error fetching formularios");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setFormularios(data);
+      })
+      .catch((error) => {
+        console.log("Error fetching formularios:", error);
+      });
   };
 
   const verificarInicioCreado = () => {
@@ -177,40 +159,37 @@ const Creaciones = () => {
     setTieneComentario(event.target.checked);
   };
 
-  const handleCloseAlertaDependenciaExistente = () => {
-    setAlertaDependenciaExistente(false);
-  };
-
-  const handleCloseAlertaClaveExistente = () => {
-    setAlertaClaveExistente(false);
+  const handleFormularioChange = (event) => {
+    const selectedFormularioId = event.target.value;
+    setFormularioId(selectedFormularioId);
   };
 
   const handleFormularioSubmit = (event) => {
     event.preventDefault();
-  
+
     // Verifica si el nombre del formulario está vacío
     if (formularioNombre.trim() === "") {
       // Realiza alguna acción, como mostrar un mensaje de error
       return;
     }
-  
-    // Crea el formulario enviando los datos al servidor
+
     crearFormulario({
       nombre: formularioNombre,
     });
-  
-    // Reinicia los campos después de enviar el formulario
+
     setFormularioNombre("");
     setDependenciasSeleccionadas([]);
   };
 
   const crearFormulario = (formularioData) => {
-    const dependenciasData = dependenciasSeleccionadas.map((nombreDependencia) => ({
-      nombreDependencia
-    }));
-  
+    const dependenciasData = dependenciasSeleccionadas.map(
+      (nombreDependencia) => ({
+        nombreDependencia,
+      })
+    );
+
     formularioData.dependencias = { create: dependenciasData };
-  
+
     fetch("http://localhost:3000/formulario", {
       method: "POST",
       headers: {
@@ -251,7 +230,7 @@ const Creaciones = () => {
       return;
     }
 
-    crearSeccion(seccionDescripcion);
+    crearSeccion(seccionDescripcion, formularioId);
     setSeccionDescripcion("");
   };
 
@@ -272,74 +251,23 @@ const Creaciones = () => {
     setShowAlert(false);
   };
 
-  const handleDependenciaSubmit = (event) => {
-    event.preventDefault();
-    if (dependenciaNombre.trim() === "") {
-      setErrorDependencia(true);
-      return;
-    }
-
-    // Verificar si ya existe una dependencia con el mismo nombre
-    const existeDependencia = dependencias.some(
-      (dependencia) =>
-        dependencia.nombreDependencia.toLowerCase() ===
-        dependenciaNombre.trim().toLowerCase()
-    );
-
-    if (existeDependencia) {
-      setErrorDependencia(true);
-      setAlertaDependencia(false); // Desactivar la alerta si ya existe una dependencia con el mismo nombre
-      setAlertaDependenciaExistente(true); // Activar la alerta de dependencia existente
-      return;
-    }
-
-    crearDependencia(dependenciaNombre);
-  };
-
-  const crearDependencia = (nombre) => {
-    fetch("http://localhost:3000/dependencias", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ nombreDependencia: nombre }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log("Dependencia creada:", nombre);
-          setAlertaDependencia(true);
-          setDependenciaNombre("");
-          setErrorDependencia(false);
-          setAlertaDependenciaExistente(false); // Desactivar la alerta de dependencia existente
-        } else if (response.status === 409) {
-          throw new Error("Ya existe una dependencia con el mismo nombre");
-        } else {
-          throw new Error("Error al crear la dependencia.");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        if (error.message === "Ya existe una dependencia con el mismo nombre") {
-        } else {
-          setErrorDependencia(true);
-        }
-      });
-  };
-
-  const crearSeccion = (descripcion) => {
+  const crearSeccion = (descripcion, formularioId) => {
     fetch("http://localhost:3000/secciones", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ descripcion: descripcion }),
+      body: JSON.stringify({
+        descripcion: descripcion,
+        formularioId: formularioId,
+      }),
     })
       .then((response) => {
         if (response.ok) {
           console.log("Sección creada:", descripcion);
           setAlertaSeccion(true);
           setSeccionDescripcion("");
-          setErrorSeccion(false); // Establecer el estado de error a false
+          setErrorSeccion(false);
           setAlertaSeccionExistente(false);
         } else {
           throw new Error("Error al crear la sección.");
@@ -364,6 +292,7 @@ const Creaciones = () => {
     }
 
     crearPregunta({
+      formularioId: formularioId,
       descripcion: pregunta,
       seccionId: seccionId,
       tieneComentario: tieneComentario,
@@ -392,6 +321,7 @@ const Creaciones = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        formularioId: formularioId,
         descripcion: descripcion,
         seccionId: seccionId,
         tieneComentario: tieneComentario,
@@ -408,7 +338,7 @@ const Creaciones = () => {
           setAlertaPregunta(true);
           setPregunta("");
           setSeccionId("");
-          setErrorPregunta(false); // Establecer el estado de error a false
+          setErrorPregunta(false);
           //window.location.reload();
         } else {
           throw new Error("Error al crear la pregunta.");
@@ -440,6 +370,7 @@ const Creaciones = () => {
     }
 
     crearInicio({
+      formularioId: formularioId,
       tituloPrincipal: tituloPrincipal,
       introduccionDescripcion: introduccionDescripcion,
       objetivoDescripcion: objetivoDescripcion,
@@ -454,17 +385,25 @@ const Creaciones = () => {
   };
 
   const crearInicio = ({
+    formularioId,
     tituloPrincipal,
     introduccionDescripcion,
     objetivoDescripcion,
     parrafo,
   }) => {
+    if (!formularioId) {
+      // Mostrar un mensaje de error o manejar el caso cuando no se proporciona formularioId
+      console.error("El formularioId no se ha proporcionado");
+      return;
+    }
+
     fetch("http://localhost:3000/inicio", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        formularioId: formularioId,
         tituloPrincipal: tituloPrincipal,
         introduccionDescripcion: introduccionDescripcion,
         objetivoDescripcion: objetivoDescripcion,
@@ -479,7 +418,7 @@ const Creaciones = () => {
           setIntroduccionDescripcion("");
           setObjetivoDescripcion("");
           setParrafo("");
-          setErrorTituloPrincipal(false); // Establecer el estado de error a false
+          setErrorTituloPrincipal(false);
           setErrorIntroduccionDescripcion(false);
           setErrorObjetivoDescripcion(false);
           setErrorParrafo(false);
@@ -616,12 +555,13 @@ const Creaciones = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {secciones.map((seccion) => (
-                      <TableRow key={seccion.id}>
-                        <TableCell>{seccion.id}</TableCell>
-                        <TableCell>{seccion.descripcion}</TableCell>
-                      </TableRow>
-                    ))}
+                    {secciones &&
+                      secciones.map((seccion) => (
+                        <TableRow key={seccion.id}>
+                          <TableCell>{seccion.id}</TableCell>
+                          <TableCell>{seccion.descripcion}</TableCell>
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -684,13 +624,13 @@ const Creaciones = () => {
             boxShadow={8}
             borderRadius={7}
           >
+            <h2>Crear Formulario</h2>
             <form onSubmit={handleFormularioSubmit}>
               <TextField
                 label="Nombre del formulario"
                 value={formularioNombre}
                 onChange={(event) => setFormularioNombre(event.target.value)}
               />
-
               <FormControl>
                 <InputLabel id="dependencias-label">Dependencias</InputLabel>
                 <Select
@@ -765,6 +705,23 @@ const Creaciones = () => {
                     onChange={(e) => setParrafo(e.target.value)}
                   ></TextField>
                 </Grid>
+                <Select
+                  labelId="formulario-select-label"
+                  id="formulario-select"
+                  value={formularioId}
+                  onChange={handleFormularioChange}
+                  error={errorPregunta && formularioId === ""}
+                >
+                  <MenuItem value="">
+                    <em>Seleccionar</em>
+                  </MenuItem>
+                  {formularios.map((formulario) => (
+                    <MenuItem key={formulario.id} value={formulario.id}>
+                      {formulario.nombre}{" "}
+                      {/* Aquí accede al nombre del formulario */}
+                    </MenuItem>
+                  ))}
+                </Select>
                 <Grid item xs={12}>
                   <button type="submit">Crear Inicio</button>
                 </Grid>
@@ -785,70 +742,6 @@ const Creaciones = () => {
                   onClose={() => setAlertaInicioExistente(false)}
                 >
                   Ya hay un inicio creado.
-                </Alert>
-              )}
-            </form>
-          </Box>
-        </Grid>
-      </Grid>
-      <Grid container spacing={6} className={classes.gridPrincipal}>
-        <Grid
-          item
-          xs={12}
-          sm={12}
-          md={6}
-          className={`${classes.cardCreacion} ${classes.gridIzquierdo}`}
-        >
-          <Box
-            className={`${classes.boxForm} ${classes.boxIzquierdo}`}
-            boxShadow={8}
-            borderRadius={7}
-          >
-            <form onSubmit={handleDependenciaSubmit} className={classes.form}>
-              <h2>Crear Dependencia</h2>
-              <TextField
-                className={classes.textField}
-                label="Dependencia"
-                value={dependenciaNombre}
-                onChange={(event) => setDependenciaNombre(event.target.value)}
-                error={errorDependencia}
-              />
-              <Button
-                className={classes.button}
-                variant="contained"
-                color="primary"
-                type="submit"
-              >
-                Crear Dependencia
-              </Button>
-              {alertaDependencia && showAlert && (
-                <Alert severity="success">
-                  ¡La dependencia se creó correctamente!
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    size="small"
-                    onClick={handleCloseAlert}
-                    className={classes.closeButton}
-                  >
-                    <CloseIcon fontSize="inherit" />
-                  </IconButton>
-                </Alert>
-              )}
-              {alertaDependenciaExistente && (
-                <Alert severity="error">
-                  Ya existe una Dependencia con el mismo nombre, intentelo
-                  denuevo.
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    size="small"
-                    onClick={handleCloseAlertaDependenciaExistente}
-                    open={alertaDependenciaExistente}
-                    className={classes.closeButton}
-                  >
-                    <CloseIcon fontSize="inherit" />
-                  </IconButton>
                 </Alert>
               )}
             </form>
@@ -877,13 +770,32 @@ const Creaciones = () => {
                 error={errorSeccion && !seccionDescripcion.trim()}
               />
 
+              <Select
+                labelId="formulario-select-label"
+                id="formulario-select"
+                value={formularioId}
+                onChange={handleFormularioChange}
+                error={errorPregunta && formularioId === ""}
+              >
+                <MenuItem value="">
+                  <em>Seleccionar</em>
+                </MenuItem>
+                {formularios.map((formulario) => (
+                  <MenuItem key={formulario.id} value={formulario.id}>
+                    {formulario.nombre}{" "}
+                    {/* Aquí accede al nombre del formulario */}
+                  </MenuItem>
+                ))}
+              </Select>
               <Button
                 className={classes.button}
                 variant="contained"
                 color="primary"
                 type="submit"
+                disabled={!seccionDescripcion.trim() || !formularioId}
               >
-                Crear Sección
+                {" "}
+                Crear Sección{" "}
               </Button>
               {alertaSeccion && (
                 <Alert severity="success">
@@ -1000,9 +912,8 @@ const Creaciones = () => {
                 error={errorPregunta && seccionId === ""}
                 className={classes.textField}
               >
-                <InputLabel>Sección</InputLabel>
+                <InputLabel id="secciones-label">Sección</InputLabel>
                 <Select
-                  labelId="seccion-select-label"
                   id="seccion-select"
                   value={seccionId}
                   onChange={(event) => setSeccionId(event.target.value)}
@@ -1014,6 +925,46 @@ const Creaciones = () => {
                   {secciones.map((seccion) => (
                     <MenuItem key={seccion.id} value={seccion.id}>
                       {seccion.descripcion}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {errorPregunta && seccionId === "" && (
+                  <FormHelperText>Seleccione una sección</FormHelperText>
+                )}
+                {alertaSeccion && showAlert && (
+                  <Alert severity="success">
+                    ¡La Seccion se creó correctamente!
+                    <IconButton
+                      aria-label="close"
+                      color="inherit"
+                      size="small"
+                      onClick={handleCloseAlert}
+                      className={classes.closeButton}
+                    >
+                      <CloseIcon fontSize="inherit" />
+                    </IconButton>
+                  </Alert>
+                )}
+              </FormControl>
+
+              <FormControl
+                error={errorPregunta && seccionId === ""}
+                className={classes.textField}
+              >
+                <InputLabel id="secciones-label">Sección</InputLabel>
+                <Select
+                  labelId="formulario-select-label"
+                  id="formulario-select"
+                  value={formularioId}
+                  onChange={handleFormularioChange}
+                  error={errorPregunta && formularioId === ""}
+                >
+                  <MenuItem value="">
+                    <em>Seleccionar</em>
+                  </MenuItem>
+                  {formularios.map((formulario) => (
+                    <MenuItem key={formulario.id} value={formulario.id}>
+                      {formulario.nombre}
                     </MenuItem>
                   ))}
                 </Select>
