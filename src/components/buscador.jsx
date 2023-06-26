@@ -111,9 +111,6 @@ const Buscador = () => {
       } else if (formularioId) {
         url += `/formulario/${formularioId}`;
       }
-  
-      // Resto del código...
-  
     } catch (error) {
       console.error("Error al buscar respuestas:", error);
     }
