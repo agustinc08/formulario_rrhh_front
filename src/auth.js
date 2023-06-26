@@ -8,9 +8,16 @@ export const setLoginData = (username, clave, rol, dependenciaId) => {
   if (dependenciaId !== undefined && dependenciaId !== null) {
     sessionStorage.setItem(DEPENDENCIA_ID_KEY, dependenciaId.toString());
   } else {
-    // Manejar el caso en el que dependenciaId sea undefined o null
     sessionStorage.removeItem(DEPENDENCIA_ID_KEY);
   }
+}
+
+export const getDependenciaId = () => {
+  const dependenciaId = sessionStorage.getItem(DEPENDENCIA_ID_KEY);
+  if (dependenciaId !== null) {
+    return parseInt(dependenciaId);
+  }
+  return null;
 }
 
 export const logout = () => {
@@ -22,6 +29,3 @@ export const isLoggedIn = () => {
   return sessionStorage.getItem(AUTH_TOKEN_KEY) === 'true';
 }
 
-export const getDependenciaId = () => {
-  return parseInt(sessionStorage.getItem(DEPENDENCIA_ID_KEY)); // Asegúrate de convertir el ID almacenado a un número entero
-}

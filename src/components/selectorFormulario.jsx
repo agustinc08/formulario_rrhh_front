@@ -43,12 +43,12 @@ function SelectorFormulario() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-  
+
     if (selectedFormulario === '') {
       console.log('Por favor, selecciona un formulario');
       return;
     }
-  
+
     // Redirigir al usuario a la página del formulario seleccionado
     history.push(`/formulario/${selectedFormulario}/inicio`);
   };
@@ -57,22 +57,25 @@ function SelectorFormulario() {
     <div>
       <h1>Bienvenido(a), {sessionStorage.getItem('dependencia')}</h1>
       <p>Por favor, selecciona el formulario al que deseas acceder:</p>
-      <FormControl>
-        <InputLabel id="formulario-label">Seleccionar formulario</InputLabel>
-        <Select
-          labelId="formulario-label"
-          id="formulario-select"
-          value={selectedFormulario}
-          onChange={handleFormularioChange}
-        >
-          <MenuItem value="">Ningún formulario seleccionado</MenuItem>
-          {formularios.map((formulario) => (
-            <MenuItem key={formulario.id} value={formulario.id}>
-              {formulario.nombre}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <form onSubmit={handleSubmit}>
+        <FormControl>
+          <InputLabel id="formulario-label">Seleccionar formulario</InputLabel>
+          <Select
+            labelId="formulario-label"
+            id="formulario-select"
+            value={selectedFormulario}
+            onChange={handleFormularioChange}
+          >
+            <MenuItem value="">Ningún formulario seleccionado</MenuItem>
+            {formularios.map((formulario) => (
+              <MenuItem key={formulario.id} value={formulario.id}>
+                {formulario.nombre}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <button type="submit">Acceder</button>
+      </form>
     </div>
   );
 }

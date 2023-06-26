@@ -134,15 +134,16 @@ const Creaciones = () => {
   };
 
   const verificarInicioCreado = () => {
-    fetch("http://localhost:3000/inicio")
+    fetch(`http://localhost:3000/inicio?formularioId=${formularioId}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.length > 0) {
-          // Mostrar alerta de error si el inicio ya está creado
+          // Mostrar alerta de error si ya existe un inicio para el formulario actual
           setAlertaInicioExistente(true);
         } else {
-          // Crear el inicio si no hay ningún inicio creado
+          // Crear el inicio si no hay ningún inicio creado para el formulario actual
           crearInicio({
+            formularioId: formularioId,
             tituloPrincipal: tituloPrincipal,
             introduccionDescripcion: introduccionDescripcion,
             objetivoDescripcion: objetivoDescripcion,
@@ -153,7 +154,7 @@ const Creaciones = () => {
       .catch((error) => {
         console.error("Error al verificar el inicio creado:", error);
       });
-  };
+  };  
 
   const handleComentarioCheckboxChange = (event) => {
     setTieneComentario(event.target.checked);
@@ -368,20 +369,8 @@ const Creaciones = () => {
       setErrorParrafo(true);
       return;
     }
-
-    crearInicio({
-      formularioId: formularioId,
-      tituloPrincipal: tituloPrincipal,
-      introduccionDescripcion: introduccionDescripcion,
-      objetivoDescripcion: objetivoDescripcion,
-      parrafo: parrafo,
-    });
-
-    // Reiniciar los campos después de enviar el formulario
-    setTituloPrincipal("");
-    setIntroduccionDescripcion("");
-    setObjetivoDescripcion("");
-    setParrafo("");
+  
+    verificarInicioCreado();
   };
 
   const crearInicio = ({
@@ -396,7 +385,7 @@ const Creaciones = () => {
       console.error("El formularioId no se ha proporcionado");
       return;
     }
-
+  
     fetch("http://localhost:3000/inicio", {
       method: "POST",
       headers: {
@@ -427,12 +416,10 @@ const Creaciones = () => {
           //window.location.reload();
         } else {
           throw new Error("Error al crear el inicio.");
-          setAlertaInicioExistente(true);
         }
       })
       .catch((error) => {
         console.error(error);
-        setAlertaInicioExistente(true);
       });
   };
 
