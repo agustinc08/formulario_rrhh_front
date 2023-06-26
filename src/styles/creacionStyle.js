@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
     },
   
     gridPrincipal: {
-      height: '85vh',
       margin: '0 auto',
       [theme.breakpoints.up('sm')]: {
         margin: '0 5%',
@@ -53,15 +52,16 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: 'column',
     },
     boxIzquierdo: {
-      flex: '1',
+      flex: '0',
     },
     boxDerecho: {
       flex: '1',
+
     },
     boxForm: {
       display: "flex",
+      justifyContent: "center",
       flexDirection: "column",
-      alignItems: "center",
       padding: theme.spacing(2),
       marginTop: "30px",
     },
@@ -70,6 +70,9 @@ const useStyles = makeStyles((theme) => ({
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
+    },
+    formControl:{
+      width: "100%",
     },
     textField: {
       margin: theme.spacing(2),
