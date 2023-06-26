@@ -56,20 +56,27 @@ const useStyles = makeStyles((theme) => ({
     }, 
     boxDerecho: {
       flex: '1',
-
+    },
+    boxCrearInicio:{
+      [theme.breakpoints.up('md')]: {
+        marginBottom: theme.spacing(7),
+      },
     },
     boxForm: {
       display: "flex",
       justifyContent: "center",
       flexDirection: "column",
       padding: theme.spacing(2),
-      marginTop: "30px",
+      marginTop: theme.spacing(5),
     },
     form: {
       width: "100%",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
+    },
+    tituloForm: {
+      fontSize: "20px",
     },
     formCrearInicio:{
       display: "flex",

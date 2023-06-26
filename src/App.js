@@ -6,6 +6,7 @@ import Buscador from "./components/buscador.jsx";
 import Estadisticas from "./components/estadisticas.jsx";
 import Creacion from "./components/creacion";
 import Navbar from "./components/navBar.jsx";
+import Footer from "./components/footer.jsx";
 import Seleccion from "./components/selectorFormulario.jsx";
 import {
   BrowserRouter as Router,
@@ -46,6 +47,7 @@ function App() {
             <React.Fragment>
               {rol === "admin" && <Navbar />}
               <Preguntas />
+              <Footer />
             </React.Fragment>
           ) : (
             <Redirect to="/login" />
@@ -56,6 +58,7 @@ function App() {
             <React.Fragment>
               {rol === "admin" && <Navbar />}
               <Inicio />
+              <Footer />
             </React.Fragment>
           ) : (
             <Redirect to="/login" />
@@ -66,6 +69,7 @@ function App() {
             <React.Fragment>
               <Navbar />
               <Creacion />
+              <Footer />
             </React.Fragment>
           ) : isLoggedIn ? (
             <Redirect to="/seleccion" />
@@ -78,6 +82,7 @@ function App() {
             <React.Fragment>
               <Navbar />
               <Buscador />
+              <Footer />
             </React.Fragment>
           ) : isLoggedIn ? (
             <Redirect to="/seleccion" />

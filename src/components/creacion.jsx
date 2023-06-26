@@ -7,6 +7,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Alert from "@material-ui/lab/Alert";
 import Grid from "@material-ui/core/Grid";
+import { useTheme } from '@mui/material/styles';
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -81,6 +82,8 @@ const Creaciones = () => {
   );
   const [formularioId, setFormularioId] = useState("");
 
+  const theme = useTheme();
+  
   useEffect(() => {
     fetchDependencias();
     fetchClaves();
@@ -613,7 +616,7 @@ const Creaciones = () => {
             borderRadius={7} 
           >
             <form onSubmit={handleFormularioSubmit} className={classes.form}>
-              <h2>Crear Formulario</h2>
+              <p className={classes.tituloForm}>CREAR FORMULARIO</p>
               <TextField
                 className={classes.textField}
                 label="Nombre del formulario"
@@ -666,12 +669,12 @@ const Creaciones = () => {
           </Box>
 
           <Box
-            className={`${classes.boxDerecho} ${classes.boxForm}`}
+            className={`${classes.boxDerecho} ${classes.boxForm} ${classes.boxCrearInicio}`}
             boxShadow={8}
             borderRadius={7}
           >
             <form onSubmit={handleInicioSubmit} className={classes.form}>
-              <h2 className={classes.mb60px}>Crear Inicio</h2>
+              <p className={`${classes.mb60px} ${classes.tituloForm}`}>CREAR INICIO</p>
                   <TextField
                     className={classes.textField}
                     type="text"
@@ -765,7 +768,7 @@ const Creaciones = () => {
             borderRadius={7}
           >
             <form onSubmit={handleSeccionSubmit} className={classes.form}>
-              <h2>Crear Sección</h2>
+              <p className={classes.tituloForm}>CREAR SECCIÓN</p>
               <TextField
                 className={classes.textField}
                 label="Descripción"
@@ -829,9 +832,10 @@ const Creaciones = () => {
             className={`${classes.boxForm} ${classes.boxDerecho}`}
             boxShadow={8}
             borderRadius={7}
+            mb={7}
           >
             <form onSubmit={handlePreguntaSubmit} className={classes.form}>
-              <h2>Crear Pregunta</h2>
+              <p className={classes.tituloForm}>CREAR PREGUNTA</p>
               <TextField
                 className={classes.textField}
                 label="Pregunta"
