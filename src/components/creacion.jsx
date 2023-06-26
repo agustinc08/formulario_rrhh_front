@@ -623,7 +623,7 @@ const Creaciones = () => {
           <Box
             className={`${classes.boxForm} ${classes.boxIzquierdo}`}
             boxShadow={8}
-            borderRadius={7}
+            borderRadius={7} 
           >
             <form onSubmit={handleFormularioSubmit} className={classes.form}>
               <h2>Crear Formulario</h2>

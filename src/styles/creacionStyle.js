@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
     },
     boxIzquierdo: {
       flex: '0',
-    },
+    }, 
     boxDerecho: {
       flex: '1',
 
