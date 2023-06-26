@@ -41,21 +41,21 @@ function App() {
             <Redirect to="/login" />
           )}
         </Route>
-        <Route exact path="/inicio">
-          {isLoggedIn ? (
-            <React.Fragment>
-              {rol === "admin" && <Navbar />}
-              <Inicio />
-            </React.Fragment>
-          ) : (
-            <Redirect to="/login" />
-          )}
-        </Route>
         <Route exact path="/formulario">
           {isLoggedIn ? (
             <React.Fragment>
               {rol === "admin" && <Navbar />}
               <Preguntas />
+            </React.Fragment>
+          ) : (
+            <Redirect to="/login" />
+          )}
+        </Route>
+        <Route exact path="/formulario/:formularioId/inicio">
+          {isLoggedIn ? (
+            <React.Fragment>
+              {rol === "admin" && <Navbar />}
+              <Inicio />
             </React.Fragment>
           ) : (
             <Redirect to="/login" />

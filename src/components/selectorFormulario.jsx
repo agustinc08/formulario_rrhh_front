@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Select, MenuItem, FormControl, InputLabel } from '@material-ui/core';
 import { isLoggedIn } from '../auth';
+import { useHistory } from 'react-router-dom';
 
 function SelectorFormulario() {
   const loggedIn = isLoggedIn();
   const [formularios, setFormularios] = useState([]);
   const [selectedFormulario, setSelectedFormulario] = useState('');
+  const history = useHistory();
 
   const getFormulariosPorDependenciaId = async (dependenciaId) => {
     try {
@@ -41,21 +43,15 @@ function SelectorFormulario() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
+  
     if (selectedFormulario === '') {
       console.log('Por favor, selecciona un formulario');
       return;
     }
-
-    // Aquí puedes redirigir o realizar la acción correspondiente al seleccionar el formulario
-    console.log('Formulario seleccionado:', selectedFormulario);
+  
+    // Redirigir al usuario a la página del formulario seleccionado
+    history.push(`/formulario/${selectedFormulario}/inicio`);
   };
-
-  if (!loggedIn) {
-    // Redireccionar a la página de inicio de sesión si no ha iniciado sesión
-    // Código para redireccionar a la página de inicio de sesión
-    return null;
-  }
 
   return (
     <div>
