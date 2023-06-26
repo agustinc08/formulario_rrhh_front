@@ -37,6 +37,7 @@ function App() {
           {isLoggedIn ? (
             <React.Fragment>
               <Seleccion />
+              <Footer />
             </React.Fragment>
           ) : (
             <Redirect to="/login" />
@@ -95,6 +96,7 @@ function App() {
             <React.Fragment>
               <Navbar />
               <Estadisticas />
+              <Footer />
             </React.Fragment>
           ) : isLoggedIn ? (
             <Redirect to="/seleccion" />
