@@ -19,7 +19,7 @@ function SelectorFormulario() {
       return [];
     }
   };
-  
+
   useEffect(() => {
     const dependenciaId = sessionStorage.getItem('dependenciaId');
     console.log('dependenciaId:', dependenciaId);
@@ -34,7 +34,7 @@ function SelectorFormulario() {
         });
     }
   }, []);
-  
+
   const handleFormularioChange = (event) => {
     setSelectedFormulario(event.target.value);
   };

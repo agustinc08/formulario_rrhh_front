@@ -1,22 +1,22 @@
 const AUTH_TOKEN_KEY = 'isLoggedIn';
+const DEPENDENCIA_ID_KEY = 'dependenciaId';
 
 export const setLoginData = (username, clave, rol, dependenciaId) => {
   sessionStorage.setItem(AUTH_TOKEN_KEY, 'true');
-  sessionStorage.setItem("dependencia", username);
-  sessionStorage.setItem("rol", rol);
-
-  if (dependenciaId) {
-    sessionStorage.setItem("dependenciaId", dependenciaId.toString()); // Convertir a cadena de texto si es necesario
-  } else {
-    console.error('Valor de dependenciaId no válido:', dependenciaId);
-  }
+  sessionStorage.setItem('dependencia', username);
+  sessionStorage.setItem('rol', rol);
+  sessionStorage.setItem(DEPENDENCIA_ID_KEY, dependenciaId.toString()); // Asegúrate de convertir el ID a una cadena antes de almacenarlo
 }
-
 
 export const logout = () => {
   sessionStorage.removeItem(AUTH_TOKEN_KEY);
+  sessionStorage.removeItem(DEPENDENCIA_ID_KEY);
 }
 
 export const isLoggedIn = () => {
   return sessionStorage.getItem(AUTH_TOKEN_KEY) === 'true';
+}
+
+export const getDependenciaId = () => {
+  return parseInt(sessionStorage.getItem(DEPENDENCIA_ID_KEY)); // Asegúrate de convertir el ID almacenado a un número entero
 }
