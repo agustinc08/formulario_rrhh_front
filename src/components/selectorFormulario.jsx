@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Select, MenuItem, FormControl, InputLabel } from '@material-ui/core';
-import { isLoggedIn } from '../auth';
+import { isLoggedIn, getDependenciaId } from '../auth';
 import { useHistory } from 'react-router-dom';
 
 function SelectorFormulario() {
@@ -23,10 +23,10 @@ function SelectorFormulario() {
   };
 
   useEffect(() => {
-    const dependenciaId = sessionStorage.getItem('dependenciaId');
+    const dependenciaId = getDependenciaId();
     console.log('dependenciaId:', dependenciaId);
     if (dependenciaId) {
-      // Llama a la función para obtener los formularios por el dependenciaId
+      // Llama a la función para obtener los formularios por la dependenciaId
       getFormulariosPorDependenciaId(dependenciaId)
         .then((data) => {
           setFormularios(data);
