@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Select, MenuItem, FormControl, InputLabel } from '@material-ui/core';
 import { isLoggedIn, getDependenciaId } from '../auth';
 import { useHistory } from 'react-router-dom';
+import Button from "@material-ui/core/Button";
+import "../css/global.css";
+import useStyles from "../styles/selectorFormularioStyle";
 
 function SelectorFormulario() {
+  const classes = useStyles();
   const loggedIn = isLoggedIn();
   const [formularios, setFormularios] = useState([]);
   const [selectedFormulario, setSelectedFormulario] = useState('');
@@ -21,6 +25,7 @@ function SelectorFormulario() {
       return [];
     }
   };
+
 
   useEffect(() => {
     const dependenciaId = getFormulariosPorDependenciaId();
@@ -54,29 +59,48 @@ function SelectorFormulario() {
   };
 
   return (
-    <div>
-      <h1>Bienvenido(a), {sessionStorage.getItem('dependencia')}</h1>
-      <p>Por favor, selecciona el formulario al que deseas acceder:</p>
-      <form onSubmit={handleSubmit}>
-        <FormControl>
-          <InputLabel id="formulario-label">Seleccionar formulario</InputLabel>
-          <Select
-            labelId="formulario-label"
-            id="formulario-select"
-            value={selectedFormulario}
-            onChange={handleFormularioChange}
-          >
-            <MenuItem value="">Ningún formulario seleccionado</MenuItem>
-            {formularios.map((formulario) => (
-              <MenuItem key={formulario.id} value={formulario.id}>
-                {formulario.nombre}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <button type="submit">Acceder</button>
-      </form>
+
+    <div className={classes.container}>
+      <div className={classes.card}>
+        <div className={classes.imagen}>
+        </div>
+        <div className={classes.seleccion}>
+          <form onSubmit={handleSubmit} className={classes.form}>
+            <div className={classes.textFieldContainer}>
+              <h1>Bienvenido/a, {sessionStorage.getItem('dependencia')}</h1>
+              <p>Por favor, selecciona el formulario al que deseas acceder:</p>
+        
+              <FormControl>
+                <InputLabel id="formulario-label">Seleccionar formulario</InputLabel>
+                <Select
+                  className={classes.textField}
+                  labelId="formulario-label"
+                  id="formulario-select"
+                  value={selectedFormulario}
+                  onChange={handleFormularioChange}
+                >
+                  <MenuItem value="">Ningún formulario seleccionado</MenuItem>
+                  {formularios.map((formulario) => (
+                    <MenuItem key={formulario.id} value={formulario.id}>
+                      {formulario.nombre}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                type="submit"
+              >
+                Acceder
+              </Button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
+
   );
 }
 
