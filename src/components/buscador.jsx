@@ -26,8 +26,10 @@ const Buscador = () => {
   const [preguntas, setPreguntas] = useState([]);
   const [dependencias, setDependencias] = useState([]);
   const [respuestas, setRespuestas] = useState([]);
+  const [formularios, setFormularios] = useState([]);
   const [selectedPregunta, setSelectedPregunta] = useState("");
   const [selectedDependencia, setSelectedDependencia] = useState("");
+  const [selectedFormulario, setSelectedFormulario] = useState("");
   const [sortConfig, setSortConfig] = useState({
     field: null,
     direction: "asc",
@@ -57,19 +59,31 @@ const Buscador = () => {
       }
     };
 
+    const obtenerFormularios = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/formulario");
+        const data = await response.json();
+        setFormularios(data);
+        console.log("Formularios obtenidos:", data);
+      } catch (error) {
+        console.error("Error al obtener los Formularios:", error);
+      }
+    };
+
     obtenerPreguntas();
     obtenerDependencias();
+    obtenerFormularios();
   }, []);
 
   const handleBuscarRespuestas = async () => {
     try {
       let url = "http://localhost:3000/respuestas";
-
+  
       const preguntaId =
         selectedPregunta !== undefined && selectedPregunta !== ""
           ? parseInt(selectedPregunta)
           : null;
-
+  
       let dependenciaId = null;
       if (selectedDependencia !== "") {
         const dependencia = dependencias.find(
@@ -77,48 +91,26 @@ const Buscador = () => {
         );
         dependenciaId = dependencia ? dependencia.id : null;
       }
-
-      if (preguntaId && dependenciaId) {
+  
+      let formularioId = null;
+      if (selectedFormulario !== "") {
+        const formulario = formularios.find(
+          (form) => form.nombre === selectedFormulario
+        );
+        formularioId = formulario ? formulario.id : null;
+      }
+  
+      if (preguntaId && dependenciaId && formularioId) {
+        url += `/${preguntaId}/${dependenciaId}/${formularioId}`;
+      } else if (preguntaId && dependenciaId) {
         url += `/${preguntaId}/${dependenciaId}`;
       } else if (preguntaId) {
         url += `/pregunta/${preguntaId}`;
       } else if (dependenciaId) {
         url += `/dependencia/${dependenciaId}`;
+      } else if (formularioId) {
+        url += `/formulario/${formularioId}`;
       }
-
-      const transformarRespuestas = (respuestas) => {
-        return respuestas.map((respuesta) => {
-          const dependencia = dependencias.find(
-            (dep) => dep.id === respuesta.dependenciaId
-          );
-          const nombreDependencia = dependencia ? dependencia.nombreDependencia : "";
-      
-          // Formatear la fecha a día/mes/año hora:minutos:segundos
-          const fecha = new Date(respuesta.createdAt);
-          const dia = fecha.getDate();
-          const mes = fecha.getMonth() + 1;
-          const año = fecha.getFullYear();
-          const hora = fecha.getHours();
-          const minutos = fecha.getMinutes();
-          const segundos = fecha.getSeconds();
-          const fechaFormateada = `${dia}/${mes}/${año} ${hora}:${minutos}:${segundos}`;
-
-          let edadFormateada = "";
-          if (respuesta.edad === "MAS_45") {
-            edadFormateada = "Más de 45";
-          } else if (respuesta.edad === "DESDE_18_A_45") {
-            edadFormateada = "Desde 18 a 45";
-          }
-      
-          return { ...respuesta, nombreDependencia, fechaFormateada, edadFormateada };
-        });
-      };
-      
-      const response = await fetch(url);
-      const data = await response.json();
-      const respuestasTransformadas = transformarRespuestas(data);
-      setRespuestas(respuestasTransformadas);
-      console.log("Respuestas obtenidas:", data);
     } catch (error) {
       console.error("Error al buscar respuestas:", error);
     }
@@ -132,6 +124,11 @@ const Buscador = () => {
   const handleDependenciaChange = (event) => {
     setSelectedDependencia(event.target.value);
     console.log("Dependencia seleccionada:", event.target.value);
+  };
+
+  const handleFormularioChange = (event) => {
+    setSelectedFormulario(event.target.value);
+    console.log("Formulario seleccionado:", event.target.value);
   };
 
   const handleSort = (field) => {
@@ -205,6 +202,26 @@ const Buscador = () => {
                   dependencias.map((dependencia) => (
                     <MenuItem key={dependencia.id} value={dependencia.nombreDependencia}>
                       {dependencia.nombreDependencia}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4} lg={3}>
+            <FormControl variant="standard" fullWidth size="small">
+              <InputLabel>Formulario</InputLabel>
+              <Select
+                value={selectedFormulario}
+                onChange={handleFormularioChange}
+                variant="standard"
+                className={classes.select}
+                fullWidth
+              >
+                <MenuItem value="">Todos los formularios</MenuItem>
+                {formularios.length > 0 &&
+                  formularios.map((formulario) => (
+                    <MenuItem key={formulario.id} value={formulario.nombre}>
+                      {formulario.nombre}
                     </MenuItem>
                   ))}
               </Select>

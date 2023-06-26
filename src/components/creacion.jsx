@@ -971,7 +971,7 @@ const Creaciones = () => {
                 error={errorPregunta && seccionId === ""}
                 className={classes.textField}
               >
-                <InputLabel id="secciones-label">Sección</InputLabel>
+                <InputLabel id="secciones-label">Formulario</InputLabel>
                 <Select
                   labelId="formulario-select-label"
                   id="formulario-select"
