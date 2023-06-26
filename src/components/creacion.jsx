@@ -633,10 +633,9 @@ const Creaciones = () => {
                 value={formularioNombre}
                 onChange={(event) => setFormularioNombre(event.target.value)}
               />
-              <FormControl className={classes.formControl}>
+              <FormControl className={classes.textField}>
                 <InputLabel id="dependencias-label">Dependencias</InputLabel>
                 <Select
-                  className={classes.textField}
                   labelId="dependencias-label"
                   multiple
                   value={dependenciasSeleccionadas}
@@ -680,12 +679,12 @@ const Creaciones = () => {
           </Box>
 
           <Box
-            className={`${classes.boxForm} ${classes.boxDerecho}`}
+            className={`${classes.boxDerecho} ${classes.boxForm}`}
             boxShadow={8}
             borderRadius={7}
           >
             <form onSubmit={handleInicioSubmit} className={classes.form}>
-              <h2>Crear Inicio</h2>
+              <h2 className={classes.mb60px}>Crear Inicio</h2>
                   <TextField
                     className={classes.textField}
                     type="text"
@@ -714,26 +713,28 @@ const Creaciones = () => {
                     onChange={(e) => setParrafo(e.target.value)}
                   ></TextField>
                 
-                <Select
-                  className={classes.textField}
-                  labelId="formulario-select-label"
-                  id="formulario-select"
-                  value={formularioId}
-                  onChange={handleFormularioChange}
-                  error={errorPregunta && formularioId === ""}
-                >
-                  <MenuItem value="">
-                    <em>Seleccionar</em>
-                  </MenuItem>
-                  {formularios.map((formulario) => (
-                    <MenuItem key={formulario.id} value={formulario.id}>
-                      {formulario.nombre}{" "}
-                      {/* Aquí accede al nombre del formulario */}
+                <FormControl className={classes.textField}>
+                  <InputLabel id="formulario-select-label">Formulario</InputLabel>
+                  <Select
+                    labelId="formulario-select-label"
+                    id="formulario-select"
+                    value={formularioId}
+                    onChange={handleFormularioChange}
+                    error={errorPregunta && formularioId === ""}
+                  >
+                    <MenuItem value="">
+                      <em>Seleccionar</em>
                     </MenuItem>
-                  ))}
-                </Select>
+                    {formularios.map((formulario) => (
+                      <MenuItem key={formulario.id} value={formulario.id}>
+                        {formulario.nombre}{" "}
+                        {/* Aquí accede al nombre del formulario */}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
                   <Button 
-                    className={classes.button}
+                    className={`${classes.button} ${classes.mt60px}`}
                     variant="contained"
                     color="primary"
                     type="submit"
@@ -786,24 +787,26 @@ const Creaciones = () => {
                 error={errorSeccion && !seccionDescripcion.trim()}
               />
 
-              <Select
-                labelId="formulario-select-label"
-                className={classes.textField}
-                id="formulario-select"
-                value={formularioId}
-                onChange={handleFormularioChange}
-                error={errorPregunta && formularioId === ""}
-              >
-                <MenuItem value="">
-                  <em>Seleccionar</em>
-                </MenuItem>
-                {formularios.map((formulario) => (
-                  <MenuItem key={formulario.id} value={formulario.id}>
-                    {formulario.nombre}{" "}
-                    {/* Aquí accede al nombre del formulario */}
+              <FormControl className={classes.textField}>
+                <InputLabel id="formulario-select-label">Formulario</InputLabel>
+                <Select
+                  labelId="formulario-select-label"
+                  id="formulario-select"
+                  value={formularioId}
+                  onChange={handleFormularioChange}
+                  error={errorPregunta && formularioId === ""}
+                >
+                  <MenuItem value="">
+                    <em>Seleccionar</em>
                   </MenuItem>
-                ))}
-              </Select>
+                  {formularios.map((formulario) => (
+                    <MenuItem key={formulario.id} value={formulario.id}>
+                      {formulario.nombre}{" "}
+                      {/* Aquí accede al nombre del formulario */}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
               <Button
                 className={classes.button}
                 variant="contained"
@@ -838,7 +841,7 @@ const Creaciones = () => {
           <Box
             className={`${classes.boxForm} ${classes.boxDerecho}`}
             boxShadow={8}
-            borderRadius={10}
+            borderRadius={7}
           >
             <form onSubmit={handlePreguntaSubmit} className={classes.form}>
               <h2>Crear Pregunta</h2>

@@ -71,6 +71,11 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: "column",
       alignItems: "center",
     },
+    formCrearInicio:{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    },
     formControl:{
       width: "100%",
     },
@@ -86,6 +91,12 @@ const useStyles = makeStyles((theme) => ({
       [theme.breakpoints.up('xs', 'sm')]: {
         paddingTop: "0px !important",
       },
+    },
+    mb60px: {
+      marginBottom: "60px !important",
+    },
+    mt60px: {
+      marginTop: "60px !important",
     },
   }));
 
