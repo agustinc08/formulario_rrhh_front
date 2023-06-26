@@ -7,7 +7,6 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Alert from "@material-ui/lab/Alert";
 import Grid from "@material-ui/core/Grid";
-import { useTheme } from '@mui/material/styles';
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -81,8 +80,6 @@ const Creaciones = () => {
     []
   );
   const [formularioId, setFormularioId] = useState("");
-
-  const theme = useTheme();
   
   useEffect(() => {
     fetchDependencias();
