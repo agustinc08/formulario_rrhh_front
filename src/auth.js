@@ -3,9 +3,14 @@ const DEPENDENCIA_ID_KEY = 'dependenciaId';
 
 export const setLoginData = (username, clave, rol, dependenciaId) => {
   sessionStorage.setItem(AUTH_TOKEN_KEY, 'true');
-  sessionStorage.setItem('dependencia', username);
-  sessionStorage.setItem('rol', rol);
-  sessionStorage.setItem(DEPENDENCIA_ID_KEY, dependenciaId.toString()); // Asegúrate de convertir el ID a una cadena antes de almacenarlo
+  sessionStorage.setItem("dependencia", username);
+  sessionStorage.setItem("rol", rol);
+  if (dependenciaId !== undefined && dependenciaId !== null) {
+    sessionStorage.setItem(DEPENDENCIA_ID_KEY, dependenciaId.toString());
+  } else {
+    // Manejar el caso en el que dependenciaId sea undefined o null
+    sessionStorage.removeItem(DEPENDENCIA_ID_KEY);
+  }
 }
 
 export const logout = () => {
