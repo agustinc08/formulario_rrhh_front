@@ -26,8 +26,10 @@ const Buscador = () => {
   const [preguntas, setPreguntas] = useState([]);
   const [dependencias, setDependencias] = useState([]);
   const [respuestas, setRespuestas] = useState([]);
+  const [formularios, setFormularios] = useState([]);
   const [selectedPregunta, setSelectedPregunta] = useState("");
   const [selectedDependencia, setSelectedDependencia] = useState("");
+  const [selectedFormulario, setSelectedFormulario] = useState("");
   const [sortConfig, setSortConfig] = useState({
     field: null,
     direction: "asc",
@@ -57,8 +59,20 @@ const Buscador = () => {
       }
     };
 
+    const obtenerFormularios = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/formulario");
+        const data = await response.json();
+        setFormularios(data);
+        console.log("Formularios obtenidos:", data);
+      } catch (error) {
+        console.error("Error al obtener los Formularios:", error);
+      }
+    };
+
     obtenerPreguntas();
     obtenerDependencias();
+    obtenerFormularios();
   }, []);
 
   const handleBuscarRespuestas = async () => {
@@ -134,6 +148,11 @@ const Buscador = () => {
     console.log("Dependencia seleccionada:", event.target.value);
   };
 
+  const handleFormularioChange = (event) => {
+    setSelectedDependencia(event.target.value);
+    console.log("Formulario seleccionado:", event.target.value);
+  };
+
   const handleSort = (field) => {
     let direction = "asc";
     if (sortConfig.field === field && sortConfig.direction === "asc") {
@@ -205,6 +224,26 @@ const Buscador = () => {
                   dependencias.map((dependencia) => (
                     <MenuItem key={dependencia.id} value={dependencia.nombreDependencia}>
                       {dependencia.nombreDependencia}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4} lg={3}>
+            <FormControl variant="standard" fullWidth size="small">
+              <InputLabel>Formulario</InputLabel>
+              <Select
+                value={selectedFormulario}
+                onChange={handleFormularioChange}
+                variant="standard"
+                className={classes.select}
+                fullWidth
+              >
+                <MenuItem value="">Todos los formularios</MenuItem>
+                {formularios.length > 0 &&
+                  formularios.map((formulario) => (
+                    <MenuItem key={formulario.id} value={formulario.nombre}>
+                      {formulario.nombre}
                     </MenuItem>
                   ))}
               </Select>

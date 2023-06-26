@@ -19,8 +19,10 @@ const Estadisticas = () => {
   const [preguntas, setPreguntas] = useState([]);
   const [selectedDependencia, setSelectedDependencia] = useState("");
   const [selectedPregunta, setSelectedPregunta] = useState("");
+  const [selectedFormulario, setSelectedFormulario] = useState("");
 
   const [respuestas, setRespuestas] = useState([]); // Agregado
+  const [formularios, setFormularios] = useState([]);
 
   const [expresionData, setExpresionData] = useState("");
   const [edadData, setEdadData] = useState("");
@@ -53,8 +55,20 @@ const Estadisticas = () => {
       }
     };
 
+    const obtenerFormularios = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/formulario");
+        const data = await response.json();
+        setDependencias(data);
+        console.log("Formularios obtenidos:", data);
+      } catch (error) {
+        console.error("Error al obtener los formularios:", error);
+      }
+    };
+
     obtenerPreguntas();
     obtenerDependencias();
+    obtenerFormularios();
   }, []);
 
   const fetchRespuestas = async () => {
@@ -190,6 +204,13 @@ const Estadisticas = () => {
     setSelectedDependencia(event.target.value);
     fetchRespuestas(); // Fetch responses when dependencia changes
   };
+
+  const handleFormularioChange = (event) => {
+    setSelectedFormulario(event.target.value);
+    fetchRespuestas(); // Fetch responses when dependencia changes
+  };
+
+
   return (
     <Grid container justifyContent="center" alignItems="center">
       <Grid item xs={12}>
@@ -208,7 +229,7 @@ const Estadisticas = () => {
               variant="standard"
               className={classes.select}
               fullWidth
-              disabled={!selectedDependencia} // Agregar esta línea
+              //disabled={!selectedDependencia} // Agregar esta línea
             >
               <MenuItem value="">Todas las preguntas</MenuItem>
               {preguntas.length > 0 &&
@@ -237,6 +258,29 @@ const Estadisticas = () => {
                 dependencias.map((dependencia) => (
                   <MenuItem key={dependencia.id} value={dependencia.id}>
                     {dependencia.nombreDependencia}
+                  </MenuItem>
+                ))}
+            </Select>
+          </FormControl>
+        </Box>
+      </Grid>
+      <Grid item xs={12} md={4}>
+        <Box mx={4}>
+          <FormControl variant="standard" fullWidth size="small">
+            <InputLabel>Formulario</InputLabel>
+            <Select
+              value={selectedFormulario}
+              onChange={handleFormularioChange}
+              variant="standard"
+              className={classes.select}
+              fullWidth
+               // Agregar esta línea
+            >
+              <MenuItem value="">Todos los Formularios</MenuItem>
+              {formularios.length > 0 &&
+                formularios.map((formulario) => (
+                  <MenuItem key={formulario.id} value={formulario.id}>
+                    {formulario.nombre}
                   </MenuItem>
                 ))}
             </Select>
