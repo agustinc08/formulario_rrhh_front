@@ -4,9 +4,9 @@ import '../css/global.css';
 
 const Footer = () => {
   return (
-    <div className='footer'>
+    <footer className='footer'>
         Desarrollado por Oficina de Sistemas y Tecnología.
-    </div>
+    </footer>
   );
 };
 
