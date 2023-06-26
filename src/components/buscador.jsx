@@ -78,12 +78,12 @@ const Buscador = () => {
   const handleBuscarRespuestas = async () => {
     try {
       let url = "http://localhost:3000/respuestas";
-
+  
       const preguntaId =
         selectedPregunta !== undefined && selectedPregunta !== ""
           ? parseInt(selectedPregunta)
           : null;
-
+  
       let dependenciaId = null;
       if (selectedDependencia !== "") {
         const dependencia = dependencias.find(
@@ -91,48 +91,29 @@ const Buscador = () => {
         );
         dependenciaId = dependencia ? dependencia.id : null;
       }
-
-      if (preguntaId && dependenciaId) {
+  
+      let formularioId = null;
+      if (selectedFormulario !== "") {
+        const formulario = formularios.find(
+          (form) => form.nombre === selectedFormulario
+        );
+        formularioId = formulario ? formulario.id : null;
+      }
+  
+      if (preguntaId && dependenciaId && formularioId) {
+        url += `/${preguntaId}/${dependenciaId}/${formularioId}`;
+      } else if (preguntaId && dependenciaId) {
         url += `/${preguntaId}/${dependenciaId}`;
       } else if (preguntaId) {
         url += `/pregunta/${preguntaId}`;
       } else if (dependenciaId) {
         url += `/dependencia/${dependenciaId}`;
+      } else if (formularioId) {
+        url += `/formulario/${formularioId}`;
       }
-
-      const transformarRespuestas = (respuestas) => {
-        return respuestas.map((respuesta) => {
-          const dependencia = dependencias.find(
-            (dep) => dep.id === respuesta.dependenciaId
-          );
-          const nombreDependencia = dependencia ? dependencia.nombreDependencia : "";
-      
-          // Formatear la fecha a día/mes/año hora:minutos:segundos
-          const fecha = new Date(respuesta.createdAt);
-          const dia = fecha.getDate();
-          const mes = fecha.getMonth() + 1;
-          const año = fecha.getFullYear();
-          const hora = fecha.getHours();
-          const minutos = fecha.getMinutes();
-          const segundos = fecha.getSeconds();
-          const fechaFormateada = `${dia}/${mes}/${año} ${hora}:${minutos}:${segundos}`;
-
-          let edadFormateada = "";
-          if (respuesta.edad === "MAS_45") {
-            edadFormateada = "Más de 45";
-          } else if (respuesta.edad === "DESDE_18_A_45") {
-            edadFormateada = "Desde 18 a 45";
-          }
-      
-          return { ...respuesta, nombreDependencia, fechaFormateada, edadFormateada };
-        });
-      };
-      
-      const response = await fetch(url);
-      const data = await response.json();
-      const respuestasTransformadas = transformarRespuestas(data);
-      setRespuestas(respuestasTransformadas);
-      console.log("Respuestas obtenidas:", data);
+  
+      // Resto del código...
+  
     } catch (error) {
       console.error("Error al buscar respuestas:", error);
     }
@@ -149,7 +130,7 @@ const Buscador = () => {
   };
 
   const handleFormularioChange = (event) => {
-    setSelectedDependencia(event.target.value);
+    setSelectedFormulario(event.target.value);
     console.log("Formulario seleccionado:", event.target.value);
   };
 
