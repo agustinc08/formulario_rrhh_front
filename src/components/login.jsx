@@ -52,10 +52,18 @@ function Login({ onLogin }) {
         console.log("Inicio de sesión exitoso!");
         sessionStorage.setItem("isLoggedIn", "true");
         sessionStorage.setItem("dependencia", dependencia.nombreDependencia);
+        const rol = dependencia.rol === "dependencia" ? "dependencia" : "admin";
+        sessionStorage.setItem("rol", rol);
+        sessionStorage.setItem("id", dependencia.id);
         // Llama a la función onLogin pasada como prop desde App.js
         // para actualizar el estado isLoggedIn
-        onLogin(dependencia.nombreDependencia, clave.clave, dependencia.rol === "dependencia" ? "dependencia" : "admin");
-        history.push("/inicio");
+        onLogin(
+          dependencia.nombreDependencia,
+          clave.clave,
+          dependencia.rol === "dependencia" ? "dependencia" : "admin",
+          dependencia.id
+        );
+        history.push(rol === "admin" ? "/creacion" : "/seleccion");
       } else {
         setErrorMessage("La clave es incorrecta para esta dependencia.");
         setOpen(true);
@@ -67,6 +75,7 @@ function Login({ onLogin }) {
       setOpen(true);
     }
   };
+  
 
   const fetchDependencias = async () => {
     const response = await fetch("http://localhost:3000/dependencias");

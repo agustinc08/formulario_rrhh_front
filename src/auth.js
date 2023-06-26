@@ -1,10 +1,11 @@
 const AUTH_TOKEN_KEY = 'isLoggedIn';
 
-export const setLoginData = (username, clave, rol, dependenciaId) => {
+export const setLoginData = (username, clave, rol, id) => {
   sessionStorage.setItem(AUTH_TOKEN_KEY, 'true');
-  sessionStorage.setItem("dependencia", username);
-  sessionStorage.setItem("rol", rol);
-}
+  sessionStorage.setItem('username', username);
+  sessionStorage.setItem('id', id);
+  sessionStorage.setItem('rol', rol);
+};
 
 export const logout = () => {
   sessionStorage.removeItem(AUTH_TOKEN_KEY);

@@ -27,22 +27,31 @@ function App() {
     setIsLoggedIn(true);
   }
 
+  let redirectPath = "/seleccion";
+  if (isLoggedIn) {
+    if (rol === "admin") {
+      redirectPath = "/creacion";
+    } else if (rol === "dependencia") {
+      redirectPath = "/seleccion";
+    }
+  }
+
   return (
     <Router>
-      <Switch>
-        <Route exact path="/">
-          <Redirect to="/seleccion" />
-        </Route>
-        <Route exact path="/seleccion">
-          {isLoggedIn ? (
-            <React.Fragment>
-              <Seleccion />
-              <Footer />
-            </React.Fragment>
-          ) : (
-            <Redirect to="/login" />
-          )}
-        </Route>
+    <Switch>
+      <Route exact path="/">
+        <Redirect to={redirectPath} />
+      </Route>
+      <Route exact path="/seleccion">
+        {isLoggedIn ? (
+          <React.Fragment>
+            <Seleccion />
+            <Footer />
+          </React.Fragment>
+        ) : (
+          <Redirect to="/login" />
+        )}
+      </Route>
         <Route exact path="/formulario">
           {isLoggedIn ? (
             <React.Fragment>
