@@ -611,7 +611,6 @@ const Creaciones = () => {
           </Modal>
         </List>
       </Drawer>
-
       <Grid container spacing={6} className={classes.gridPrincipal}>
         <Grid
           item
@@ -623,17 +622,17 @@ const Creaciones = () => {
           <Box
             className={`${classes.boxForm} ${classes.boxIzquierdo}`}
             boxShadow={8}
-            borderRadius={7} 
+            borderRadius={7}
           >
-            <form onSubmit={handleFormularioSubmit} className={classes.form}>
-              <h2>Crear Formulario</h2>
+            <h2>Crear Formulario</h2>
+            <form onSubmit={handleFormularioSubmit}>
               <TextField
                 className={classes.textField}
                 label="Nombre del formulario"
                 value={formularioNombre}
                 onChange={(event) => setFormularioNombre(event.target.value)}
               />
-              <FormControl className={classes.formControl}>
+              <FormControl>
                 <InputLabel id="dependencias-label">Dependencias</InputLabel>
                 <Select
                   className={classes.textField}
@@ -666,14 +665,10 @@ const Creaciones = () => {
                     </MenuItem>
                   ))}
                 </Select>
+                <FormHelperText>Seleccione las dependencias</FormHelperText>
               </FormControl>
 
-              <Button 
-                className={classes.button}
-                variant="contained"
-                color="primary"
-                type="submit"
-              >
+              <Button type="submit" variant="contained" color="primary">
                 Crear formulario
               </Button>
             </form>
@@ -686,6 +681,8 @@ const Creaciones = () => {
           >
             <form onSubmit={handleInicioSubmit} className={classes.form}>
               <h2>Crear Inicio</h2>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
                   <TextField
                     className={classes.textField}
                     type="text"
@@ -693,6 +690,8 @@ const Creaciones = () => {
                     value={tituloPrincipal}
                     onChange={(e) => setTituloPrincipal(e.target.value)}
                   />
+                </Grid>
+                <Grid item xs={12}>
                   <TextField
                     className={classes.textField}
                     type="text"
@@ -700,6 +699,8 @@ const Creaciones = () => {
                     value={introduccionDescripcion}
                     onChange={(e) => setIntroduccionDescripcion(e.target.value)}
                   />
+                </Grid>
+                <Grid item xs={12}>
                   <TextField
                     className={classes.textField}
                     type="text"
@@ -707,13 +708,15 @@ const Creaciones = () => {
                     value={objetivoDescripcion}
                     onChange={(e) => setObjetivoDescripcion(e.target.value)}
                   />
+                </Grid>
+                <Grid item xs={12}>
                   <TextField
                     className={classes.textField}
                     placeholder="Párrafo"
                     value={parrafo}
                     onChange={(e) => setParrafo(e.target.value)}
                   ></TextField>
-                
+                </Grid>
                 <Select
                   className={classes.textField}
                   labelId="formulario-select-label"
@@ -732,16 +735,10 @@ const Creaciones = () => {
                     </MenuItem>
                   ))}
                 </Select>
-                  <Button 
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                  >
-                    Crear Inicio
-                  </Button>
-                
-              
+                <Grid item xs={12}>
+                  <button type="submit">Crear Inicio</button>
+                </Grid>
+              </Grid>
               {errorTituloPrincipal && <p className={classes.error}></p>}
               {alertaCreacionExitosa && (
                 <Alert
@@ -786,6 +783,7 @@ const Creaciones = () => {
                 error={errorSeccion && !seccionDescripcion.trim()}
               />
 
+            
               <Select
                 labelId="formulario-select-label"
                 className={classes.textField}
