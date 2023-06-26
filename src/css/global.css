@@ -1,12 +1,16 @@
 /* 
   Primary color de Material UI: #3F51B5; 
-  Textos: 16px;
+  Textos: 1 em = 16px;
 
 */
 
 *{
+    margin: 0;
+    padding: 0;
     scroll-behavior: smooth;
     box-sizing: border-box;
+    list-style: none;
+    font-family: 'Roboto', sans-serif;
 }
 
 .container {
