@@ -17,9 +17,9 @@ import {
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import Pagination from "@material-ui/lab/Pagination";
-import "../css/global.css";
 import useStyles from "../styles/formularioStyle";
 import { useHistory } from "react-router-dom";
+import "../css/global.css";
 
 function Preguntas() {
   const classes = useStyles();
