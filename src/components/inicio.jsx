@@ -29,9 +29,7 @@ function Inicio() {
   useEffect(() => {
     const fetchFormularioData = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/formulario/${formularioId}`
-        );
+        const response = await fetch(`http://localhost:3000/formulario/${formularioId}`);
         const data = await response.json();
         // Actualizar el estado con los datos del formulario seleccionado
         setInicioData(data.inicio);
@@ -102,20 +100,19 @@ function Inicio() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {secciones &&
-                    secciones
-                      .filter(
-                        (seccion) =>
-                          parseInt(seccion.formularioId) ===
-                          parseInt(formularioId)
-                      )
-                      .map((seccion) => (
-                        <TableRow key={seccion.id}>
-                          <TableCell className="texto-tabla">
-                            {seccion.descripcion}
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                {secciones &&
+  secciones
+  .filter(
+    (seccion) =>
+      parseInt(seccion.formularioId) ===
+      parseInt(formularioId)
+  )
+
+    .map((seccion) => (
+      <TableRow key={seccion.id}>
+        <TableCell className="texto-tabla">{seccion.descripcion}</TableCell>
+      </TableRow>
+    ))}
                 </TableBody>
               </Table>
               <div className="separar">
