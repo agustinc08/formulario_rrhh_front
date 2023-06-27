@@ -22,14 +22,18 @@
   content: '';
   position: absolute;
   bottom: -2px;
-  left: 50%;
+  left: 15%;
   transform: translateX(-50%);
-  width: 75%;
+  width: 70%;
   height: 1px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s;
 }
 
 .navbar-item:hover::after {
   background-color: white;
+  transform: scaleX(1);
 }
 
 .navbar-link {
@@ -43,7 +47,7 @@
   height: 60%;
   max-height: 80vh;
   margin: auto;
-  border: none !important;
   border-radius: 10px !important;
+  border: none !important;
 }
   
