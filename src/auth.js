@@ -1,9 +1,7 @@
 const AUTH_TOKEN_KEY = 'isLoggedIn';
 
-export const setLoginData = (username, clave, rol, id) => {
+export const setLoginData = (rol) => {
   sessionStorage.setItem(AUTH_TOKEN_KEY, 'true');
-  sessionStorage.setItem('username', username);
-  sessionStorage.setItem('id', id);
   sessionStorage.setItem('rol', rol);
 };
 

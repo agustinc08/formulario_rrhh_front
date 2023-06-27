@@ -52,16 +52,16 @@ function Login({ onLogin }) {
         console.log("Inicio de sesión exitoso!");
         sessionStorage.setItem("isLoggedIn", "true");
         sessionStorage.setItem("dependencia", dependencia.nombreDependencia);
+        sessionStorage.setItem("dependenciaId", dependencia.id);
         const rol = dependencia.rol === "dependencia" ? "dependencia" : "admin";
         sessionStorage.setItem("rol", rol);
-        sessionStorage.setItem("id", dependencia.id);
         // Llama a la función onLogin pasada como prop desde App.js
         // para actualizar el estado isLoggedIn
         onLogin(
           dependencia.nombreDependencia,
           clave.clave,
           dependencia.rol === "dependencia" ? "dependencia" : "admin",
-          dependencia.id
+          dependencia.id,
         );
         history.push(rol === "admin" ? "/creacion" : "/seleccion");
       } else {
