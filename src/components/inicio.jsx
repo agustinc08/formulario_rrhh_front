@@ -100,13 +100,13 @@ function Inicio() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                {secciones &&
-  secciones
-  .filter(
-    (seccion) =>
-      parseInt(seccion.formularioId) ===
-      parseInt(formularioId)
-  )
+                  {secciones &&
+    secciones
+    .filter(
+      (seccion) =>
+        parseInt(seccion.formularioId) ===
+        parseInt(formularioId)
+    )
 
     .map((seccion) => (
       <TableRow key={seccion.id}>
