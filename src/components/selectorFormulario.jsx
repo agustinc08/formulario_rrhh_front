@@ -28,7 +28,7 @@ function SelectorFormulario() {
 
 
   useEffect(() => {
-    const dependenciaId = getFormulariosPorDependenciaId();
+    const dependenciaId = getDependenciaId(); // OBTIENE EL ID DEPENDENCIA
     console.log('dependenciaId:', dependenciaId);
     if (dependenciaId) {
       // Llama a la función para obtener los formularios por la dependenciaId

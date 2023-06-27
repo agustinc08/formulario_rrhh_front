@@ -5,6 +5,10 @@ export const setLoginData = (rol) => {
   sessionStorage.setItem('rol', rol);
 };
 
+export const getDependenciaId = () => {
+  return sessionStorage.getItem('dependenciaId');
+};
+
 export const logout = () => {
   sessionStorage.removeItem(AUTH_TOKEN_KEY);
 }
