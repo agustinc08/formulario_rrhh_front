@@ -11,6 +11,8 @@ const Navbar = () => {
   const [secciones, setSecciones] = useState([]);
   const [claves, setClaves] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -53,7 +55,7 @@ const Navbar = () => {
             <span className="navbar-link">MENU</span>
             <Menu
               anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
+              open={Boolean(anchorEl) || menuOpen}
               onClose={handleMenuClose}
               MenuListProps={{
                 'aria-labelledby': 'menu',
@@ -82,7 +84,7 @@ const Navbar = () => {
           onClose={handleClose}
           className="modal"
         >
-          <Paper className="modalContent">
+          <Paper className="modalContent smallModal">
             <TableContainer>
               <IconButton
                 aria-label="close"
@@ -118,7 +120,7 @@ const Navbar = () => {
           onClose={handleClose}
           className="modal"
         >
-          <Paper className="modalContent">
+          <Paper className="modalContent smallModal">
             <TableContainer>
               <IconButton
                 aria-label="close"
@@ -154,7 +156,7 @@ const Navbar = () => {
           onClose={handleClose}
           className="modal"
         >
-          <Paper className="modalContent">
+          <Paper className="modalContent smallModal">
             <TableContainer>
               <IconButton
                 aria-label="close"
@@ -191,7 +193,7 @@ const Navbar = () => {
           onClose={handleClose}
           className="modal"
         >
-          <Paper className="modalContent">
+          <Paper className="modalContent smallModal">
             <TableContainer>
               <IconButton
                 aria-label="close"

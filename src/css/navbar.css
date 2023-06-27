@@ -36,4 +36,14 @@
   color: white;
   text-decoration: none;
 }
+
+.smallModal{
+  margin-top: 70px !important;
+  width: 60%;
+  height: 60%;
+  max-height: 80vh;
+  margin: auto;
+  border: none !important;
+  border-radius: 10px !important;
+}
   

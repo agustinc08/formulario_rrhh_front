@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
       overflowY: "auto",
       padding: theme.spacing(2),
       position: "relative",
+      border: "none !important",
     },
     drawer: {
       width: 140,
