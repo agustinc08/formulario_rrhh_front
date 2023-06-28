@@ -23,12 +23,11 @@
   position: absolute;
   bottom: -2px;
   left: 15%;
-  transform: translateX(-50%);
   width: 70%;
   height: 1px;
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.5s;
+  transition: transform 0.5s ease-out;
 }
 
 .navbar-item:hover::after {

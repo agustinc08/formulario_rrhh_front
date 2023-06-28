@@ -7,6 +7,7 @@ import Estadisticas from "./components/estadisticas.jsx";
 import Creacion from "./components/creacion";
 import Navbar from "./components/navBar.jsx";
 import Footer from "./components/footer.jsx";
+import NotFound from "./components/notFound.jsx";
 import Seleccion from "./components/selectorFormulario.jsx";
 import {
   BrowserRouter as Router,
@@ -120,6 +121,12 @@ function App() {
             <Login onLogin={handleLogin} />
           )}
         </Route>
+          
+        <React.Fragment>
+          <Navbar />
+          <Route component={NotFound} />
+          <Footer />
+        </React.Fragment>
       </Switch>
     </Router>
   );
