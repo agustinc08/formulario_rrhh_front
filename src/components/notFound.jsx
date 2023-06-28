@@ -18,7 +18,7 @@ function NotFound() {
   }, []);
 
   return (
-    <>
+    <div className="error404">
       <div className="wrapper">
         <div className="text_group">
           <p className="text_404">404</p>
@@ -30,7 +30,7 @@ function NotFound() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

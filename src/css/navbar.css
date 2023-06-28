@@ -1,6 +1,8 @@
 .navbar {
   background-color: #3F51B5;
   padding: 10px;
+  z-index: 1000;
+  position: relative;
 }
   
 .navbar-list {
@@ -42,7 +44,7 @@
 
 .smallModal{
   margin-top: 70px !important;
-  width: 60%;
+  width: 50%;
   height: 60%;
   max-height: 80vh;
   margin: auto;
@@ -50,3 +52,6 @@
   border: none !important;
 }
   
+.columnaId{
+  width: 100px;
+}
