@@ -7,7 +7,6 @@ import Estadisticas from "./components/estadisticas.jsx";
 import Creacion from "./components/creacion";
 import Navbar from "./components/navBar.jsx";
 import Footer from "./components/footer.jsx";
-import Seleccion from "./components/selectorFormulario.jsx";
 import {
   BrowserRouter as Router,
   Route,
@@ -27,12 +26,12 @@ function App() {
     setIsLoggedIn(true);
   }
 
-  let redirectPath = "/seleccion";
+  let redirectPath = "/inicio";
   if (isLoggedIn) {
     if (rol === "admin") {
       redirectPath = "/creacion";
     } else if (rol === "dependencia") {
-      redirectPath = "/seleccion";
+      redirectPath = "/inicio";
     }
   }
 
@@ -42,10 +41,10 @@ function App() {
       <Route exact path="/">
         <Redirect to={redirectPath} />
       </Route>
-      <Route exact path="/seleccion">
+      <Route exact path="/inicio">
         {isLoggedIn ? (
           <React.Fragment>
-            <Seleccion />
+            <Inicio />
             <Footer />
           </React.Fragment>
         ) : (
@@ -82,7 +81,7 @@ function App() {
               <Footer />
             </React.Fragment>
           ) : isLoggedIn ? (
-            <Redirect to="/seleccion" />
+            <Redirect to="/inicio" />
           ) : (
             <Redirect to="/login" />
           )}
@@ -95,7 +94,7 @@ function App() {
               <Footer />
             </React.Fragment>
           ) : isLoggedIn ? (
-            <Redirect to="/seleccion" />
+            <Redirect to="/inicio" />
           ) : (
             <Redirect to="/login" />
           )}
@@ -108,14 +107,14 @@ function App() {
               <Footer />
             </React.Fragment>
           ) : isLoggedIn ? (
-            <Redirect to="/seleccion" />
+            <Redirect to="/inicio" />
           ) : (
             <Redirect to="/login" />
           )}
         </Route>
         <Route exact path="/login">
           {isLoggedIn ? (
-            <Redirect to="/seleccion" />
+            <Redirect to="/inicio" />
           ) : (
             <Login onLogin={handleLogin} />
           )}

@@ -20,9 +20,7 @@ import { Paper } from "@material-ui/core";
 import Input from "@material-ui/core/Input";
 import Chip from "@material-ui/core/Chip";
 import ListItemText from "@material-ui/core/ListItemText";
-import {
-  Box
-} from "@material-ui/core";
+import { Box } from "@material-ui/core";
 import "../css/global.css";
 import "../css/creacion.css";
 import useStyles from "../styles/creacionStyle";
@@ -55,6 +53,7 @@ const Creaciones = () => {
   const [showAlert, setShowAlert] = useState(true);
   const [alertaSeccionExistente, setAlertaSeccionExistente] = useState(false);
   const [alertaClaveExistente, setAlertaClaveExistente] = useState(false);
+  const [alertaFormulario, setAlertaFormulario] = useState(false);
   const [tituloPrincipal, setTituloPrincipal] = useState("");
   const [introduccionDescripcion, setIntroduccionDescripcion] = useState("");
   const [objetivoDescripcion, setObjetivoDescripcion] = useState("");
@@ -74,7 +73,7 @@ const Creaciones = () => {
     []
   );
   const [formularioId, setFormularioId] = useState("");
-  
+
   useEffect(() => {
     fetchDependencias();
     fetchClaves();
@@ -148,7 +147,7 @@ const Creaciones = () => {
       .catch((error) => {
         console.error("Error al verificar el inicio creado:", error);
       });
-  };  
+  };
 
   const handleComentarioCheckboxChange = (event) => {
     setTieneComentario(event.target.checked);
@@ -170,6 +169,7 @@ const Creaciones = () => {
 
     crearFormulario({
       nombre: formularioNombre,
+      dependencias: dependencias,
     });
 
     setFormularioNombre("");
@@ -177,26 +177,29 @@ const Creaciones = () => {
   };
 
   const crearFormulario = (formularioData) => {
-    const dependenciasData = dependenciasSeleccionadas.map(
-      (nombreDependencia) => ({
-        nombreDependencia,
-      })
-    );
+    const dependenciaIds = formularioData.dependencias.map((dependencia) => ({
+      id: dependencia.id,
+    }));
 
-    formularioData.dependencias = { create: dependenciasData };
+    const formularioCreateData = {
+      nombre: formularioData.nombre,
+      dependencias: {
+        connect: dependenciaIds,
+      },
+    };
 
     fetch("http://localhost:3000/formulario", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formularioData),
+      body: JSON.stringify(formularioCreateData),
     })
       .then((response) => {
         if (response.ok) {
-          // Realiza alguna acción después de crear el formulario, como mostrar una notificación
+          setAlertaCreacionExitosa(true);
         } else {
-          // Realiza alguna acción si hubo un error en la creación del formulario
+          setAlertaFormulario(true);
         }
       })
       .catch((error) => {
@@ -240,7 +243,7 @@ const Creaciones = () => {
 
   const handleCloseAlert = () => {
     setAlertaDependencia(false);
-    setAlertaClave(false);
+
     setAlertaSeccion(false);
     setAlertaPregunta(false);
     setShowAlert(false);
@@ -363,7 +366,7 @@ const Creaciones = () => {
       setErrorParrafo(true);
       return;
     }
-  
+
     verificarInicioCreado();
   };
 
@@ -379,7 +382,7 @@ const Creaciones = () => {
       console.error("El formularioId no se ha proporcionado");
       return;
     }
-  
+
     fetch("http://localhost:3000/inicio", {
       method: "POST",
       headers: {
@@ -419,7 +422,6 @@ const Creaciones = () => {
 
   return (
     <div className={classes.divMain} style={{ display: "flex" }}>
-    
       <Grid container spacing={6} className={classes.gridPrincipal}>
         <Grid
           item
@@ -431,7 +433,7 @@ const Creaciones = () => {
           <Box
             className={`${classes.boxForm} ${classes.boxIzquierdo}`}
             boxShadow={8}
-            borderRadius={7} 
+            borderRadius={7}
           >
             <form onSubmit={handleFormularioSubmit} className={classes.form}>
               <p className={classes.tituloForm}>CREAR FORMULARIO</p>
@@ -475,7 +477,7 @@ const Creaciones = () => {
                 </Select>
               </FormControl>
 
-              <Button 
+              <Button
                 className={classes.button}
                 variant="contained"
                 color="primary"
@@ -483,6 +485,24 @@ const Creaciones = () => {
               >
                 Crear formulario
               </Button>
+
+              {alertaCreacionExitosa && (
+                <Alert
+                  severity="success"
+                  onClose={() => setAlertaCreacionExitosa(false)}
+                >
+                  Formulario creado exitosamente.
+                </Alert>
+              )}
+
+              {alertaFormulario && (
+                <Alert
+                  severity="error"
+                  onClose={() => setAlertaFormulario(false)}
+                >
+                  Error al crear el formulario.
+                </Alert>
+              )}
             </form>
           </Box>
 
@@ -492,65 +512,66 @@ const Creaciones = () => {
             borderRadius={7}
           >
             <form onSubmit={handleInicioSubmit} className={classes.form}>
-              <p className={`${classes.mb60px} ${classes.tituloForm}`}>CREAR INICIO</p>
-                  <TextField
-                    className={classes.textField}
-                    type="text"
-                    placeholder="Título principal"
-                    value={tituloPrincipal}
-                    onChange={(e) => setTituloPrincipal(e.target.value)}
-                  />
-                  <TextField
-                    className={classes.textField}
-                    type="text"
-                    placeholder="Descripción de introducción"
-                    value={introduccionDescripcion}
-                    onChange={(e) => setIntroduccionDescripcion(e.target.value)}
-                  />
-                  <TextField
-                    className={classes.textField}
-                    type="text"
-                    placeholder="Descripción de objetivo"
-                    value={objetivoDescripcion}
-                    onChange={(e) => setObjetivoDescripcion(e.target.value)}
-                  />
-                  <TextField
-                    className={classes.textField}
-                    placeholder="Párrafo"
-                    value={parrafo}
-                    onChange={(e) => setParrafo(e.target.value)}
-                  ></TextField>
-                
-                <FormControl className={classes.textField}>
-                  <InputLabel id="formulario-select-label">Formulario</InputLabel>
-                  <Select
-                    labelId="formulario-select-label"
-                    id="formulario-select"
-                    value={formularioId}
-                    onChange={handleFormularioChange}
-                    error={errorPregunta && formularioId === ""}
-                  >
-                    <MenuItem value="">
-                      <em>Seleccionar</em>
+              <p className={`${classes.mb60px} ${classes.tituloForm}`}>
+                CREAR INICIO
+              </p>
+              <TextField
+                className={classes.textField}
+                type="text"
+                placeholder="Título principal"
+                value={tituloPrincipal}
+                onChange={(e) => setTituloPrincipal(e.target.value)}
+              />
+              <TextField
+                className={classes.textField}
+                type="text"
+                placeholder="Descripción de introducción"
+                value={introduccionDescripcion}
+                onChange={(e) => setIntroduccionDescripcion(e.target.value)}
+              />
+              <TextField
+                className={classes.textField}
+                type="text"
+                placeholder="Descripción de objetivo"
+                value={objetivoDescripcion}
+                onChange={(e) => setObjetivoDescripcion(e.target.value)}
+              />
+              <TextField
+                className={classes.textField}
+                placeholder="Párrafo"
+                value={parrafo}
+                onChange={(e) => setParrafo(e.target.value)}
+              ></TextField>
+
+              <FormControl className={classes.textField}>
+                <InputLabel id="formulario-select-label">Formulario</InputLabel>
+                <Select
+                  labelId="formulario-select-label"
+                  id="formulario-select"
+                  value={formularioId}
+                  onChange={handleFormularioChange}
+                  error={errorPregunta && formularioId === ""}
+                >
+                  <MenuItem value="">
+                    <em>Seleccionar</em>
+                  </MenuItem>
+                  {formularios.map((formulario) => (
+                    <MenuItem key={formulario.id} value={formulario.id}>
+                      {formulario.nombre}{" "}
+                      {/* Aquí accede al nombre del formulario */}
                     </MenuItem>
-                    {formularios.map((formulario) => (
-                      <MenuItem key={formulario.id} value={formulario.id}>
-                        {formulario.nombre}{" "}
-                        {/* Aquí accede al nombre del formulario */}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                  <Button 
-                    className={`${classes.button} ${classes.mt60px}`}
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                  >
-                    Crear Inicio
-                  </Button>
-                
-              
+                  ))}
+                </Select>
+              </FormControl>
+              <Button
+                className={`${classes.button} ${classes.mt60px}`}
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Crear Inicio
+              </Button>
+
               {errorTituloPrincipal && <p className={classes.error}></p>}
               {alertaCreacionExitosa && (
                 <Alert

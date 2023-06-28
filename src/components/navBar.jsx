@@ -135,6 +135,9 @@ const Navbar = () => {
               <MenuItem onClick={() => handleOpen("claves")}>
                 Claves
               </MenuItem>
+              <MenuItem onClick={() => handleOpen("formularios")}>
+                Formularios
+              </MenuItem>
             </Menu>
           </li>
         </ul>
@@ -196,6 +199,7 @@ const Navbar = () => {
                   <TableRow>
                     <TableCell>Número</TableCell>
                     <TableCell>Descripción</TableCell>
+                    <TableCell>Formulario</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -203,6 +207,7 @@ const Navbar = () => {
                     <TableRow key={pregunta.id}>
                       <TableCell>{pregunta.id}</TableCell>
                       <TableCell>{pregunta.descripcion}</TableCell>
+                      <TableCell>{pregunta.formularioId}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -232,6 +237,7 @@ const Navbar = () => {
                   <TableRow>
                     <TableCell>Número</TableCell>
                     <TableCell>Sección</TableCell>
+                    <TableCell>Formulario</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -240,6 +246,44 @@ const Navbar = () => {
                       <TableRow key={seccion.id}>
                         <TableCell>{seccion.id}</TableCell>
                         <TableCell>{seccion.descripcion}</TableCell>
+                        <TableCell>{seccion.formularioId}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Modal>
+      )}
+
+      {open && selectedList === "formularios" && (
+        <Modal
+          open={open}
+          onClose={handleClose}
+          className="modal"
+        >
+          <Paper className="modalContent smallModal">
+            <TableContainer>
+              <IconButton
+                aria-label="close"
+                className="closeButton"
+                onClick={handleClose}
+              >
+                <CloseIcon />
+              </IconButton>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Formulario</TableCell>
+                    <TableCell>Nombre</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {formularios &&
+                    formularios.map((formulario) => (
+                      <TableRow key={formulario.id}>
+                        <TableCell>{formulario.id}</TableCell>
+                        <TableCell>{formulario.descripcion}</TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
