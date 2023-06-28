@@ -119,6 +119,12 @@ function App() {
             <Login onLogin={handleLogin} />
           )}
         </Route>
+          
+        <React.Fragment>
+          <Navbar />
+          <Route component={NotFound} />
+          <Footer />
+        </React.Fragment>
       </Switch>
     </Router>
   );
