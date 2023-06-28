@@ -18,6 +18,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import Pagination from "@material-ui/lab/Pagination";
 import "../css/global.css";
+import "../css/formulario.css";
 import useStyles from "../styles/formularioStyle";
 import { useHistory } from "react-router-dom";
 
@@ -314,7 +315,7 @@ function Preguntas() {
           secciones.find((seccion) => seccion.id === seccionId)?.descripcion}
       </Typography>
       <Divider />
-      <form onSubmit={enviarRespuestas}>
+      <form onSubmit={enviarRespuestas} className="formulario">
         {error && (
           <Typography variant="body1" color="error">
             Por favor, selecciona una opción en todas las preguntas.
@@ -563,7 +564,7 @@ function Preguntas() {
         </Box>
       </form>
       <Pagination
-        style={{ marginBottom: "20px" }}
+        className="pagination"
         count={secciones.length}
         page={secciones.findIndex((seccion) => seccion.id === seccionId) + 1}
         onChange={(event, value) => {
@@ -574,6 +575,7 @@ function Preguntas() {
           setIsLastPage(pageIndex === secciones.length - 1);
         }}
       />
+      
     </Container>
   );
 }
