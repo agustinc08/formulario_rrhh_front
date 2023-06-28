@@ -31,7 +31,6 @@ function Inicio() {
       try {
         const response = await fetch(`http://localhost:3000/formulario/${formularioId}`);
         const data = await response.json();
-        // Actualizar el estado con los datos del formulario seleccionado
         setInicioData(data.inicio);
         setSecciones(data.secciones);
       } catch (error) {
