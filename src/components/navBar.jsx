@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { Menu, MenuItem, Modal, TableContainer, IconButton, Table, TableHead, TableRow, TableCell, TableBody, Paper } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -12,6 +12,68 @@ const Navbar = () => {
   const [claves, setClaves] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [formularios, setFormularios] = useState([]);
+  const [dependenciaId, setDependenciaId] = useState("");
+  const [seccionId, setSeccionId] = useState("");
+
+  useEffect(() => {
+    fetchDependencias();
+    fetchFormulario();
+    fetchSecciones();
+    fetchClaves();
+  }, []);
+
+  useEffect(() => {
+    if (dependencias.length > 0 && dependenciaId) {
+      const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
+    }
+  }, [dependencias, dependenciaId]);
+
+  const fetchClaves = () => {
+    fetch("http://localhost:3000/claves")
+      .then((response) => response.json())
+      .then((data) => {
+        setClaves(data);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const fetchDependencias = () => {
+    fetch("http://localhost:3000/dependencias")
+      .then((response) => response.json())
+      .then((data) => {
+        const dependenciasOrdenadas = data.sort((a, b) =>
+          a.nombreDependencia.localeCompare(b.nombreDependencia)
+        );
+        setDependencias(dependenciasOrdenadas);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const fetchFormulario = () => {
+    fetch("http://localhost:3000/formulario")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error fetching formularios");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setFormularios(data);
+      })
+      .catch((error) => {
+        console.log("Error fetching formularios:", error);
+      });
+  };
+
+  const fetchSecciones = () => {
+    fetch("http://localhost:3000/secciones")
+      .then((response) => response.json())
+      .then((data) => {
+        setSecciones(data);
+      })
+      .catch((error) => console.log(error));
+  };
 
 
   const handleMenuOpen = (event) => {
