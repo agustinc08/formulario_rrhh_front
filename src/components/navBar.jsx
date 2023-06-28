@@ -162,14 +162,14 @@ const Navbar = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell className="columnaId">Número</TableCell>
-                    <TableCell>Dependencia</TableCell>
+                    <TableCell className="columnaTexto">Dependencia</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {dependencias.map((dependencia) => (
                     <TableRow key={dependencia.id}>
                       <TableCell className="columnaId">{dependencia.id}</TableCell>
-                      <TableCell>{dependencia.nombreDependencia}</TableCell>
+                      <TableCell className="columnaTexto">{dependencia.nombreDependencia}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -198,7 +198,7 @@ const Navbar = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell className="columnaId">Número</TableCell>
-                    <TableCell>Descripción</TableCell>
+                    <TableCell className="columnaTexto">Descripción</TableCell>
                     <TableCell className="columnaId">Formulario</TableCell>
                   </TableRow>
                 </TableHead>
@@ -206,7 +206,7 @@ const Navbar = () => {
                   {preguntas.map((pregunta) => (
                     <TableRow key={pregunta.id}>
                       <TableCell className="columnaId">{pregunta.id}</TableCell>
-                      <TableCell>{pregunta.descripcion}</TableCell>
+                      <TableCell className="columnaTexto">{pregunta.descripcion}</TableCell>
                       <TableCell className="columnaId">{pregunta.formularioId}</TableCell>
                     </TableRow>
                   ))}
@@ -236,7 +236,7 @@ const Navbar = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell className="columnaId">Número</TableCell>
-                    <TableCell>Sección</TableCell>
+                    <TableCell className="columnaTexto">Sección</TableCell>
                     <TableCell className="columnaId">Formulario</TableCell>
                   </TableRow>
                 </TableHead>
@@ -245,7 +245,7 @@ const Navbar = () => {
                     secciones.map((seccion) => (
                       <TableRow key={seccion.id}>
                         <TableCell className="columnaId">{seccion.id}</TableCell>
-                        <TableCell>{seccion.descripcion}</TableCell>
+                        <TableCell className="columnaTexto">{seccion.descripcion}</TableCell>
                         <TableCell className="columnaId">{seccion.formularioId}</TableCell>
                       </TableRow>
                     ))}
@@ -275,7 +275,7 @@ const Navbar = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell className="columnaId">Formulario</TableCell>
-                    <TableCell>Nombre</TableCell>
+                    <TableCell className="columnaTexto">Nombre</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -283,7 +283,7 @@ const Navbar = () => {
                     formularios.map((formulario) => (
                       <TableRow key={formulario.id}>
                         <TableCell className="columnaId">{formulario.id}</TableCell>
-                        <TableCell>{formulario.descripcion}</TableCell>
+                        <TableCell className="columnaTexto">{formulario.descripcion}</TableCell>
                       </TableRow>
                     ))}
                 </TableBody>

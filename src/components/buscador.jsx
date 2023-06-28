@@ -158,7 +158,7 @@ const Buscador = () => {
       <Container>
         <Box sx={{ paddingTop: 20 }}>
           <Typography
-            variant="h3"
+            variant="h4"
             align="center"
             gutterBottom
           >

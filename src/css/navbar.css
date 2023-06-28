@@ -3,6 +3,7 @@
   padding: 10px;
   z-index: 1000;
   position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
   
 .navbar-list {
@@ -50,8 +51,35 @@
   margin: auto;
   border-radius: 10px !important;
   border: none !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5) !important;
 }
   
 .columnaId{
-  width: 100px;
+  width: 1%; /*Va a ocupar lo mínimo que esté escrito, o sea, 
+  si X palabra es la más larga y ocupa 120px, toda la columna va a ocupar 120px*/
+  text-align: center !important;
+}
+
+.columnaTexto {
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+
+
+@media (max-width: 949px) {
+  .smallModal {
+    width: 90%; 
+  }
+  .columnaTexto {
+    padding: 16px !important;
+  }
+}
+
+@media (min-width: 950px) and (max-width: 1360px) {
+  .smallModal {
+    width: 70%; 
+  }
+  .columnaTexto {
+    padding: 16px !important;
+  }
 }
