@@ -96,7 +96,7 @@
   .pagination {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    padding: 35px 25px 70px 25px !important;
   }
   
   .pagination li {

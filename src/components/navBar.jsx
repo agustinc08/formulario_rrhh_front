@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
-import { Menu, MenuItem, Modal, TableContainer, IconButton, Table, TableHead, TableRow, TableCell, TableBody, Paper } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { Menu, MenuItem, Modal, TableContainer, IconButton, Table, TableHead, TableRow, TableCell, TableBody, Paper } from '@material-ui/core';
+import CloseIcon from "@material-ui/icons/Close";
 import '../css/navbar.css'; 
 import '../css/global.css';
 
@@ -161,15 +161,15 @@ const Navbar = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Número</TableCell>
-                    <TableCell>Dependencia</TableCell>
+                    <TableCell className="columnaId">Número</TableCell>
+                    <TableCell className="columnaTexto">Dependencia</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {dependencias.map((dependencia) => (
                     <TableRow key={dependencia.id}>
-                      <TableCell>{dependencia.id}</TableCell>
-                      <TableCell>{dependencia.nombreDependencia}</TableCell>
+                      <TableCell className="columnaId">{dependencia.id}</TableCell>
+                      <TableCell className="columnaTexto">{dependencia.nombreDependencia}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -197,17 +197,17 @@ const Navbar = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Número</TableCell>
-                    <TableCell>Descripción</TableCell>
-                    <TableCell>Formulario</TableCell>
+                    <TableCell className="columnaId">Número</TableCell>
+                    <TableCell className="columnaTexto">Descripción</TableCell>
+                    <TableCell className="columnaId">Formulario</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {preguntas.map((pregunta) => (
                     <TableRow key={pregunta.id}>
-                      <TableCell>{pregunta.id}</TableCell>
-                      <TableCell>{pregunta.descripcion}</TableCell>
-                      <TableCell>{pregunta.formularioId}</TableCell>
+                      <TableCell className="columnaId">{pregunta.id}</TableCell>
+                      <TableCell className="columnaTexto">{pregunta.descripcion}</TableCell>
+                      <TableCell className="columnaId">{pregunta.formularioId}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -235,18 +235,18 @@ const Navbar = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Número</TableCell>
-                    <TableCell>Sección</TableCell>
-                    <TableCell>Formulario</TableCell>
+                    <TableCell className="columnaId">Número</TableCell>
+                    <TableCell className="columnaTexto">Sección</TableCell>
+                    <TableCell className="columnaId">Formulario</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {secciones &&
                     secciones.map((seccion) => (
                       <TableRow key={seccion.id}>
-                        <TableCell>{seccion.id}</TableCell>
-                        <TableCell>{seccion.descripcion}</TableCell>
-                        <TableCell>{seccion.formularioId}</TableCell>
+                        <TableCell className="columnaId">{seccion.id}</TableCell>
+                        <TableCell className="columnaTexto">{seccion.descripcion}</TableCell>
+                        <TableCell className="columnaId">{seccion.formularioId}</TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
@@ -274,16 +274,16 @@ const Navbar = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Formulario</TableCell>
-                    <TableCell>Nombre</TableCell>
+                    <TableCell className="columnaId">Formulario</TableCell>
+                    <TableCell className="columnaTexto">Nombre</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {formularios &&
                     formularios.map((formulario) => (
                       <TableRow key={formulario.id}>
-                        <TableCell>{formulario.id}</TableCell>
-                        <TableCell>{formulario.descripcion}</TableCell>
+                        <TableCell className="columnaId">{formulario.id}</TableCell>
+                        <TableCell className="columnaTexto">{formulario.descripcion}</TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
