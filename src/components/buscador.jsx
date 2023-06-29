@@ -78,12 +78,12 @@ const Buscador = () => {
   const handleBuscarRespuestas = async () => {
     try {
       let url = "http://localhost:3000/respuestas";
-  
+
       const preguntaId =
         selectedPregunta !== undefined && selectedPregunta !== ""
           ? parseInt(selectedPregunta)
           : null;
-  
+
       let dependenciaId = null;
       if (selectedDependencia !== "") {
         const dependencia = dependencias.find(
@@ -91,7 +91,7 @@ const Buscador = () => {
         );
         dependenciaId = dependencia ? dependencia.id : null;
       }
-  
+
       let formularioId = null;
       if (selectedFormulario !== "") {
         const formulario = formularios.find(
@@ -99,7 +99,7 @@ const Buscador = () => {
         );
         formularioId = formulario ? formulario.id : null;
       }
-  
+
       if (preguntaId && dependenciaId && formularioId) {
         url += `/${preguntaId}/${dependenciaId}/${formularioId}`;
       } else if (preguntaId && dependenciaId) {
@@ -142,26 +142,22 @@ const Buscador = () => {
   const sortedRespuestas =
     Array.isArray(respuestas) && respuestas.length > 0
       ? respuestas.sort((a, b) => {
-        const aValue = a[sortConfig.field] || "";
-        const bValue = b[sortConfig.field] || "";
+          const aValue = a[sortConfig.field] || "";
+          const bValue = b[sortConfig.field] || "";
 
-        if (sortConfig.direction === "asc") {
-          return aValue.toString().localeCompare(bValue.toString());
-        } else {
-          return bValue.toString().localeCompare(aValue.toString());
-        }
-      })
+          if (sortConfig.direction === "asc") {
+            return aValue.toString().localeCompare(bValue.toString());
+          } else {
+            return bValue.toString().localeCompare(aValue.toString());
+          }
+        })
       : [];
-  console.log()
+  console.log();
   return (
     <div>
       <Container>
         <Box sx={{ paddingTop: 20 }}>
-          <Typography
-            variant="h3"
-            align="center"
-            gutterBottom
-          >
+          <Typography variant="h3" align="center" gutterBottom>
             Buscador de Respuestas
           </Typography>
         </Box>
@@ -200,7 +196,10 @@ const Buscador = () => {
                 <MenuItem value="">Todas las dependencias</MenuItem>
                 {dependencias.length > 0 &&
                   dependencias.map((dependencia) => (
-                    <MenuItem key={dependencia.id} value={dependencia.nombreDependencia}>
+                    <MenuItem
+                      key={dependencia.id}
+                      value={dependencia.nombreDependencia}
+                    >
                       {dependencia.nombreDependencia}
                     </MenuItem>
                   ))}
@@ -340,12 +339,7 @@ const Buscador = () => {
               <TableCell>{respuesta.nombreDependencia}</TableCell>
               <TableCell>{respuesta.edadFormateada}</TableCell>
               <TableCell>{respuesta.genero}</TableCell>
-              <TableCell>
-                {respuesta.expresion}
-                {respuesta.calificaciones}
-                {respuesta.clasificaciones}
-                {respuesta.grado}
-              </TableCell>
+              <TableCell>{respuesta.tipoRespuesta}</TableCell>
               <TableCell>
                 {respuesta.comentarios &&
                   respuesta.comentarios.map((comentario) => (

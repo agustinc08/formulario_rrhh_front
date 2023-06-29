@@ -409,126 +409,26 @@ function Preguntas() {
                   </Typography>
                   <br />
                   <Grid container spacing={2}>
-                    {pregunta.tieneExpresion && (
+                    {pregunta.tipoRespuesta && (
                       <Grid item xs={12}>
                         <FormControl fullWidth>
                           <InputLabel id={`respuesta-${pregunta.id}-label`}>
                             ¿Qué opinas?
                           </InputLabel>
                           <Select
-                            name="expresion"
-                            value={respuestas[pregunta.id]?.expresion || ""}
+                            name="tipoRespuesta"
+                            value={respuestas[pregunta.id]?.tipoRespuesta || ""}
                             onChange={(event) =>
                               handleExpresionChange(event, pregunta.id)
                             }
-                            label="expresion"
+                            label="tipoRespuesta"
                             required
                           >
-                            <MenuItem value="SI">Sí</MenuItem>
-                            <MenuItem value="NO">No</MenuItem>
-                            <MenuItem value="NO_SE">No lo sé</MenuItem>
                           </Select>
                         </FormControl>
                       </Grid>
                     )}
-                    {pregunta.tieneCalificaciones && (
-                      <Grid item xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel id={`respuesta-${pregunta.id}-label`}>
-                            Calificacion
-                          </InputLabel>
-                          <Select
-                            name="calificaciones"
-                            value={
-                              respuestas[pregunta.id]?.calificaciones || ""
-                            }
-                            onChange={(event) =>
-                              handleCalificacionesChange(event, pregunta.id)
-                            }
-                            label="Calificaciones"
-                            required
-                          >
-                            <MenuItem value="">Seleccionar</MenuItem>
-                            <MenuItem value="SIEMPRE">SIEMPRE</MenuItem>
-                            <MenuItem value="CASI_SIEMPRE">
-                              CASI SIEMPRE
-                            </MenuItem>
-                            <MenuItem value="AVECES">A VECES</MenuItem>
-                            <MenuItem value="CASI_NUNCA">CASI NUNCA</MenuItem>
-                            <MenuItem value="NUNCA">NUNCA</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                    )}
-                    {pregunta.tieneClasificaciones && (
-                      <Grid item xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel id={`respuesta-${pregunta.id}-label`}>
-                            Clasificaciones
-                          </InputLabel>
-                          <Select
-                            name="clasificaciones"
-                            value={
-                              respuestas[pregunta.id]?.clasificaciones || ""
-                            }
-                            onChange={(event) =>
-                              handleClasificacionesChange(event, pregunta.id)
-                            }
-                            label="clasificaciones"
-                            required
-                          >
-                            <MenuItem value="MUY_BUENO">Muy Bueno</MenuItem>
-                            <MenuItem value="BUENO">Bueno</MenuItem>
-                            <MenuItem value="REGULAR">Regular</MenuItem>
-                            <MenuItem value="MALO">Malo</MenuItem>
-                            <MenuItem value="MUY_MALO">Muy Malo</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                    )}
-                    {pregunta.tieneGrado && (
-                      <Grid item xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel id={`respuesta-${pregunta.id}-label`}>
-                            Grado
-                          </InputLabel>
-                          <Select
-                            name="grado"
-                            value={respuestas[pregunta.id]?.grado || ""}
-                            onChange={(event) =>
-                              handleGradoChange(event, pregunta.id)
-                            }
-                            label="grado"
-                            required
-                          >
-                            <MenuItem value="ALTA">Alta</MenuItem>
-                            <MenuItem value="MEDIA">Media</MenuItem>
-                            <MenuItem value="BAJA">Baja</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                    )}
-                    {pregunta.tieneComentario && (
-                      <Grid item xs={12}>
-                        <Typography variant="body1" style={{ marginTop: "2%" }}>
-                          {pregunta.descripcionComentario}
-                        </Typography>
-                        <TextField
-                          style={{ marginTop: "2%" }}
-                          name="comentario"
-                          label="Comentario"
-                          value={comentarios[pregunta.id] || ""}
-                          onChange={(event) =>
-                            handleComentarioChange(event, pregunta.id)
-                          }
-                          fullWidth
-                          multiline
-                          rows={4}
-                          variant="outlined"
-                          required
-                        />
-                      </Grid>
-                    )}
+                  
                   </Grid>
                 </Box>
               </ListItem>

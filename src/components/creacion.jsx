@@ -10,13 +10,8 @@ import Grid from "@material-ui/core/Grid";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Drawer from "@material-ui/core/Drawer";
-import ListItem from "@material-ui/core/ListItem";
-import List from "@material-ui/core/List";
-import Modal from "@material-ui/core/Modal";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-import { Paper } from "@material-ui/core";
 import Input from "@material-ui/core/Input";
 import Chip from "@material-ui/core/Chip";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -30,12 +25,7 @@ const Creaciones = () => {
   const [seccionDescripcion, setSeccionDescripcion] = useState("");
   const [tieneComentario, setTieneComentario] = useState(false);
   const [descripcionComentario, setDescripcionComentario] = useState("");
-  const [tieneExpresion, setTieneExpresion] = useState(false);
-  const [tieneCalificaciones, setTieneCalificaciones] = useState(false);
-  const [tieneClasificaciones, setTieneClasificaciones] = useState(false);
-  const [tieneGrado, setTieneGrado] = useState(false);
   const [preguntas, setPreguntas] = useState([]);
-  const [claves, setClaves] = useState([]);
   const [dependencias, setDependencias] = useState([]);
   const [formularios, setFormularios] = useState([]);
   const [dependenciaId, setDependenciaId] = useState("");
@@ -66,6 +56,8 @@ const Creaciones = () => {
   const [errorParrafo, setErrorParrafo] = useState(false);
   const [alertaInicio, setAlertaInicio] = useState(false);
   const [inicioCreado, setInicioCreado] = useState(false);
+  const [tipoPregunta, setTipoPregunta] = useState("");
+  const [tipoRespuesta, setTipoRespuesta] = useState("");
   const [alertaInicioExistente, setAlertaInicioExistente] = useState(false);
   const [alertaCreacionExitosa, setAlertaCreacionExitosa] = useState(false);
   const [formularioNombre, setFormularioNombre] = useState("");
@@ -76,7 +68,6 @@ const Creaciones = () => {
 
   useEffect(() => {
     fetchDependencias();
-    fetchClaves();
     fetchFormulario();
   }, []);
 
@@ -88,15 +79,6 @@ const Creaciones = () => {
       }
     }
   }, [dependencias, dependenciaId]);
-
-  const fetchClaves = () => {
-    fetch("http://localhost:3000/claves")
-      .then((response) => response.json())
-      .then((data) => {
-        setClaves(data);
-      })
-      .catch((error) => console.log(error));
-  };
 
   const fetchDependencias = () => {
     fetch("http://localhost:3000/dependencias")
@@ -119,7 +101,11 @@ const Creaciones = () => {
         return response.json();
       })
       .then((data) => {
-        setFormularios(data);
+        const formulariosObj = {};
+        data.forEach((formulario) => {
+          formulariosObj[formulario.id] = formulario;
+        });
+        setFormularios(formulariosObj);
       })
       .catch((error) => {
         console.log("Error fetching formularios:", error);
@@ -128,9 +114,14 @@ const Creaciones = () => {
 
   const verificarInicioCreado = () => {
     fetch(`http://localhost:3000/inicio?formularioId=${formularioId}`)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error en la solicitud de inicio");
+        }
+        return response.json();
+      })
       .then((data) => {
-        if (data.length > 0) {
+        if (data && data.length > 0) {
           // Mostrar alerta de error si ya existe un inicio para el formulario actual
           setAlertaInicioExistente(true);
         } else {
@@ -148,7 +139,6 @@ const Creaciones = () => {
         console.error("Error al verificar el inicio creado:", error);
       });
   };
-
   const handleComentarioCheckboxChange = (event) => {
     setTieneComentario(event.target.checked);
   };
@@ -177,17 +167,15 @@ const Creaciones = () => {
   };
 
   const crearFormulario = (formularioData) => {
-    const dependenciaIds = formularioData.dependencias.map((dependencia) => ({
-      id: dependencia.id,
-    }));
-
+    const dependencias = formularioData.dependencias.map((dependencia) => dependencia.id);
+  
     const formularioCreateData = {
       nombre: formularioData.nombre,
       dependencias: {
-        connect: dependenciaIds,
+        connect: dependencias,
       },
     };
-
+  
     fetch("http://localhost:3000/formulario", {
       method: "POST",
       headers: {
@@ -230,15 +218,6 @@ const Creaciones = () => {
 
     crearSeccion(seccionDescripcion, formularioId);
     setSeccionDescripcion("");
-  };
-
-  const handleOpen = (list) => {
-    setSelectedList(list);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
   };
 
   const handleCloseAlert = () => {
@@ -290,15 +269,12 @@ const Creaciones = () => {
     }
 
     crearPregunta({
-      formularioId: formularioId,
       descripcion: pregunta,
       seccionId: seccionId,
       tieneComentario: tieneComentario,
       descripcionComentario: descripcionComentario,
-      tieneExpresion: tieneExpresion,
-      tieneCalificaciones: tieneCalificaciones,
-      tieneClasificaciones: tieneClasificaciones,
-      tieneGrado: tieneGrado,
+      tipoPregunta: tipoPregunta, // Agregar tipoPregunta al objeto de datos
+      tipoRespuesta: tipoRespuesta, // Agregar tipoRespuesta al objeto de datos
     });
 
     // Reiniciar los campos después de enviar el formulario
@@ -306,13 +282,16 @@ const Creaciones = () => {
     setSeccionId("");
     setTieneComentario(false);
     setDescripcionComentario("");
-    setTieneExpresion(false);
-    setTieneCalificaciones(false);
-    setTieneClasificaciones(false);
-    setTieneGrado(false);
   };
 
-  const crearPregunta = ({ descripcion, seccionId }) => {
+  const crearPregunta = ({
+    descripcion,
+    seccionId,
+    tieneComentario,
+    descripcionComentario,
+    tipoPregunta,
+    tipoRespuesta,
+  }) => {
     fetch("http://localhost:3000/preguntas", {
       method: "POST",
       headers: {
@@ -324,10 +303,8 @@ const Creaciones = () => {
         seccionId: seccionId,
         tieneComentario: tieneComentario,
         descripcionComentario: descripcionComentario,
-        tieneExpresion: tieneExpresion,
-        tieneCalificaciones: tieneCalificaciones,
-        tieneClasificaciones: tieneClasificaciones,
-        tieneGrado: tieneGrado,
+        tipoPregunta: tipoPregunta, // Agregar tipoPregunta al objeto de datos
+        tipoRespuesta: tipoRespuesta, // Agregar tipoRespuesta al objeto de datos
       }),
     })
       .then((response) => {
@@ -545,20 +522,10 @@ const Creaciones = () => {
 
               <FormControl className={classes.textField}>
                 <InputLabel id="formulario-select-label">Formulario</InputLabel>
-                <Select
-                  labelId="formulario-select-label"
-                  id="formulario-select"
-                  value={formularioId}
-                  onChange={handleFormularioChange}
-                  error={errorPregunta && formularioId === ""}
-                >
-                  <MenuItem value="">
-                    <em>Seleccionar</em>
-                  </MenuItem>
-                  {formularios.map((formulario) => (
+                <Select value={formularioId} onChange={handleFormularioChange}>
+                  {Object.values(formularios).map((formulario) => (
                     <MenuItem key={formulario.id} value={formulario.id}>
-                      {formulario.nombre}{" "}
-                      {/* Aquí accede al nombre del formulario */}
+                      {formulario.nombre}
                     </MenuItem>
                   ))}
                 </Select>
@@ -618,20 +585,10 @@ const Creaciones = () => {
 
               <FormControl className={classes.textField}>
                 <InputLabel id="formulario-select-label">Formulario</InputLabel>
-                <Select
-                  labelId="formulario-select-label"
-                  id="formulario-select"
-                  value={formularioId}
-                  onChange={handleFormularioChange}
-                  error={errorPregunta && formularioId === ""}
-                >
-                  <MenuItem value="">
-                    <em>Seleccionar</em>
-                  </MenuItem>
-                  {formularios.map((formulario) => (
+                <Select value={formularioId} onChange={handleFormularioChange}>
+                  {Object.values(formularios).map((formulario) => (
                     <MenuItem key={formulario.id} value={formulario.id}>
-                      {formulario.nombre}{" "}
-                      {/* Aquí accede al nombre del formulario */}
+                      {formulario.nombre}
                     </MenuItem>
                   ))}
                 </Select>
@@ -694,69 +651,7 @@ const Creaciones = () => {
                     label="Tiene Comentario"
                   />
                 </div>
-                {tieneComentario && ( // Renderizar el campo de descripcionComentario solo si tieneComentario es true
-                  <TextField
-                    label="Descripción"
-                    value={descripcionComentario}
-                    onChange={(e) => setDescripcionComentario(e.target.value)}
-                    variant="outlined"
-                    margin="normal"
-                    fullWidth
-                  />
-                )}
-                <div>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={tieneExpresion}
-                        onChange={(event) =>
-                          setTieneExpresion(event.target.checked)
-                        }
-                      />
-                    }
-                    label="Tiene Expresion"
-                  />
                 </div>
-                <div>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={tieneCalificaciones}
-                        onChange={(event) =>
-                          setTieneCalificaciones(event.target.checked)
-                        }
-                      />
-                    }
-                    label="Tiene Calificaciones"
-                  />
-                </div>
-                <div>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={tieneGrado}
-                        onChange={(event) =>
-                          setTieneGrado(event.target.checked)
-                        }
-                      />
-                    }
-                    label="Tiene Grado"
-                  />
-                </div>
-                <div>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={tieneClasificaciones}
-                        onChange={(event) =>
-                          setTieneClasificaciones(event.target.checked)
-                        }
-                      />
-                    }
-                    label="Tiene Clasificaciones"
-                  />
-                </div>
-              </div>
 
               <FormControl
                 error={errorPregunta && seccionId === ""}
@@ -802,17 +697,8 @@ const Creaciones = () => {
                 className={classes.textField}
               >
                 <InputLabel id="secciones-label">Formulario</InputLabel>
-                <Select
-                  labelId="formulario-select-label"
-                  id="formulario-select"
-                  value={formularioId}
-                  onChange={handleFormularioChange}
-                  error={errorPregunta && formularioId === ""}
-                >
-                  <MenuItem value="">
-                    <em>Seleccionar</em>
-                  </MenuItem>
-                  {formularios.map((formulario) => (
+                <Select value={formularioId} onChange={handleFormularioChange}>
+                  {Object.values(formularios).map((formulario) => (
                     <MenuItem key={formulario.id} value={formulario.id}>
                       {formulario.nombre}
                     </MenuItem>
@@ -860,6 +746,117 @@ const Creaciones = () => {
                   </IconButton>
                 </Alert>
               )}
+            </form>
+          </Box>
+        </Grid>
+
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={6}
+          className={`${classes.cardCreacion} ${classes.gridDerecho}`}
+        >
+          <Box
+            className={`${classes.boxForm} ${classes.boxDerecho}`}
+            boxShadow={8}
+            borderRadius={7}
+          >
+            <form onSubmit={handleSeccionSubmit} className={classes.form}>
+              <p className={classes.tituloForm}>CREAR SECCIÓN</p>
+              <TextField
+                className={classes.textField}
+                label="Descripción"
+                value={seccionDescripcion}
+                onChange={(event) => setSeccionDescripcion(event.target.value)}
+                error={errorSeccion && !seccionDescripcion.trim()}
+              />
+
+              <FormControl className={classes.textField}>
+                <InputLabel id="formulario-select-label">Formulario</InputLabel>
+                <Select value={formularioId} onChange={handleFormularioChange}>
+                  {Object.values(formularios).map((formulario) => (
+                    <MenuItem key={formulario.id} value={formulario.id}>
+                      {formulario.nombre}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Button
+                className={classes.button}
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={!seccionDescripcion.trim() || !formularioId}
+              >
+                {" "}
+                Crear Sección{" "}
+              </Button>
+              {alertaSeccion && (
+                <Alert severity="success">
+                  ¡La sección se creó correctamente!
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={handleCloseAlert}
+                    className={classes.closeButton}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                </Alert>
+              )}
+              {alertaSeccionExistente && (
+                <Alert severity="error">
+                  Ya existe una Seccion con el mismo nombre, intentelo denuevo.
+                </Alert>
+              )}
+            </form>
+          </Box>
+        </Grid>
+
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={6}
+          className={`${classes.cardCreacion} ${classes.gridDerecho}`}
+        >
+          <Box
+            className={`${classes.boxForm} ${classes.boxDerecho}`}
+            boxShadow={8}
+            borderRadius={7}
+          >
+            <form onSubmit={handleSeccionSubmit} className={classes.form}>
+              <p className={classes.tituloForm}>CREAR Respuesta</p>
+              <TextField
+                className={classes.textField}
+                label="Descripción"
+                value={seccionDescripcion}
+                onChange={(event) => setTipoRespuesta(event.target.value)}
+                //error={errorSeccion && !seccionDescripcion.trim()}
+              />
+
+              <FormControl className={classes.textField}>
+                <InputLabel id="formulario-select-label">Formulario</InputLabel>
+                <Select value={formularioId} onChange={handleFormularioChange}>
+                  {Object.values(formularios).map((formulario) => (
+                    <MenuItem key={formulario.id} value={formulario.id}>
+                      {formulario.nombre}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Button
+                className={classes.button}
+                variant="contained"
+                color="primary"
+                type="submit"
+                //disabled={!seccionDescripcion.trim() || !formularioId}
+              >
+                {" "}
+                Crear Sección{" "}
+              </Button>  
             </form>
           </Box>
         </Grid>
