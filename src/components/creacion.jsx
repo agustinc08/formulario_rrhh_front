@@ -484,7 +484,7 @@ const Creaciones = () => {
           </Box>
 
           <Box
-            className={`${classes.boxForm} ${classes.boxDerecho}`}
+            className={`${classes.boxForm} ${classes.boxIzquierdo}`}
             boxShadow={8}
             borderRadius={7}
           >
@@ -541,7 +541,7 @@ const Creaciones = () => {
           </Box>
 
           <Box
-            className={`${classes.boxForm} ${classes.boxDerecho}`}
+            className={`${classes.boxForm} ${classes.boxIzquierdo} ${'boxCrearSeccion'}`}
             boxShadow={8}
             borderRadius={7}
           >
@@ -606,7 +606,7 @@ const Creaciones = () => {
           className={`${classes.cardCreacion} ${classes.gridDerecho}`}
         >
           <Box
-            className={`${classes.boxDerecho} ${classes.boxForm} ${classes.boxCrearInicio}`}
+            className={`${classes.boxDerecho} ${classes.boxForm} ${'boxCrearInicio'}`}
             boxShadow={8}
             borderRadius={7}
           >

@@ -9,3 +9,15 @@
     background-color: #3F51B5 !important;
     color: white !important;
 }
+
+@media screen and (min-width: 960px) {
+    .boxCrearSeccion {
+      margin-bottom: 56px;
+    }
+}
+
+@media screen and (max-width: 959px) {
+    .boxCrearInicio{
+        margin-top: 16px !important;
+    }
+}
