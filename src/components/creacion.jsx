@@ -484,12 +484,134 @@ const Creaciones = () => {
           </Box>
 
           <Box
+            className={`${classes.boxForm} ${classes.boxDerecho}`}
+            boxShadow={8}
+            borderRadius={7}
+          >
+            <form onSubmit={handleSeccionSubmit} className={classes.form}>
+              <p className={classes.tituloForm}>CREAR TIPO PREGUNTA</p>
+              <TextField
+                className={classes.textField}
+                label="Descripción"
+                value={seccionDescripcion}
+                onChange={(event) => setSeccionDescripcion(event.target.value)}
+                error={errorSeccion && !seccionDescripcion.trim()}
+              />
+
+              <FormControl className={classes.textField}>
+                <InputLabel id="formulario-select-label">Formulario</InputLabel>
+                <Select value={formularioId} onChange={handleFormularioChange}>
+                  {Object.values(formularios).map((formulario) => (
+                    <MenuItem key={formulario.id} value={formulario.id}>
+                      {formulario.nombre}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Button
+                className={classes.button}
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={!seccionDescripcion.trim() || !formularioId}
+              >
+                {" "}
+                Crear Tipo de Pregunta{" "}
+              </Button>
+              {alertaSeccion && (
+                <Alert severity="success">
+                  ¡La sección se creó correctamente!
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={handleCloseAlert}
+                    className={classes.closeButton}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                </Alert>
+              )}
+              {alertaSeccionExistente && (
+                <Alert severity="error">
+                  Ya existe una Seccion con el mismo nombre, intentelo denuevo.
+                </Alert>
+              )}
+            </form>
+          </Box>
+
+          <Box
+            className={`${classes.boxForm} ${classes.boxDerecho}`}
+            boxShadow={8}
+            borderRadius={7}
+          >
+            <form onSubmit={handleSeccionSubmit} className={classes.form}>
+              <p className={classes.tituloForm}>CREAR SECCIÓN</p>
+              <TextField
+                className={classes.textField}
+                label="Descripción"
+                value={seccionDescripcion}
+                onChange={(event) => setSeccionDescripcion(event.target.value)}
+                error={errorSeccion && !seccionDescripcion.trim()}
+              />
+
+              <FormControl className={classes.textField}>
+                <InputLabel id="formulario-select-label">Formulario</InputLabel>
+                <Select value={formularioId} onChange={handleFormularioChange}>
+                  {Object.values(formularios).map((formulario) => (
+                    <MenuItem key={formulario.id} value={formulario.id}>
+                      {formulario.nombre}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Button
+                className={classes.button}
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={!seccionDescripcion.trim() || !formularioId}
+              >
+                {" "}
+                Crear Sección{" "}
+              </Button>
+              {alertaSeccion && (
+                <Alert severity="success">
+                  ¡La sección se creó correctamente!
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={handleCloseAlert}
+                    className={classes.closeButton}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                </Alert>
+              )}
+              {alertaSeccionExistente && (
+                <Alert severity="error">
+                  Ya existe una Seccion con el mismo nombre, intentelo denuevo.
+                </Alert>
+              )}
+            </form>
+          </Box>
+        </Grid> {/* CIERRE GridIzquierdo */}
+
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={6}
+          className={`${classes.cardCreacion} ${classes.gridDerecho}`}
+        >
+          <Box
             className={`${classes.boxDerecho} ${classes.boxForm} ${classes.boxCrearInicio}`}
             boxShadow={8}
             borderRadius={7}
           >
             <form onSubmit={handleInicioSubmit} className={classes.form}>
-              <p className={`${classes.mb60px} ${classes.tituloForm}`}>
+              <p className={classes.tituloForm}>
                 CREAR INICIO
               </p>
               <TextField
@@ -559,28 +681,20 @@ const Creaciones = () => {
               )}
             </form>
           </Box>
-        </Grid>
 
-        <Grid
-          item
-          xs={12}
-          sm={12}
-          md={6}
-          className={`${classes.cardCreacion} ${classes.gridDerecho}`}
-        >
           <Box
             className={`${classes.boxForm} ${classes.boxDerecho}`}
             boxShadow={8}
             borderRadius={7}
           >
             <form onSubmit={handleSeccionSubmit} className={classes.form}>
-              <p className={classes.tituloForm}>CREAR SECCIÓN</p>
+              <p className={classes.tituloForm}>CREAR TIPO RESPUESTA</p>
               <TextField
                 className={classes.textField}
                 label="Descripción"
                 value={seccionDescripcion}
-                onChange={(event) => setSeccionDescripcion(event.target.value)}
-                error={errorSeccion && !seccionDescripcion.trim()}
+                onChange={(event) => setTipoRespuesta(event.target.value)}
+                //error={errorSeccion && !seccionDescripcion.trim()}
               />
 
               <FormControl className={classes.textField}>
@@ -598,32 +712,15 @@ const Creaciones = () => {
                 variant="contained"
                 color="primary"
                 type="submit"
-                disabled={!seccionDescripcion.trim() || !formularioId}
+                //disabled={!seccionDescripcion.trim() || !formularioId}
               >
                 {" "}
-                Crear Sección{" "}
-              </Button>
-              {alertaSeccion && (
-                <Alert severity="success">
-                  ¡La sección se creó correctamente!
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    size="small"
-                    onClick={handleCloseAlert}
-                    className={classes.closeButton}
-                  >
-                    <CloseIcon fontSize="inherit" />
-                  </IconButton>
-                </Alert>
-              )}
-              {alertaSeccionExistente && (
-                <Alert severity="error">
-                  Ya existe una Seccion con el mismo nombre, intentelo denuevo.
-                </Alert>
-              )}
+                Crear TIPO RESPUESTA{" "}
+              </Button>  
             </form>
           </Box>
+
+          
           <Box
             className={`${classes.boxForm} ${classes.boxDerecho}`}
             boxShadow={8}
@@ -748,119 +845,8 @@ const Creaciones = () => {
               )}
             </form>
           </Box>
-        </Grid>
-
-        <Grid
-          item
-          xs={12}
-          sm={12}
-          md={6}
-          className={`${classes.cardCreacion} ${classes.gridDerecho}`}
-        >
-          <Box
-            className={`${classes.boxForm} ${classes.boxDerecho}`}
-            boxShadow={8}
-            borderRadius={7}
-          >
-            <form onSubmit={handleSeccionSubmit} className={classes.form}>
-              <p className={classes.tituloForm}>CREAR TIPO PREGUNTA</p>
-              <TextField
-                className={classes.textField}
-                label="Descripción"
-                value={seccionDescripcion}
-                onChange={(event) => setSeccionDescripcion(event.target.value)}
-                error={errorSeccion && !seccionDescripcion.trim()}
-              />
-
-              <FormControl className={classes.textField}>
-                <InputLabel id="formulario-select-label">Formulario</InputLabel>
-                <Select value={formularioId} onChange={handleFormularioChange}>
-                  {Object.values(formularios).map((formulario) => (
-                    <MenuItem key={formulario.id} value={formulario.id}>
-                      {formulario.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <Button
-                className={classes.button}
-                variant="contained"
-                color="primary"
-                type="submit"
-                disabled={!seccionDescripcion.trim() || !formularioId}
-              >
-                {" "}
-                Crear Tipo de Pregunta{" "}
-              </Button>
-              {alertaSeccion && (
-                <Alert severity="success">
-                  ¡La sección se creó correctamente!
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    size="small"
-                    onClick={handleCloseAlert}
-                    className={classes.closeButton}
-                  >
-                    <CloseIcon fontSize="inherit" />
-                  </IconButton>
-                </Alert>
-              )}
-              {alertaSeccionExistente && (
-                <Alert severity="error">
-                  Ya existe una Seccion con el mismo nombre, intentelo denuevo.
-                </Alert>
-              )}
-            </form>
-          </Box>
-        </Grid>
-
-        <Grid
-          item
-          xs={12}
-          sm={12}
-          md={6}
-          className={`${classes.cardCreacion} ${classes.gridDerecho}`}
-        >
-          <Box
-            className={`${classes.boxForm} ${classes.boxDerecho}`}
-            boxShadow={8}
-            borderRadius={7}
-          >
-            <form onSubmit={handleSeccionSubmit} className={classes.form}>
-              <p className={classes.tituloForm}>CREAR TIPO RESPUESTA</p>
-              <TextField
-                className={classes.textField}
-                label="Descripción"
-                value={seccionDescripcion}
-                onChange={(event) => setTipoRespuesta(event.target.value)}
-                //error={errorSeccion && !seccionDescripcion.trim()}
-              />
-
-              <FormControl className={classes.textField}>
-                <InputLabel id="formulario-select-label">Formulario</InputLabel>
-                <Select value={formularioId} onChange={handleFormularioChange}>
-                  {Object.values(formularios).map((formulario) => (
-                    <MenuItem key={formulario.id} value={formulario.id}>
-                      {formulario.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <Button
-                className={classes.button}
-                variant="contained"
-                color="primary"
-                type="submit"
-                //disabled={!seccionDescripcion.trim() || !formularioId}
-              >
-                {" "}
-                Crear TIPO RESPUESTA{" "}
-              </Button>  
-            </form>
-          </Box>
-        </Grid>
-      </Grid>
+        </Grid> {/*CIERRE GridDerecho*/}
+      </Grid> {/*CIERRE GridPrincipal*/}
     </div>
   );
 };
