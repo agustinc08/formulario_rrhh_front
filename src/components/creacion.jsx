@@ -24,6 +24,7 @@ const Creaciones = () => {
   const classes = useStyles();
   const [seccionDescripcion, setSeccionDescripcion] = useState("");
   const [tipoPreguntaDescripcion, setTipoPreguntaDescripcion] = useState("");
+  const [tipoRespuestaDescripcion, setTipoRespuestaDescripcion] = useState("");
   const [tieneComentario, setTieneComentario] = useState(false);
   const [descripcionComentario, setDescripcionComentario] = useState("");
   const [preguntas, setPreguntas] = useState([]);
@@ -35,6 +36,7 @@ const Creaciones = () => {
   const [pregunta, setPregunta] = useState("");
   const [errorSeccion, setErrorSeccion] = useState(false);
   const [errorTipoPregunta, setErrorTipoPregunta] = useState(false);
+  const [errorTipoRespuesta, setErrorTipoRespuesta] = useState(false);
   const [errorPregunta, setErrorPregunta] = useState(false);
   const [alertaDependencia, setAlertaDependencia] = useState(false);
   const [alertaSeccion, setAlertaSeccion] = useState(false);
@@ -286,6 +288,39 @@ const Creaciones = () => {
       .catch((error) => {
         console.error(error);
         setErrorSeccion(true);
+      });
+  };
+
+  const handleTipoRespuestaSubmit = (event) => {
+    event.preventDefault();
+
+    crearTipoRespuesta(tipoRespuestaDescripcion,tipoRespuesta, formularioId);
+    setTipoRespuestaDescripcion("");
+  };
+
+  const crearTipoRespuesta = (descripcion,tipoRespuesta, formularioId) => {
+    fetch("http://localhost:3000/tipoRespuesta", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        descripcion: descripcion,
+        tipoRespuesta : tipoRespuesta,
+        formularioId: formularioId,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log("Tipo Respuesta creada:", descripcion);
+          setTipoRespuestaDescripcion(false);
+        } else {
+          throw new Error("Error al crear el Tipo de Respuesta.");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        setErrorTipoRespuesta(true);
       });
   };
 
@@ -719,14 +754,13 @@ const Creaciones = () => {
             boxShadow={8}
             borderRadius={7}
           >
-            <form onSubmit={handleSeccionSubmit} className={classes.form}>
+            <form onSubmit={handleTipoRespuestaSubmit} className={classes.form}>
               <p className={classes.tituloForm}>CREAR TIPO RESPUESTA</p>
               <TextField
                 className={classes.textField}
                 label="Descripción"
-                value={seccionDescripcion}
-                onChange={(event) => setTipoRespuesta(event.target.value)}
-                //error={errorSeccion && !seccionDescripcion.trim()}
+                value={tipoRespuestaDescripcion}
+                onChange={(event) => setTipoRespuestaDescripcion(event.target.value)}
               />
 
               <FormControl className={classes.textField}>
@@ -744,7 +778,6 @@ const Creaciones = () => {
                 variant="contained"
                 color="primary"
                 type="submit"
-                //disabled={!seccionDescripcion.trim() || !formularioId}
               >
                 {" "}
                 Crear TIPO RESPUESTA{" "}
