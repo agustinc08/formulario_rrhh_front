@@ -56,10 +56,12 @@ const Creaciones = () => {
     useState(false);
   const [errorObjetivoDescripcion, setErrorObjetivoDescripcion] =
     useState(false);
+  const [tipoPreguntaId, setTipoPreguntaId] = useState("");
   const [errorParrafo, setErrorParrafo] = useState(false);
   const [alertaInicio, setAlertaInicio] = useState(false);
   const [inicioCreado, setInicioCreado] = useState(false);
   const [tipoPregunta, setTipoPregunta] = useState("");
+  const [tipoPreguntas, setTipoPreguntas] = useState([]);
   const [tipoRespuesta, setTipoRespuesta] = useState("");
   const [alertaInicioExistente, setAlertaInicioExistente] = useState(false);
   const [alertaCreacionExitosa, setAlertaCreacionExitosa] = useState(false);
@@ -72,6 +74,7 @@ const Creaciones = () => {
   useEffect(() => {
     fetchDependencias();
     fetchFormulario();
+    fetchTipoPreguntas();
   }, []);
 
   useEffect(() => {
@@ -93,6 +96,17 @@ const Creaciones = () => {
         setDependencias(dependenciasOrdenadas);
       })
       .catch((error) => console.log(error));
+  };
+
+  const fetchTipoPreguntas = () => {
+    fetch("http://localhost:3000/tipoPregunta")
+      .then((response) => response.json())
+      .then((data) => {
+        setTipoPreguntas(data); // Guardar los tipos de pregunta en el estado
+      })
+      .catch((error) => {
+        console.error("Error al obtener los tipos de pregunta:", error);
+      });
   };
 
   const fetchFormulario = () => {
@@ -151,6 +165,10 @@ const Creaciones = () => {
     setFormularioId(selectedFormularioId);
   };
 
+  const handleTipoPreguntaChange = (event) => {
+    setTipoPreguntaId(event.target.value);
+  };
+
   const handleFormularioSubmit = (event) => {
     event.preventDefault();
 
@@ -170,15 +188,17 @@ const Creaciones = () => {
   };
 
   const crearFormulario = (formularioData) => {
-    const dependencias = formularioData.dependencias.map((dependencia) => dependencia.id);
-  
+    const dependencias = formularioData.dependencias.map(
+      (dependencia) => dependencia.id
+    );
+
     const formularioCreateData = {
       nombre: formularioData.nombre,
       dependencias: {
         connect: dependencias,
       },
     };
-  
+
     fetch("http://localhost:3000/formulario", {
       method: "POST",
       headers: {
@@ -294,11 +314,11 @@ const Creaciones = () => {
   const handleTipoRespuestaSubmit = (event) => {
     event.preventDefault();
 
-    crearTipoRespuesta(tipoRespuestaDescripcion,tipoRespuesta, formularioId);
+    crearTipoRespuesta(tipoRespuestaDescripcion, tipoPreguntaId, formularioId);
     setTipoRespuestaDescripcion("");
   };
 
-  const crearTipoRespuesta = (descripcion,tipoRespuesta, formularioId) => {
+  const crearTipoRespuesta = (descripcion, tipoPreguntaId, formularioId) => {
     fetch("http://localhost:3000/tipoRespuesta", {
       method: "POST",
       headers: {
@@ -306,14 +326,14 @@ const Creaciones = () => {
       },
       body: JSON.stringify({
         descripcion: descripcion,
-        tipoRespuesta : tipoRespuesta,
+        tipoPreguntaId: tipoPreguntaId,
         formularioId: formularioId,
       }),
     })
       .then((response) => {
         if (response.ok) {
           console.log("Tipo Respuesta creada:", descripcion);
-          setTipoRespuestaDescripcion(false);
+          setTipoRespuestaDescripcion("");
         } else {
           throw new Error("Error al crear el Tipo de Respuesta.");
         }
@@ -335,7 +355,7 @@ const Creaciones = () => {
       setErrorSeccion(true);
       return;
     }
-  
+
     crearPregunta({
       descripcion: pregunta,
       seccionId: seccionId,
@@ -344,7 +364,7 @@ const Creaciones = () => {
       tipoPregunta: tipoPregunta, // Agregar tipoPregunta al objeto de datos
       tipoRespuesta: tipoRespuesta, // Agregar tipoRespuesta al objeto de datos
     });
-  
+
     // Reiniciar los campos después de enviar el formulario
     setPregunta("");
     setSeccionId("");
@@ -562,7 +582,9 @@ const Creaciones = () => {
                 className={classes.textField}
                 label="Descripción"
                 value={tipoPreguntaDescripcion}
-                onChange={(event) => setTipoPreguntaDescripcion(event.target.value)}
+                onChange={(event) =>
+                  setTipoPreguntaDescripcion(event.target.value)
+                }
                 error={errorTipoPregunta && !tipoPreguntaDescripcion.trim()}
               />
 
@@ -608,7 +630,9 @@ const Creaciones = () => {
           </Box>
 
           <Box
-            className={`${classes.boxForm} ${classes.boxIzquierdo} ${'boxCrearSeccion'}`}
+            className={`${classes.boxForm} ${
+              classes.boxIzquierdo
+            } ${"boxCrearSeccion"}`}
             boxShadow={8}
             borderRadius={7}
           >
@@ -663,8 +687,8 @@ const Creaciones = () => {
               )}
             </form>
           </Box>
-        </Grid> {/* CIERRE GridIzquierdo */}
-
+        </Grid>{" "}
+        {/* CIERRE GridIzquierdo */}
         <Grid
           item
           xs={12}
@@ -673,14 +697,14 @@ const Creaciones = () => {
           className={`${classes.cardCreacion} ${classes.gridDerecho}`}
         >
           <Box
-            className={`${classes.boxDerecho} ${classes.boxForm} ${'boxCrearInicio'}`}
+            className={`${classes.boxDerecho} ${
+              classes.boxForm
+            } ${"boxCrearInicio"}`}
             boxShadow={8}
             borderRadius={7}
           >
             <form onSubmit={handleInicioSubmit} className={classes.form}>
-              <p className={classes.tituloForm}>
-                CREAR INICIO
-              </p>
+              <p className={classes.tituloForm}>CREAR INICIO</p>
               <TextField
                 className={classes.textField}
                 type="text"
@@ -754,13 +778,15 @@ const Creaciones = () => {
             boxShadow={8}
             borderRadius={7}
           >
-            <form onSubmit={handleTipoRespuestaSubmit} className={classes.form}>
+            <form onSubmit={handleTipoRespuestaSubmit}>
               <p className={classes.tituloForm}>CREAR TIPO RESPUESTA</p>
               <TextField
                 className={classes.textField}
                 label="Descripción"
                 value={tipoRespuestaDescripcion}
-                onChange={(event) => setTipoRespuestaDescripcion(event.target.value)}
+                onChange={(event) =>
+                  setTipoRespuestaDescripcion(event.target.value)
+                }
               />
 
               <FormControl className={classes.textField}>
@@ -773,19 +799,34 @@ const Creaciones = () => {
                   ))}
                 </Select>
               </FormControl>
+
+              <FormControl className={classes.textField}>
+                <InputLabel id="tipo-pregunta-select-label">
+                  Tipo de Pregunta
+                </InputLabel>
+                <Select
+                  value={tipoPreguntaId}
+                  onChange={handleTipoPreguntaChange}
+                >
+                  {tipoPreguntas.map((tipoPregunta) => (
+                    <MenuItem key={tipoPregunta.id} value={tipoPregunta.id}>
+                      {tipoPregunta.descripcion}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
               <Button
                 className={classes.button}
                 variant="contained"
                 color="primary"
                 type="submit"
               >
-                {" "}
-                Crear TIPO RESPUESTA{" "}
-              </Button>  
+                Crear TIPO RESPUESTA
+              </Button>
             </form>
           </Box>
 
-          
           <Box
             className={`${classes.boxForm} ${classes.boxDerecho}`}
             boxShadow={8}
@@ -813,7 +854,7 @@ const Creaciones = () => {
                     label="Tiene Comentario"
                   />
                 </div>
-                </div>
+              </div>
 
               <FormControl
                 error={errorPregunta && seccionId === ""}
@@ -835,7 +876,7 @@ const Creaciones = () => {
                     </MenuItem>
                   ))}
                 </Select>
-    
+
                 {errorPregunta && seccionId === "" && (
                   <FormHelperText>Seleccione una sección</FormHelperText>
                 )}
@@ -911,8 +952,10 @@ const Creaciones = () => {
               )}
             </form>
           </Box>
-        </Grid> {/*CIERRE GridDerecho*/}
-      </Grid> {/*CIERRE GridPrincipal*/}
+        </Grid>{" "}
+        {/*CIERRE GridDerecho*/}
+      </Grid>{" "}
+      {/*CIERRE GridPrincipal*/}
     </div>
   );
 };
