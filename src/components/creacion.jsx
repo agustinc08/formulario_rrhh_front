@@ -895,7 +895,23 @@ const Creaciones = () => {
                   </Alert>
                 )}
               </FormControl>
-
+              
+              <FormControl className={classes.textField}>
+                <InputLabel id="tipo-pregunta-select-label">
+                  Tipo de Pregunta
+                </InputLabel>
+                <Select
+                  value={tipoPreguntaId}
+                  onChange={handleTipoPreguntaChange}
+                >
+                  {tipoPreguntas.map((tipoPregunta) => (
+                    <MenuItem key={tipoPregunta.id} value={tipoPregunta.id}>
+                      {tipoPregunta.descripcion}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
               <FormControl
                 error={errorPregunta && seccionId === ""}
                 className={classes.textField}
