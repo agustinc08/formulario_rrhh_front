@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: 'column',
     },
     boxIzquierdo: {
-      flex: '0',
+      flex: '1',
     }, 
     boxDerecho: {
       flex: '1',
@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
       display: "flex",
       justifyContent: "center",
       flexDirection: "column",
-      padding: theme.spacing(2),
+      padding: theme.spacing(3),
       marginTop: theme.spacing(5),
     },
     form: {
