@@ -23,6 +23,7 @@ import useStyles from "../styles/creacionStyle";
 const Creaciones = () => {
   const classes = useStyles();
   const [seccionDescripcion, setSeccionDescripcion] = useState("");
+  const [tipoPreguntaDescripcion, setTipoPreguntaDescripcion] = useState("");
   const [tieneComentario, setTieneComentario] = useState(false);
   const [descripcionComentario, setDescripcionComentario] = useState("");
   const [preguntas, setPreguntas] = useState([]);
@@ -33,9 +34,9 @@ const Creaciones = () => {
   const [seccionId, setSeccionId] = useState("");
   const [pregunta, setPregunta] = useState("");
   const [errorSeccion, setErrorSeccion] = useState(false);
+  const [errorTipoPregunta, setErrorTipoPregunta] = useState(false);
   const [errorPregunta, setErrorPregunta] = useState(false);
   const [alertaDependencia, setAlertaDependencia] = useState(false);
-  const [alertaClave, setAlertaClave] = useState(false);
   const [alertaSeccion, setAlertaSeccion] = useState(false);
   const [alertaPregunta, setAlertaPregunta] = useState(false);
   const [open, setOpen] = useState(false);
@@ -256,6 +257,38 @@ const Creaciones = () => {
       });
   };
 
+  const handleTipoPreguntaSubmit = (event) => {
+    event.preventDefault();
+
+    crearTipoPregunta(tipoPreguntaDescripcion, formularioId);
+    setSeccionDescripcion("");
+  };
+
+  const crearTipoPregunta = (descripcion, formularioId) => {
+    fetch("http://localhost:3000/tipoPregunta", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        descripcion: descripcion,
+        formularioId: formularioId,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log("Tipo Pregunta creada:", descripcion);
+          setTipoPreguntaDescripcion();
+        } else {
+          throw new Error("Error al crear el Tipo de Pregunta.");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        setErrorSeccion(true);
+      });
+  };
+
   const handlePreguntaSubmit = (event) => {
     event.preventDefault();
     if (pregunta.trim() === "") {
@@ -267,7 +300,7 @@ const Creaciones = () => {
       setErrorSeccion(true);
       return;
     }
-
+  
     crearPregunta({
       descripcion: pregunta,
       seccionId: seccionId,
@@ -276,7 +309,7 @@ const Creaciones = () => {
       tipoPregunta: tipoPregunta, // Agregar tipoPregunta al objeto de datos
       tipoRespuesta: tipoRespuesta, // Agregar tipoRespuesta al objeto de datos
     });
-
+  
     // Reiniciar los campos después de enviar el formulario
     setPregunta("");
     setSeccionId("");
@@ -488,14 +521,14 @@ const Creaciones = () => {
             boxShadow={8}
             borderRadius={7}
           >
-            <form onSubmit={handleSeccionSubmit} className={classes.form}>
+            <form onSubmit={handleTipoPreguntaSubmit} className={classes.form}>
               <p className={classes.tituloForm}>CREAR TIPO PREGUNTA</p>
               <TextField
                 className={classes.textField}
                 label="Descripción"
-                value={seccionDescripcion}
-                onChange={(event) => setSeccionDescripcion(event.target.value)}
-                error={errorSeccion && !seccionDescripcion.trim()}
+                value={tipoPreguntaDescripcion}
+                onChange={(event) => setTipoPreguntaDescripcion(event.target.value)}
+                error={errorTipoPregunta && !tipoPreguntaDescripcion.trim()}
               />
 
               <FormControl className={classes.textField}>
@@ -513,14 +546,13 @@ const Creaciones = () => {
                 variant="contained"
                 color="primary"
                 type="submit"
-                disabled={!seccionDescripcion.trim() || !formularioId}
               >
                 {" "}
                 Crear Tipo de Pregunta{" "}
               </Button>
               {alertaSeccion && (
                 <Alert severity="success">
-                  ¡La sección se creó correctamente!
+                  ¡El tipo de Pregunta se creó correctamente!
                   <IconButton
                     aria-label="close"
                     color="inherit"
@@ -770,6 +802,7 @@ const Creaciones = () => {
                     </MenuItem>
                   ))}
                 </Select>
+    
                 {errorPregunta && seccionId === "" && (
                   <FormHelperText>Seleccione una sección</FormHelperText>
                 )}
