@@ -763,7 +763,7 @@ const Creaciones = () => {
             borderRadius={7}
           >
             <form onSubmit={handleSeccionSubmit} className={classes.form}>
-              <p className={classes.tituloForm}>CREAR SECCIÓN</p>
+              <p className={classes.tituloForm}>CREAR TIPO PREGUNTA</p>
               <TextField
                 className={classes.textField}
                 label="Descripción"
@@ -790,7 +790,7 @@ const Creaciones = () => {
                 disabled={!seccionDescripcion.trim() || !formularioId}
               >
                 {" "}
-                Crear Sección{" "}
+                Crear Tipo de Pregunta{" "}
               </Button>
               {alertaSeccion && (
                 <Alert severity="success">
@@ -828,7 +828,7 @@ const Creaciones = () => {
             borderRadius={7}
           >
             <form onSubmit={handleSeccionSubmit} className={classes.form}>
-              <p className={classes.tituloForm}>CREAR Respuesta</p>
+              <p className={classes.tituloForm}>CREAR TIPO RESPUESTA</p>
               <TextField
                 className={classes.textField}
                 label="Descripción"
@@ -855,7 +855,7 @@ const Creaciones = () => {
                 //disabled={!seccionDescripcion.trim() || !formularioId}
               >
                 {" "}
-                Crear Sección{" "}
+                Crear TIPO RESPUESTA{" "}
               </Button>  
             </form>
           </Box>
