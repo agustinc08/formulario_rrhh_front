@@ -778,7 +778,7 @@ const Creaciones = () => {
             boxShadow={8}
             borderRadius={7}
           >
-            <form onSubmit={handleTipoRespuestaSubmit}>
+            <form onSubmit={handleTipoRespuestaSubmit} className={classes.form}>
               <p className={classes.tituloForm}>CREAR TIPO RESPUESTA</p>
               <TextField
                 className={classes.textField}
