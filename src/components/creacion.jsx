@@ -720,7 +720,7 @@ const Creaciones = () => {
                 </Select>
               </FormControl>
               <Button
-                className={`${classes.button} ${classes.mt60px}`}
+                className={classes.button}
                 variant="contained"
                 color="primary"
                 type="submit"

@@ -100,12 +100,6 @@ const useStyles = makeStyles((theme) => ({
         paddingTop: "0px !important",
       },
     },
-    mb60px: {
-      marginBottom: "60px !important",
-    },
-    mt60px: {
-      marginTop: "60px !important",
-    },
   }));
 
   export default useStyles;
