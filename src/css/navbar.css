@@ -43,8 +43,8 @@
   text-decoration: none;
 }
 
-
 .smallModal{
+  overflow-y: auto !important;
   margin-top: 70px !important;
   width: 50%;
   height: 60%;
@@ -54,14 +54,33 @@
   border: none !important;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5) !important;
 }
-  
-.columnaId{
-  width: 1%; /*Va a ocupar lo mínimo que esté escrito, o sea, 
-  si X palabra es la más larga y ocupa 120px, toda la columna va a ocupar 120px*/
+
+.modal ::-webkit-scrollbar{
+  width: 7px !important;
+  height: 7px !important;
+}
+
+.modal ::-webkit-scrollbar-thumb{
+  background: #3F51B5;
+  border-radius: 7px;
+}
+
+th{
+  background-color: #bdc7ff !important;
   text-align: center !important;
 }
 
+td{
+  text-align: center !important;
+}
+
+.columnaId{
+  width: 1%; /*Va a ocupar lo mínimo que esté escrito, o sea, 
+  si X palabra es la más larga y ocupa 120px, toda la columna va a ocupar 120px*/
+}
+
 .columnaTexto {
+ 
   padding-left: 24px !important;
   padding-right: 24px !important;
 }
