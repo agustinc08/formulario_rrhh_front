@@ -92,6 +92,18 @@ function Preguntas() {
     }
   }, [seccionId, setPreguntaActual, preguntaActual]);
 
+  useEffect(() => {
+    async function fetchTipoRespuestas() {
+      try {
+        const { data } = await axios.get("http://localhost:3000/tipoRespuestas");
+        setTipoRespuestas(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchTipoRespuestas();
+  }, []);
+
   function handleEdadChange(event) {
     setEdad(event.target.value);
   }
