@@ -853,8 +853,7 @@ const Creaciones = () => {
                 onChange={(event) => setPregunta(event.target.value)}
                 error={errorPregunta}
               />
-              <div>
-                <div>
+
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -874,8 +873,18 @@ const Creaciones = () => {
                       }
                     />
                   )}
-                </div>
-              </div>
+
+                  
+              <FormControl className={classes.textField}>
+                <InputLabel id="formulario-label">Formulario</InputLabel>
+                <Select value={formularioId} onChange={handleFormularioChange}>
+                  {Object.values(formularios).map((formulario) => (
+                    <MenuItem key={formulario.id} value={formulario.id}>
+                      {formulario.nombre}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
               <FormControl className={classes.textField}>
                 <InputLabel id="secciones-label">Sección</InputLabel>
@@ -902,17 +911,6 @@ const Creaciones = () => {
                   {tipoPreguntas.map((tipoPregunta) => (
                     <MenuItem key={tipoPregunta.id} value={tipoPregunta.id}>
                       {tipoPregunta.descripcion}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl className={classes.textField}>
-                <InputLabel id="formulario-label">Formulario</InputLabel>
-                <Select value={formularioId} onChange={handleFormularioChange}>
-                  {Object.values(formularios).map((formulario) => (
-                    <MenuItem key={formulario.id} value={formulario.id}>
-                      {formulario.nombre}
                     </MenuItem>
                   ))}
                 </Select>
