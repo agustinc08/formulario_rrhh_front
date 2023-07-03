@@ -56,10 +56,11 @@ const Creaciones = () => {
     useState(false);
   const [errorObjetivoDescripcion, setErrorObjetivoDescripcion] =
     useState(false);
-  const [tipoPreguntaId, setTipoPreguntaId] = useState("");
+  const [inicioCreado, setInicioCreado] = useState(false);
   const [errorParrafo, setErrorParrafo] = useState(false);
   const [alertaInicio, setAlertaInicio] = useState(false);
-  const [inicioCreado, setInicioCreado] = useState(false);
+  const [tipoPreguntaId, setTipoPreguntaId] = useState("");
+  const [tipoRespuestaId, setTipoRespuestaId] = useState("");
   const [tipoPregunta, setTipoPregunta] = useState("");
   const [tipoPreguntas, setTipoPreguntas] = useState([]);
   const [tipoRespuesta, setTipoRespuesta] = useState("");
@@ -75,6 +76,7 @@ const Creaciones = () => {
     fetchDependencias();
     fetchFormulario();
     fetchTipoPreguntas();
+    fetchSecciones();
   }, []);
 
   useEffect(() => {
@@ -96,6 +98,24 @@ const Creaciones = () => {
         setDependencias(dependenciasOrdenadas);
       })
       .catch((error) => console.log(error));
+  };
+
+  const fetchSecciones = () => {
+    fetch("http://localhost:3000/secciones")
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Error al obtener las secciones.");
+        }
+      })
+      .then((data) => {
+        console.log("Secciones obtenidas:", data);
+        setSecciones(data); // Actualizar el estado secciones con los datos obtenidos
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   const fetchTipoPreguntas = () => {
@@ -156,6 +176,7 @@ const Creaciones = () => {
         console.error("Error al verificar el inicio creado:", error);
       });
   };
+
   const handleComentarioCheckboxChange = (event) => {
     setTieneComentario(event.target.checked);
   };
@@ -165,16 +186,18 @@ const Creaciones = () => {
     setFormularioId(selectedFormularioId);
   };
 
+  const handleSeccionChange = (event) => {
+    const seccionId = event.target.value;
+    setSeccionId(seccionId);
+  };
+
   const handleTipoPreguntaChange = (event) => {
     setTipoPreguntaId(event.target.value);
   };
 
   const handleFormularioSubmit = (event) => {
     event.preventDefault();
-
-    // Verifica si el nombre del formulario está vacío
     if (formularioNombre.trim() === "") {
-      // Realiza alguna acción, como mostrar un mensaje de error
       return;
     }
 
@@ -213,9 +236,7 @@ const Creaciones = () => {
           setAlertaFormulario(true);
         }
       })
-      .catch((error) => {
-        // Maneja el error en caso de que ocurra
-      });
+      .catch((error) => {});
   };
 
   const handleSeccionSubmit = (event) => {
@@ -224,8 +245,6 @@ const Creaciones = () => {
       setErrorSeccion(true);
       return;
     }
-
-    // Verificar si ya existe una sección con el mismo nombre
     const existeSeccion = secciones.some(
       (seccion) =>
         seccion.descripcion.toLowerCase() ===
@@ -234,18 +253,16 @@ const Creaciones = () => {
 
     if (existeSeccion) {
       setErrorSeccion(true);
-      setAlertaSeccion(false); // Desactivar la alerta si ya existe una sección con el mismo nombre
-      setAlertaSeccionExistente(true); // Activar la alerta de sección existente
+      setAlertaSeccion(false);
+      setAlertaSeccionExistente(true);
       return;
     }
-
     crearSeccion(seccionDescripcion, formularioId);
     setSeccionDescripcion("");
   };
 
   const handleCloseAlert = () => {
     setAlertaDependencia(false);
-
     setAlertaSeccion(false);
     setAlertaPregunta(false);
     setShowAlert(false);
@@ -281,7 +298,6 @@ const Creaciones = () => {
 
   const handleTipoPreguntaSubmit = (event) => {
     event.preventDefault();
-
     crearTipoPregunta(tipoPreguntaDescripcion, formularioId);
     setSeccionDescripcion("");
   };
@@ -313,7 +329,6 @@ const Creaciones = () => {
 
   const handleTipoRespuestaSubmit = (event) => {
     event.preventDefault();
-
     crearTipoRespuesta(tipoRespuestaDescripcion, tipoPreguntaId, formularioId);
     setTipoRespuestaDescripcion("");
   };
@@ -361,11 +376,9 @@ const Creaciones = () => {
       seccionId: seccionId,
       tieneComentario: tieneComentario,
       descripcionComentario: descripcionComentario,
-      tipoPregunta: tipoPregunta, // Agregar tipoPregunta al objeto de datos
-      tipoRespuesta: tipoRespuesta, // Agregar tipoRespuesta al objeto de datos
+      tipoPreguntaId: tipoPreguntaId, // Utiliza tipoPreguntaId en lugar de tipoPregunta
+      tipoRespuestaId: tipoRespuestaId, // Asegúrate de tener el tipo de respuesta seleccionado
     });
-
-    // Reiniciar los campos después de enviar el formulario
     setPregunta("");
     setSeccionId("");
     setTieneComentario(false);
@@ -377,8 +390,8 @@ const Creaciones = () => {
     seccionId,
     tieneComentario,
     descripcionComentario,
-    tipoPregunta,
-    tipoRespuesta,
+    tipoPreguntaId,
+    tipoRespuestaId,
   }) => {
     fetch("http://localhost:3000/preguntas", {
       method: "POST",
@@ -391,8 +404,8 @@ const Creaciones = () => {
         seccionId: seccionId,
         tieneComentario: tieneComentario,
         descripcionComentario: descripcionComentario,
-        tipoPregunta: tipoPregunta, // Agregar tipoPregunta al objeto de datos
-        tipoRespuesta: tipoRespuesta, // Agregar tipoRespuesta al objeto de datos
+        tipoPreguntaId: tipoPreguntaId,
+        tipoRespuestaId: tipoRespuestaId,
       }),
     })
       .then((response) => {
@@ -431,7 +444,6 @@ const Creaciones = () => {
       setErrorParrafo(true);
       return;
     }
-
     verificarInicioCreado();
   };
 
@@ -443,7 +455,6 @@ const Creaciones = () => {
     parrafo,
   }) => {
     if (!formularioId) {
-      // Mostrar un mensaje de error o manejar el caso cuando no se proporciona formularioId
       console.error("El formularioId no se ha proporcionado");
       return;
     }
@@ -853,20 +864,22 @@ const Creaciones = () => {
                     }
                     label="Tiene Comentario"
                   />
+                  {tieneComentario && (
+                    <TextField
+                      className={classes.textField}
+                      label="Descripción del Comentario"
+                      value={descripcionComentario}
+                      onChange={(event) =>
+                        setDescripcionComentario(event.target.value)
+                      }
+                    />
+                  )}
                 </div>
               </div>
 
-              <FormControl
-                error={errorPregunta && seccionId === ""}
-                className={classes.textField}
-              >
+              <FormControl className={classes.textField}>
                 <InputLabel id="secciones-label">Sección</InputLabel>
-                <Select
-                  id="seccion-select"
-                  value={seccionId}
-                  onChange={(event) => setSeccionId(event.target.value)}
-                  error={errorPregunta && seccionId === ""}
-                >
+                <Select value={seccionId} onChange={handleSeccionChange}>
                   <MenuItem value="">
                     <em>Seleccionar</em>
                   </MenuItem>
@@ -876,26 +889,8 @@ const Creaciones = () => {
                     </MenuItem>
                   ))}
                 </Select>
-
-                {errorPregunta && seccionId === "" && (
-                  <FormHelperText>Seleccione una sección</FormHelperText>
-                )}
-                {alertaSeccion && showAlert && (
-                  <Alert severity="success">
-                    ¡La Seccion se creó correctamente!
-                    <IconButton
-                      aria-label="close"
-                      color="inherit"
-                      size="small"
-                      onClick={handleCloseAlert}
-                      className={classes.closeButton}
-                    >
-                      <CloseIcon fontSize="inherit" />
-                    </IconButton>
-                  </Alert>
-                )}
               </FormControl>
-              
+
               <FormControl className={classes.textField}>
                 <InputLabel id="tipo-pregunta-select-label">
                   Tipo de Pregunta
@@ -911,12 +906,9 @@ const Creaciones = () => {
                   ))}
                 </Select>
               </FormControl>
-              
-              <FormControl
-                error={errorPregunta && seccionId === ""}
-                className={classes.textField}
-              >
-                <InputLabel id="secciones-label">Formulario</InputLabel>
+
+              <FormControl className={classes.textField}>
+                <InputLabel id="formulario-label">Formulario</InputLabel>
                 <Select value={formularioId} onChange={handleFormularioChange}>
                   {Object.values(formularios).map((formulario) => (
                     <MenuItem key={formulario.id} value={formulario.id}>
@@ -924,23 +916,6 @@ const Creaciones = () => {
                     </MenuItem>
                   ))}
                 </Select>
-                {errorPregunta && seccionId === "" && (
-                  <FormHelperText>Seleccione una sección</FormHelperText>
-                )}
-                {alertaSeccion && showAlert && (
-                  <Alert severity="success">
-                    ¡La Seccion se creó correctamente!
-                    <IconButton
-                      aria-label="close"
-                      color="inherit"
-                      size="small"
-                      onClick={handleCloseAlert}
-                      className={classes.closeButton}
-                    >
-                      <CloseIcon fontSize="inherit" />
-                    </IconButton>
-                  </Alert>
-                )}
               </FormControl>
 
               <Button
