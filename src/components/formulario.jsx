@@ -36,6 +36,7 @@ function Preguntas() {
   const [preguntasPorSeccion, setPreguntasPorSeccion] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [respuestas, setRespuestas] = useState({});
+  const [tipoRespuesta, setTipoRespuesta] = useState({});
   const [comentarios, setComentarios] = useState({});
   const [mensaje] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -45,7 +46,8 @@ function Preguntas() {
   const [preguntasSinSeleccion, setPreguntasSinSeleccion] = useState(false);
   const [preguntasSinResponder, setPreguntasSinResponder] = useState({});
   const [preguntaActual, setPreguntaActual] = useState(null);
-  const [preguntasRequierenComentario, setPreguntaRequierenComentario] = useState(false);
+  const [preguntasRequierenComentario, setPreguntaRequierenComentario] =
+    useState(false);
   const history = useHistory();
   const redirectTimer = useRef(null);
 
@@ -75,9 +77,14 @@ function Preguntas() {
   }, []);
 
   useEffect(() => {
-    cargarPreguntasPorSeccion(seccionId, setPreguntasPorSeccion, setCurrentPage, setPreguntaActual);
+    cargarPreguntasPorSeccion(
+      seccionId,
+      setPreguntasPorSeccion,
+      setCurrentPage,
+      setPreguntaActual
+    );
   }, [seccionId, setPreguntaActual]);
-  
+
   useEffect(() => {
     if (preguntasPorSeccion[seccionId]) {
       const startIndex = (currentPage - 1) * 5;
@@ -93,15 +100,15 @@ function Preguntas() {
   }, [seccionId, setPreguntaActual, preguntaActual]);
 
   useEffect(() => {
-    async function fetchTipoRespuestas() {
+    async function fetchTipoRespuesta() {
       try {
-        const { data } = await axios.get("http://localhost:3000/tipoRespuestas");
-        setTipoRespuestas(data);
+        const { data } = await axios.get("http://localhost:3000/tipoRespuesta");
+        setTipoRespuesta(data);
       } catch (error) {
         console.error(error);
       }
     }
-    fetchTipoRespuestas();
+    fetchTipoRespuesta();
   }, []);
 
   function handleEdadChange(event) {
@@ -185,7 +192,12 @@ function Preguntas() {
     setOpenSnackbar(false);
   };
 
-  async function cargarPreguntasPorSeccion(seccionId, setPreguntasPorSeccion, setCurrentPage, setPreguntaActual) {
+  async function cargarPreguntasPorSeccion(
+    seccionId,
+    setPreguntasPorSeccion,
+    setCurrentPage,
+    setPreguntaActual
+  ) {
     if (seccionId) {
       axios
         .get(`http://localhost:3000/preguntas/${seccionId}`)
@@ -202,13 +214,13 @@ function Preguntas() {
         });
     }
   }
-  
+
   async function enviarRespuestas(event) {
     event.preventDefault();
     const respuestasData = [];
     let preguntasSinComentario = false;
     let preguntasSinSeleccion = {};
-  
+
     // Verificar si hay preguntas sin comentario o con comentario vacío
     for (const preguntaId in comentarios) {
       const comentario = comentarios[preguntaId];
@@ -217,7 +229,7 @@ function Preguntas() {
         break;
       }
     }
-  
+
     if (preguntasSinComentario) {
       setError(true);
       setSnackbarMessage(
@@ -227,7 +239,7 @@ function Preguntas() {
       setOpenSnackbar(true);
       return;
     }
-  
+
     // Verificar si hay preguntas sin selección
     for (const preguntaId in respuestas) {
       const respuesta = respuestas[preguntaId];
@@ -240,7 +252,7 @@ function Preguntas() {
         preguntasSinSeleccion[preguntaId] = true;
       }
     }
-  
+
     if (Object.keys(preguntasSinSeleccion).length > 0) {
       setError(true);
       setPreguntasSinSeleccion(true);
@@ -252,21 +264,19 @@ function Preguntas() {
       setPreguntaActual(Object.keys(preguntasSinSeleccion)[0]);
       return;
     }
-  
+
     // Iterar sobre preguntasPorSeccion
     for (const seccionId in preguntasPorSeccion) {
       const preguntas = preguntasPorSeccion[seccionId];
       const respuestasSeccion = preguntas.map((pregunta) => {
         const { id: preguntaId, tieneComentario } = pregunta;
-        const {
-          expresion,
-          calificaciones,
-          clasificaciones,
-          grado,
-        } = respuestas[preguntaId] || {};
-  
-        const comentario = tieneComentario ? comentarios[preguntaId] || null : null;
-  
+        const { expresion, calificaciones, clasificaciones, grado } =
+          respuestas[preguntaId] || {};
+
+        const comentario = tieneComentario
+          ? comentarios[preguntaId] || null
+          : null;
+
         if (tieneComentario && !comentario) {
           setError(true);
           setSnackbarMessage(
@@ -276,7 +286,7 @@ function Preguntas() {
           setOpenSnackbar(true);
           throw new Error("Faltan comentarios en las preguntas requeridas.");
         }
-  
+
         return {
           preguntaId,
           dependenciaId: parseInt(dependencia),
@@ -285,17 +295,17 @@ function Preguntas() {
           comentario,
         };
       });
-  
+
       // Agregar respuestas de la sección actual a respuestasData
       respuestasData.push(...respuestasSeccion);
     }
-  
+
     const createRespuestaDto = {
       respuestas: respuestasData,
       edad,
       genero,
     };
-  
+
     try {
       const response = await axios.post(
         "http://localhost:3000/respuestas",
@@ -317,7 +327,7 @@ function Preguntas() {
       setOpenSnackbar(true);
     }
   }
-  
+
   return (
     <Container>
       <Typography variant="h4" className={classes.tituloPregunta}>
@@ -422,26 +432,28 @@ function Preguntas() {
                   </Typography>
                   <br />
                   <Grid container spacing={2}>
-                    {pregunta.tipoRespuesta && (
-                      <Grid item xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel id={`respuesta-${pregunta.id}-label`}>
-                            ¿Qué opinas?
-                          </InputLabel>
-                          <Select
-                            name="tipoRespuesta"
-                            value={respuestas[pregunta.id]?.tipoRespuesta || ""}
-                            onChange={(event) =>
-                              handleExpresionChange(event, pregunta.id)
-                            }
-                            label="tipoRespuesta"
-                            required
-                          >
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                    )}
-                  
+                  {pregunta.tipoRespuesta && tipoRespuesta && (
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel id={`respuesta-${pregunta.id}-label`}>
+                  ¿Qué opinas?
+                </InputLabel>
+                <Select
+                  name="tipoRespuesta"
+                  value={respuestas[pregunta.id]?.tipoRespuesta || ""}
+                  onChange={(event) =>
+                    handleExpresionChange(event, pregunta.id)
+                  }
+                  label="tipoRespuesta"
+                  required
+                >
+                  <MenuItem value={tipoRespuesta.id}>
+                    {tipoRespuesta.nombre}
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          )}
                   </Grid>
                 </Box>
               </ListItem>
@@ -487,7 +499,6 @@ function Preguntas() {
           setIsLastPage(pageIndex === secciones.length - 1);
         }}
       />
-      
     </Container>
   );
 }
