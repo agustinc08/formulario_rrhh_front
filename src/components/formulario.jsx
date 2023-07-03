@@ -13,6 +13,7 @@ import {
   Grid,
   Divider,
   Container,
+  Input,
 } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
@@ -130,58 +131,6 @@ function Preguntas() {
       ...prevComentarios,
       [preguntaId]: value,
     }));
-  }
-
-  function handleExpresionChange(event, preguntaId) {
-    const { value } = event.target;
-
-    setRespuestas((prevRespuestas) => ({
-      ...prevRespuestas,
-      [preguntaId]: {
-        ...prevRespuestas[preguntaId],
-        expresion: value,
-      },
-    }));
-    setPreguntaActual(null); // Reiniciar pregunta actual
-  }
-
-  function handleCalificacionesChange(event, preguntaId) {
-    const { value } = event.target;
-
-    setRespuestas((prevRespuestas) => ({
-      ...prevRespuestas,
-      [preguntaId]: {
-        ...prevRespuestas[preguntaId],
-        calificaciones: value,
-      },
-    }));
-    setPreguntaActual(null); // Reiniciar pregunta actual
-  }
-
-  function handleClasificacionesChange(event, preguntaId) {
-    const { value } = event.target;
-
-    setRespuestas((prevRespuestas) => ({
-      ...prevRespuestas,
-      [preguntaId]: {
-        ...prevRespuestas[preguntaId],
-        clasificaciones: value,
-      },
-    }));
-    setPreguntaActual(null); // Reiniciar pregunta actual
-  }
-
-  function handleGradoChange(event, preguntaId) {
-    const { value } = event.target;
-
-    setRespuestas((prevRespuestas) => ({
-      ...prevRespuestas,
-      [preguntaId]: {
-        ...prevRespuestas[preguntaId],
-        grado: value,
-      },
-    }));
-    setPreguntaActual(null); // Reiniciar pregunta actual
   }
 
   const handleSnackbarClose = (event, reason) => {
@@ -432,28 +381,53 @@ function Preguntas() {
                   </Typography>
                   <br />
                   <Grid container spacing={2}>
-                  {pregunta.tipoRespuesta && tipoRespuesta && (
-            <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel id={`respuesta-${pregunta.id}-label`}>
-                  ¿Qué opinas?
-                </InputLabel>
-                <Select
-                  name="tipoRespuesta"
-                  value={respuestas[pregunta.id]?.tipoRespuesta || ""}
-                  onChange={(event) =>
-                    handleExpresionChange(event, pregunta.id)
-                  }
-                  label="tipoRespuesta"
-                  required
-                >
-                  <MenuItem value={tipoRespuesta.id}>
-                    {tipoRespuesta.nombre}
-                  </MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          )}
+                    {pregunta.tipoRespuesta && tipoRespuesta && (
+                      <>
+                        <Grid item xs={12}>
+                          <FormControl fullWidth>
+                            <InputLabel id={`respuesta-${pregunta.id}-label`}>
+                              ¿Qué opinas?
+                            </InputLabel>
+                            <Select
+                              name="tipoRespuesta"
+                              value={
+                                respuestas[pregunta.id]?.tipoRespuesta || ""
+                              }
+                              label="tipoRespuesta"
+                              required
+                            >
+                              {pregunta.tipoRespuesta.map((tipoRespuesta) => (
+                                <MenuItem
+                                  key={tipoRespuesta.id}
+                                  value={tipoRespuesta.id}
+                                >
+                                  {tipoRespuesta.descripcion}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                        {pregunta.tieneComentario && (
+                          <Grid item xs={12}>
+                            <FormControl fullWidth>
+                              <InputLabel htmlFor={`comentario-${pregunta.id}`}>
+                                Comentario
+                              </InputLabel>
+                              <Input
+                                id={`comentario-${pregunta.id}`}
+                                name={`comentario-${pregunta.id}`}
+                                value={
+                                  respuestas[pregunta.id]?.comentario || ""
+                                }
+                                onChange={(event) =>
+                                  handleComentarioChange(event, pregunta.id)
+                                }
+                              />
+                            </FormControl>
+                          </Grid>
+                        )}
+                      </>
+                    )}
                   </Grid>
                 </Box>
               </ListItem>
