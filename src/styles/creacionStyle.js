@@ -54,6 +54,12 @@ const useStyles = makeStyles((theme) => ({
     },
     boxIzquierdo: {
       flex: '1',
+      '& button': {
+        marginTop: '50px',
+      },
+      '& p': {
+        marginBottom: '25px',
+      },
     }, 
     boxDerecho: {
       flex: '1',
