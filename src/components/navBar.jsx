@@ -101,6 +101,12 @@ const Navbar = () => {
       <nav className="navbar">
         <ul className="navbar-list">
           <li className="navbar-item">
+            <Link to="/inicio" className="navbar-link">INICIO</Link>
+          </li>
+          <li className="navbar-item">
+            <Link to="/formulario" className="navbar-link">FORMULARIO</Link>
+          </li>
+          <li className="navbar-item">
             <Link to="/creacion" className="navbar-link">CREACIONES</Link>
           </li>
           <li className="navbar-item">
