@@ -43,6 +43,19 @@
   text-decoration: none;
 }
 
+/* ACA ARRANCA EL MODAL Y SUS TABLAS INTERNAS */ 
+/* ACA ARRANCA EL MODAL Y SUS TABLAS INTERNAS */ 
+/* ACA ARRANCA EL MODAL Y SUS TABLAS INTERNAS */
+.modal ::-webkit-scrollbar{
+  width: 7px !important;
+  height: 7px !important;
+}
+
+.modal ::-webkit-scrollbar-thumb{
+  background: #3F51B5;
+  border-radius: 7px;
+}
+
 .smallModal{
   overflow-y: auto !important;
   margin-top: 70px !important;
@@ -55,20 +68,11 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5) !important;
 }
 
-.modal ::-webkit-scrollbar{
-  width: 7px !important;
-  height: 7px !important;
-}
-
-.modal ::-webkit-scrollbar-thumb{
-  background: #3F51B5;
-  border-radius: 7px;
-}
-
 th{
   background-color: #bdc7ff !important;
   text-align: center !important;
-}
+} 
+
 
 td{
   text-align: center !important;
@@ -80,7 +84,6 @@ td{
 }
 
 .columnaTexto {
- 
   padding-left: 24px !important;
   padding-right: 24px !important;
 }

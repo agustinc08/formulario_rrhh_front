@@ -157,7 +157,7 @@ const Buscador = () => {
     <div>
       <Container>
         <Box sx={{ paddingTop: 20 }}>
-          <Typography variant="h3" align="center" gutterBottom>
+          <Typography variant="h4" align="center" gutterBottom>
             Buscador de Respuestas
           </Typography>
         </Box>

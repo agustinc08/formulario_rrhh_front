@@ -156,7 +156,7 @@ const Navbar = () => {
           className="modal"
         >
           <Paper className="modalContent smallModal">
-            <TableContainer>
+            <TableContainer className="stickyTableContainer">
               <IconButton
                 aria-label="close"
                 className="closeButton"
@@ -317,17 +317,17 @@ const Navbar = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Dependencia</TableCell>
-                    <TableCell>Claves</TableCell>
+                    <TableCell className="columnaTexto">Dependencia</TableCell>
+                    <TableCell className="columnaTexto">Claves</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {claves.map((clave) => (
                     <TableRow key={clave.id}>
-                      <TableCell>
+                      <TableCell className="columnaTexto">
                         {clave.dependencia.nombreDependencia}
                       </TableCell>
-                      <TableCell>{clave.clave}</TableCell>
+                      <TableCell className="columnaTexto">{clave.clave}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
