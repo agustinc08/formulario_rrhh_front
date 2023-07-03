@@ -114,21 +114,22 @@ function Inicio() {
     ))}
                 </TableBody>
               </Table>
-              <div className="separar">
-                <Typography variant="body1" className="parrafo">
-                  {inicioData.parrafo}
-                </Typography>
-                <Box height={50} />
-                <Box className="botonContainer">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleButtonClick}
-                  >
-                    ir a preguntas
-                  </Button>
-                </Box>
-              </div>
+
+              <Typography variant="body1" className="parrafo">
+                {inicioData.parrafo}
+              </Typography>
+
+              <Box height={50} />
+              <Box className="botonContainer">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleButtonClick}
+                >
+                  ir a preguntas
+                </Button>
+              </Box>
+              <Box height={50} />
             </>
           )}
         </>

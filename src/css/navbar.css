@@ -68,11 +68,13 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5) !important;
 }
 
+tr{
+  background: linear-gradient(to right,  #bdc7ff, #9caeff) !important;
+}
+
 th{
-  background-color: #bdc7ff !important;
   text-align: center !important;
 } 
-
 
 td{
   text-align: center !important;
