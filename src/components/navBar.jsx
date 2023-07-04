@@ -21,6 +21,7 @@ const Navbar = () => {
     fetchFormulario();
     fetchSecciones();
     fetchClaves();
+    fetchPreguntas();
   }, []);
 
   useEffect(() => {
@@ -38,12 +39,24 @@ const Navbar = () => {
       .catch((error) => console.log(error));
   };
 
+  const fetchPreguntas = () => {
+    fetch("http://localhost:3000/preguntas")
+      .then((response) => response.json())
+      .then((data) => {
+        const preguntasOrdenadas = data.sort((a, b) =>
+          a.id - b.id
+        );
+        setPreguntas(preguntasOrdenadas);
+      })
+      .catch((error) => console.log(error));
+  };
+
   const fetchDependencias = () => {
     fetch("http://localhost:3000/dependencias")
       .then((response) => response.json())
       .then((data) => {
         const dependenciasOrdenadas = data.sort((a, b) =>
-          a.nombreDependencia.localeCompare(b.nombreDependencia)
+          a.id - b.id
         );
         setDependencias(dependenciasOrdenadas);
       })
@@ -70,7 +83,10 @@ const Navbar = () => {
     fetch("http://localhost:3000/secciones")
       .then((response) => response.json())
       .then((data) => {
-        setSecciones(data);
+        const seccionesOrdenadas = data.sort((a, b) =>
+          a.id - b.id
+        );
+        setSecciones(seccionesOrdenadas);
       })
       .catch((error) => console.log(error));
   };
@@ -319,18 +335,17 @@ const Navbar = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell className="columnaTexto">Dependencia</TableCell>
-                    <TableCell className="columnaTexto">Claves</TableCell>
+                    <TableCell className="columnaTexto">Clave</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {claves.map((clave) => (
-                    <TableRow key={clave.id}>
-                      <TableCell className="columnaTexto">
-                        {clave.dependencia.nombreDependencia}
-                      </TableCell>
-                      <TableCell className="columnaTexto">{clave.clave}</TableCell>
-                    </TableRow>
-                  ))}
+                  {claves &&
+                    claves.map((clave) => (
+                      <TableRow key={clave.id}>
+                        <TableCell className="columnaTexto">{clave.dependencia}</TableCell>
+                        <TableCell className="columnaTexto">{clave.clave}</TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -340,7 +355,5 @@ const Navbar = () => {
     </>
   );
 };
-
-
 
 export default Navbar;
