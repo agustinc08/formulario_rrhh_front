@@ -1,5 +1,6 @@
 .footer{
     display: flex;
+    flex-direction: column;
     justify-content: center;
     position: absolute;
     bottom: 0px;
@@ -11,5 +12,13 @@
 }
 
 .spanFooter{
-    margin-top: 8px;
+    padding: 5px;
 }
+
+.magicHover:hover {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    background-color: #889eff;
+}
+
+

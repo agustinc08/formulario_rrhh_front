@@ -8,9 +8,9 @@ const Footer = () => {
     <>
       <Box height={50} />
       <footer className='footer'>
-          Desarrollado por Oficina de Sistemas y Tecnología
-          <br />Secretaría de Informática
-          <br />Cámara Nacional de Apelaciones en lo Civil
+        <p className="spanFooter">Desarrollado por <span className='magicHover'>Oficina de Sistemas y Tecnología </span> </p>  
+        <p className="spanFooter">Secretaría de Informática</p>  
+        <p className="spanFooter">Cámara Nacional de Apelaciones en lo Civil</p>  
       </footer>
     </>
   );
