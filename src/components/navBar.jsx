@@ -1,9 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
-import { Menu, MenuItem, Modal, TableContainer, IconButton, Table, TableHead, TableRow, TableCell, TableBody, Paper } from '@material-ui/core';
+import { Link } from "react-router-dom";
+import {
+  Menu,
+  MenuItem,
+  Modal,
+  TableContainer,
+  IconButton,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  TextField, // Agregado para el buscador
+} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import '../css/navbar.css'; 
-import '../css/global.css';
+import "../css/navbar.css";
+import "../css/global.css";
 
 const Navbar = () => {
   const [dependencias, setDependencias] = useState([]);
@@ -15,6 +28,7 @@ const Navbar = () => {
   const [formularios, setFormularios] = useState([]);
   const [dependenciaId, setDependenciaId] = useState("");
   const [seccionId, setSeccionId] = useState("");
+  const [searchValue, setSearchValue] = useState(""); // Nuevo estado para el valor del buscador
 
   useEffect(() => {
     fetchDependencias();
@@ -43,9 +57,7 @@ const Navbar = () => {
     fetch("http://localhost:3000/preguntas")
       .then((response) => response.json())
       .then((data) => {
-        const preguntasOrdenadas = data.sort((a, b) =>
-          a.id - b.id
-        );
+        const preguntasOrdenadas = data.sort((a, b) => a.id - b.id);
         setPreguntas(preguntasOrdenadas);
       })
       .catch((error) => console.log(error));
@@ -55,9 +67,7 @@ const Navbar = () => {
     fetch("http://localhost:3000/dependencias")
       .then((response) => response.json())
       .then((data) => {
-        const dependenciasOrdenadas = data.sort((a, b) =>
-          a.id - b.id
-        );
+        const dependenciasOrdenadas = data.sort((a, b) => a.id - b.id);
         setDependencias(dependenciasOrdenadas);
       })
       .catch((error) => console.log(error));
@@ -83,14 +93,11 @@ const Navbar = () => {
     fetch("http://localhost:3000/secciones")
       .then((response) => response.json())
       .then((data) => {
-        const seccionesOrdenadas = data.sort((a, b) =>
-          a.id - b.id
-        );
+        const seccionesOrdenadas = data.sort((a, b) => a.id - b.id);
         setSecciones(seccionesOrdenadas);
       })
       .catch((error) => console.log(error));
   };
-
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -113,6 +120,16 @@ const Navbar = () => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  // Función para manejar el cambio en el buscador
+  const handleSearchChange = (event) => {
+    setSearchValue(event.target.value);
+  };
+
+  // Filtra las preguntas por la descripción en base al valor del buscador
+  const filteredPreguntas = preguntas.filter((pregunta) =>
+    pregunta.descripcion.toLowerCase().includes(searchValue.toLowerCase())
+  );
 
   return (
     <>
@@ -202,12 +219,8 @@ const Navbar = () => {
         </Modal>
       )}
 
-      {open && selectedList === "preguntas" && (
-        <Modal
-          open={open}
-          onClose={handleClose}
-          className="modal"
-        >
+{open && selectedList === "preguntas" && (
+        <Modal open={open} onClose={handleClose} className="modal">
           <Paper className="modalContent smallModal">
             <TableContainer>
               <IconButton
@@ -217,6 +230,14 @@ const Navbar = () => {
               >
                 <CloseIcon />
               </IconButton>
+              <TextField // Agregado para el buscador
+                label="Buscar"
+                variant="outlined"
+                value={searchValue}
+                onChange={handleSearchChange}
+                fullWidth
+                margin="normal"
+              />
               <Table>
                 <TableHead>
                   <TableRow>
@@ -226,11 +247,15 @@ const Navbar = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {preguntas.map((pregunta) => (
+                  {filteredPreguntas.map((pregunta) => (
                     <TableRow key={pregunta.id}>
                       <TableCell className="columnaId">{pregunta.id}</TableCell>
-                      <TableCell className="columnaTexto">{pregunta.descripcion}</TableCell>
-                      <TableCell className="columnaId">{pregunta.formularioId}</TableCell>
+                      <TableCell className="columnaTexto">
+                        {pregunta.descripcion}
+                      </TableCell>
+                      <TableCell className="columnaId">
+                        {pregunta.formularioId}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -239,7 +264,6 @@ const Navbar = () => {
           </Paper>
         </Modal>
       )}
-
       {open && selectedList === "secciones" && (
         <Modal
           open={open}
