@@ -17,29 +17,12 @@ import { isLoggedIn } from "../auth";
 import Login from "./login";
 import { useHistory } from "react-router-dom";
 import useStyles from "../styles/inicioStyle";
-import { useParams } from "react-router-dom";
 
 function Inicio() {
   const classes = useStyles();
   const history = useHistory();
   const [inicioData, setInicioData] = useState(null);
   const [secciones, setSecciones] = useState([]);
-  const { formularioId } = useParams();
-
-  useEffect(() => {
-    const fetchFormularioData = async () => {
-      try {
-        const response = await fetch(`http://localhost:3000/formulario/${formularioId}`);
-        const data = await response.json();
-        setInicioData(data.inicio);
-        setSecciones(data.secciones);
-      } catch (error) {
-        console.log("Error fetching formulario data:", error);
-      }
-    };
-
-    fetchFormularioData();
-  }, [formularioId]);
 
   useEffect(() => {
     const fetchInicioData = async () => {
@@ -100,21 +83,14 @@ function Inicio() {
                 </TableHead>
                 <TableBody>
                   {secciones &&
-    secciones
-    .filter(
-      (seccion) =>
-        parseInt(seccion.formularioId) ===
-        parseInt(formularioId)
-    )
-
-    .map((seccion) => (
-      <TableRow key={seccion.id}>
-        <TableCell className="texto-tabla">{seccion.descripcion}</TableCell>
-      </TableRow>
-    ))}
+                    secciones.map((seccion) => (
+                      <TableRow key={seccion.id}>
+                        <TableCell className="texto-tabla">{seccion.descripcion}</TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
-
+              <Box height={50} />
               <Typography variant="body1" className="parrafo">
                 {inicioData.parrafo}
               </Typography>
