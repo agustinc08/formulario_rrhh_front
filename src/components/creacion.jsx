@@ -859,6 +859,7 @@ const Creaciones = () => {
                       <Checkbox
                         checked={tieneComentario}
                         onChange={handleComentarioCheckboxChange}
+                        style ={{color: "#00e676",}}
                       />
                     }
                     label="Tiene Comentario"
