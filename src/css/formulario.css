@@ -1,3 +1,7 @@
+.mb20px{
+  margin-bottom: 20px !important;
+}
+
 .formulario-container {
     display: flex;
     flex-direction: column;

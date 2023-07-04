@@ -26,7 +26,8 @@ const useStyles = makeStyles((theme) => ({
       marginTop: "15px",
     },
     pregunta: {
-      height: "100%"
+      height: "100%",
+      padding: "6%"
     },
     enviarButton: {
       marginTop: theme.spacing(2),

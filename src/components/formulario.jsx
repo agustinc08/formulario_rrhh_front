@@ -366,12 +366,11 @@ function Preguntas() {
                   width={"100%"}
                   value={pregunta.id}
                 >
-                  <Typography>
-                    <Box sx={{ fontSize: 18, paddingTop: "1%" }}>
+                  <Typography  className="mb20px">
+                    <Box sx={{ fontSize: 18,}}>
                       {pregunta.descripcion}
                     </Box>
                   </Typography>
-                  <br />
                   <Grid container spacing={2}>
                     {pregunta.tipoRespuesta && tipoRespuesta && (
                       <Grid item xs={12}>
@@ -394,6 +393,7 @@ function Preguntas() {
                             }}
                             label="tipoRespuesta"
                             required
+                            className="mb20px"
                           >
                             {tipoRespuesta.map((tipo) => (
                               <MenuItem key={tipo.id} value={tipo.id}>
@@ -403,7 +403,7 @@ function Preguntas() {
                           </Select>
                           {pregunta.tieneComentario && (
                       <Grid item xs={12}>
-                        <Typography variant="body2">
+                        <Typography variant="body2" className="mb20px">
                           {pregunta.descripcionComentario}
                         </Typography>
                         <TextField
