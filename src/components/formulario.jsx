@@ -78,13 +78,29 @@ function Preguntas() {
   }, []);
 
   useEffect(() => {
-    cargarPreguntasPorSeccion(
-      seccionId,
-      setPreguntasPorSeccion,
-      setCurrentPage,
-      setPreguntaActual
-    );
-  }, [seccionId, setPreguntaActual]);
+  async function cargarPreguntasPorSeccion(seccionId) {
+    if (seccionId) {
+      try {
+        const [preguntasResponse, tiposPreguntaResponse] = await Promise.all([
+          axios.get(`http://localhost:3000/preguntas/${seccionId}`),
+          axios.get("http://localhost:3000/tipoPregunta"),
+        ]);
+
+        setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
+          ...prevPreguntasPorSeccion,
+          [seccionId]: preguntasResponse.data,
+        }));
+        setTipoPregunta(tiposPreguntaResponse.data);
+        setCurrentPage(1);
+        setPreguntaActual(preguntasResponse.data[0]?.id);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
+  cargarPreguntasPorSeccion(seccionId);
+}, [seccionId, setPreguntaActual]);
 
   useEffect(() => {
     if (preguntasPorSeccion[seccionId]) {
@@ -381,7 +397,7 @@ function Preguntas() {
                   </Typography>
                   <br />
                   <Grid container spacing={2}>
-                    {pregunta.tipoRespuesta && tipoRespuesta && (
+                    {pregunta.tipoPregunta && tipoPregunta && (
                       <>
                         <Grid item xs={12}>
                           <FormControl fullWidth>
@@ -396,14 +412,14 @@ function Preguntas() {
                               label="tipoRespuesta"
                               required
                             >
-                              {pregunta.tipoRespuesta.map((tipoRespuesta) => (
-                                <MenuItem
-                                  key={tipoRespuesta.id}
-                                  value={tipoRespuesta.id}
-                                >
-                                  {tipoRespuesta.descripcion}
-                                </MenuItem>
-                              ))}
+                              {pregunta.tipoPregunta.map((tipoPreguntaId) => {
+                                const tipo = tipoPregunta[tipoPreguntaId];
+                                return (
+                                  <MenuItem key={tipo.id} value={tipo.id}>
+                                    {tipo.descripcion}
+                                  </MenuItem>
+                                );
+                              })}
                             </Select>
                           </FormControl>
                         </Grid>
