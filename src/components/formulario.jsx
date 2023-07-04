@@ -142,7 +142,7 @@ function Preguntas() {
 
   function handleComentarioChange(event, preguntaId) {
     const { value } = event.target;
-  
+
     setComentarios((prevComentarios) => ({
       ...prevComentarios,
       [preguntaId]: value,
@@ -409,6 +409,16 @@ function Preguntas() {
                               value={
                                 respuestas[pregunta.id]?.tipoRespuesta || ""
                               }
+                              onChange={(event) => {
+                                const { value } = event.target;
+                                setRespuestas((prevRespuestas) => ({
+                                  ...prevRespuestas,
+                                  [pregunta.id]: {
+                                    ...prevRespuestas[pregunta.id],
+                                    tipoRespuesta: value,
+                                  },
+                                }));
+                              }}
                               label="tipoRespuesta"
                               required
                             >
@@ -427,7 +437,7 @@ function Preguntas() {
                           <Grid item xs={12}>
                             <FormControl fullWidth>
                               <InputLabel htmlFor={`comentario-${pregunta.id}`}>
-                                Comentario
+                                {pregunta.descripcionComentario}
                               </InputLabel>
                               <TextField
                                 id={`comentario-${pregunta.id}`}
