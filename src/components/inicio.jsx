@@ -129,7 +129,6 @@ function Inicio() {
                   ir a preguntas
                 </Button>
               </Box>
-              <Box height={50} />
             </>
           )}
         </>
