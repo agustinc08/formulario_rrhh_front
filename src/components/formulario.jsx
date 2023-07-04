@@ -47,6 +47,7 @@ function Preguntas() {
   const [preguntasSinSeleccion, setPreguntasSinSeleccion] = useState(false);
   const [preguntasSinResponder, setPreguntasSinResponder] = useState({});
   const [preguntaActual, setPreguntaActual] = useState(null);
+  const [tipoPregunta, setTipoPregunta] = useState({});
   const [preguntasRequierenComentario, setPreguntaRequierenComentario] =
     useState(false);
   const history = useHistory();
