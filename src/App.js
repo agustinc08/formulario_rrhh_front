@@ -46,6 +46,7 @@ function App() {
       <Route exact path="/inicio">
         {isLoggedIn ? (
           <React.Fragment>
+            <Navbar />
             <Inicio />
             <Footer />
           </React.Fragment>
