@@ -41,6 +41,7 @@
 .navbar-link {
   color: white;
   text-decoration: none;
+  cursor: pointer;
 }
 
 /* ACA ARRANCA EL MODAL Y SUS TABLAS INTERNAS */ 

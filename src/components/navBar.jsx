@@ -78,10 +78,12 @@ const Navbar = () => {
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
+    setMenuOpen(true);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+    setMenuOpen(false);
   };
 
   const [open, setOpen] = useState(false);
@@ -115,18 +117,17 @@ const Navbar = () => {
           <li className="navbar-item">
             <Link to="/estadisticas" className="navbar-link">ESTADÍSTICAS</Link>
           </li>
-          <li
-            className="navbar-item"
-            onMouseEnter={handleMenuOpen}
-            onMouseLeave={handleMenuClose}
-          >
-            <span className="navbar-link">MENU</span>
+          <li className="navbar-item">
+            <span className="navbar-link" onClick={handleMenuOpen}>MENU</span>
             <Menu
               anchorEl={anchorEl}
-              open={Boolean(anchorEl) || menuOpen}
+              open={menuOpen}
               onClose={handleMenuClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+              transformOrigin={{ vertical: "top", horizontal: "left" }}
+              getContentAnchorEl={null}
               MenuListProps={{
-                'aria-labelledby': 'menu',
+                "aria-labelledby": "menu",
               }}
             >
               <MenuItem onClick={() => handleOpen("dependencias")}>
