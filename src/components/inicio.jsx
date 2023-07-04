@@ -54,7 +54,7 @@ function Inicio() {
   };
 
   return (
-    <Container>
+    <Container className="mb80px">
       {isLoggedIn() ? (
         <>
           {inicioData && (

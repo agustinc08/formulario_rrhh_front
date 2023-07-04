@@ -212,7 +212,7 @@ const Estadisticas = () => {
 
 
   return (
-    <Grid container justifyContent="center" alignItems="center" className="divMain">
+    <Grid container justifyContent="center" alignItems="center" className="divMain mb80px">
       <Grid item xs={12}>
         <Typography variant="h4" align="center" className={classes.titulo}>
           Estadísticas

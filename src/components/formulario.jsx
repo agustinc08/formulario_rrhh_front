@@ -270,7 +270,7 @@ function Preguntas() {
   }
 
   return (
-    <Container>
+    <Container className="mb80px">
       <Typography variant="h4" className={classes.tituloPregunta}>
         {mensaje}
         {seccionId &&

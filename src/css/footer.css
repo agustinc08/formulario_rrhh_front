@@ -6,7 +6,7 @@
     bottom: 0px;
     width: 100%;
     margin-top: 40px;
-    margin-bottom: 7px;
+    margin-bottom: 5px;
     font-size: 16px;
     text-align: center;
 }
@@ -16,9 +16,7 @@
 }
 
 .magicHover:hover {
-    padding-top: 3px;
-    padding-bottom: 3px;
-    background-color: #889eff;
+    color: #3F51B5;
 }
 
 

@@ -154,7 +154,7 @@ const Buscador = () => {
       : [];
   console.log();
   return (
-    <div className="divMain">
+    <div className="divMain mb80px">
       <Container>
         <Box sx={{ paddingTop: 20 }}>
           <Typography variant="h4" align="center" gutterBottom>
@@ -240,7 +240,7 @@ const Buscador = () => {
         </Grid>
       </Container>
 
-      <Table style={{ marginTop: "2em" }}>
+      <Table>
         <TableHead>
           <TableRow>
             <TableCell>
