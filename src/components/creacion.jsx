@@ -497,7 +497,7 @@ const Creaciones = () => {
   };
 
   return (
-    <div className={classes.divMain} style={{ display: "flex" }}>
+    <div className={`${classes.divMain} 'mb80px'`} style={{ display: "flex" }}>
       <Grid container spacing={6} className={classes.gridPrincipal}>
         <Grid
           item
@@ -942,10 +942,8 @@ const Creaciones = () => {
               )}
             </form>
           </Box>
-        </Grid>{" "}
-        {/*CIERRE GridDerecho*/}
-      </Grid>{" "}
-      {/*CIERRE GridPrincipal*/}
+        </Grid>{/*CIERRE GridDerecho*/}
+      </Grid>{/*CIERRE GridPrincipal*/}
     </div>
   );
 };
