@@ -31,14 +31,6 @@ const Navbar = () => {
   const [searchValue, setSearchValue] = useState(""); // Nuevo estado para el valor del buscador
 
   useEffect(() => {
-    fetchDependencias();
-    fetchFormulario();
-    fetchSecciones();
-    fetchClaves();
-    fetchPreguntas();
-  }, []);
-
-  useEffect(() => {
     if (dependencias.length > 0 && dependenciaId) {
       const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
     }
@@ -98,6 +90,14 @@ const Navbar = () => {
       })
       .catch((error) => console.log(error));
   };
+
+  useEffect(() => {
+    fetchDependencias();
+    fetchFormulario();
+    fetchSecciones();
+    fetchClaves();
+    fetchPreguntas();
+  }, []);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -183,41 +183,37 @@ const Navbar = () => {
         </ul>
       </nav>
 
-      {open && selectedList === "dependencias" && (
-        <Modal
-          open={open}
-          onClose={handleClose}
-          className="modal"
+      {open && selectedList === "dependencias" && dependencias.length > 0 && (
+  <Modal open={open} onClose={handleClose} className="modal">
+    <Paper className="modalContent smallModal">
+      <TableContainer className="stickyTableContainer">
+        <IconButton
+          aria-label="close"
+          className="closeButton"
+          onClick={handleClose}
         >
-          <Paper className="modalContent smallModal">
-            <TableContainer className="stickyTableContainer">
-              <IconButton
-                aria-label="close"
-                className="closeButton"
-                onClick={handleClose}
-              >
-                <CloseIcon />
-              </IconButton>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell className="columnaId">Número</TableCell>
-                    <TableCell className="columnaTexto">Dependencia</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {dependencias.map((dependencia) => (
-                    <TableRow key={dependencia.id}>
-                      <TableCell className="columnaId">{dependencia.id}</TableCell>
-                      <TableCell className="columnaTexto">{dependencia.nombreDependencia}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Modal>
-      )}
+          <CloseIcon />
+        </IconButton>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell className="columnaId">Número</TableCell>
+              <TableCell className="columnaTexto">Dependencia</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {dependencias.map((dependencia) => (
+              <TableRow key={dependencia.id}>
+                <TableCell className="columnaId">{dependencia.id}</TableCell>
+                <TableCell className="columnaTexto">{dependencia.nombreDependencia}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
+  </Modal>
+)}
 
 {open && selectedList === "preguntas" && (
         <Modal open={open} onClose={handleClose} className="modal">

@@ -26,6 +26,7 @@ const Creaciones = () => {
   const [tipoPreguntaDescripcion, setTipoPreguntaDescripcion] = useState("");
   const [tipoRespuestaDescripcion, setTipoRespuestaDescripcion] = useState("");
   const [tieneComentario, setTieneComentario] = useState(false);
+  const [tieneTipoPregunta, setTieneTipoPregunta] = useState(false);
   const [descripcionComentario, setDescripcionComentario] = useState("");
   const [preguntas, setPreguntas] = useState([]);
   const [dependencias, setDependencias] = useState([]);
@@ -900,6 +901,17 @@ const Creaciones = () => {
                   ))}
                 </Select>
               </FormControl>
+
+              <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={tieneTipoPregunta}
+                        onChange={handleComentarioCheckboxChange}
+                        style ={{color: "#00e676",}}
+                      />
+                    }
+                    label="Tiene Tipo de Pregunta ?"
+                  />
 
               <FormControl className={classes.textField}>
                 <InputLabel id="tipo-pregunta-select-label">
