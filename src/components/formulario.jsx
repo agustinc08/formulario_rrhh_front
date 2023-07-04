@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
 import {
   Typography,
   ListItem,
@@ -21,6 +20,7 @@ import Pagination from "@material-ui/lab/Pagination";
 import "../css/global.css";
 import "../css/formulario.css";
 import useStyles from "../styles/formularioStyle";
+import { useHistory } from "react-router-dom";
 
 function Preguntas() {
   const classes = useStyles();
@@ -34,6 +34,7 @@ function Preguntas() {
   const [seccionId, setSeccionId] = useState(null);
   const [secciones, setSecciones] = useState([]);
   const [preguntasPorSeccion, setPreguntasPorSeccion] = useState({});
+  const [userComments, setUserComments] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [respuestas, setRespuestas] = useState({});
   const [tipoRespuesta, setTipoRespuesta] = useState({});
@@ -46,7 +47,6 @@ function Preguntas() {
   const [preguntasSinSeleccion, setPreguntasSinSeleccion] = useState(false);
   const [preguntasSinResponder, setPreguntasSinResponder] = useState({});
   const [preguntaActual, setPreguntaActual] = useState(null);
-  const [tipoPregunta, setTipoPregunta] = useState({});
   const [preguntasRequierenComentario, setPreguntaRequierenComentario] =
     useState(false);
   const history = useHistory();
@@ -78,28 +78,12 @@ function Preguntas() {
   }, []);
 
   useEffect(() => {
-    async function cargarPreguntasPorSeccion(seccionId) {
-      if (seccionId) {
-        try {
-          const [preguntasResponse, tiposPreguntaResponse] = await Promise.all([
-            axios.get(`http://localhost:3000/preguntas/${seccionId}`),
-            axios.get("http://localhost:3000/tipoPregunta"),
-          ]);
-
-          setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
-            ...prevPreguntasPorSeccion,
-            [seccionId]: preguntasResponse.data,
-          }));
-          setTipoPregunta(tiposPreguntaResponse.data); // Agregar esta línea para establecer los tipos de pregunta
-          setCurrentPage(1);
-          setPreguntaActual(preguntasResponse.data[0]?.id);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    }
-
-    cargarPreguntasPorSeccion(seccionId);
+    cargarPreguntasPorSeccion(
+      seccionId,
+      setPreguntasPorSeccion,
+      setCurrentPage,
+      setPreguntaActual
+    );
   }, [seccionId, setPreguntaActual]);
 
   useEffect(() => {
@@ -143,19 +127,11 @@ function Preguntas() {
   function handleComentarioChange(event, preguntaId) {
     const { value } = event.target;
 
-    setComentarios((prevComentarios) => ({
-      ...prevComentarios,
+    setUserComments((prevUserComments) => ({
+      ...prevUserComments,
       [preguntaId]: value,
     }));
   }
-
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpenSnackbar(false);
-  };
 
   async function cargarPreguntasPorSeccion(
     seccionId,
@@ -397,60 +373,54 @@ function Preguntas() {
                   </Typography>
                   <br />
                   <Grid container spacing={2}>
-                    {pregunta.tipoPregunta && tipoRespuesta && (
-                      <>
-                        <Grid item xs={12}>
-                          <FormControl fullWidth>
-                            <InputLabel id={`respuesta-${pregunta.id}-label`}>
-                              ¿Qué opinas?
-                            </InputLabel>
-                            <Select
-                              name="tipoRespuesta"
-                              value={
-                                respuestas[pregunta.id]?.tipoRespuesta || ""
-                              }
-                              onChange={(event) => {
-                                const { value } = event.target;
-                                setRespuestas((prevRespuestas) => ({
-                                  ...prevRespuestas,
-                                  [pregunta.id]: {
-                                    ...prevRespuestas[pregunta.id],
-                                    tipoRespuesta: value,
-                                  },
-                                }));
-                              }}
-                              label="tipoRespuesta"
-                              required
-                            >
-                              {pregunta.tipoPregunta.map((tipoPreguntaId) => {
-                                const tipo = tipoRespuesta[tipoPreguntaId];
-                                return (
-                                  <MenuItem key={tipo.id} value={tipo.id}>
-                                    {tipo.descripcion}
-                                  </MenuItem>
-                                );
-                              })}
-                            </Select>
-                          </FormControl>
-                        </Grid>
-                        {pregunta.tieneComentario && (
-                          <Grid item xs={12}>
-                            <FormControl fullWidth>
-                              <InputLabel htmlFor={`comentario-${pregunta.id}`}>
-                                {pregunta.descripcionComentario}
-                              </InputLabel>
-                              <TextField
-                                id={`comentario-${pregunta.id}`}
-                                name={`comentario-${pregunta.id}`}
-                                value={comentarios[pregunta.id] || ""}
-                                onChange={(event) =>
-                                  handleComentarioChange(event, pregunta.id)
-                                }
-                              />
-                            </FormControl>
-                          </Grid>
-                        )}
-                      </>
+                    {pregunta.tipoRespuesta && tipoRespuesta && (
+                      <Grid item xs={12}>
+                        <FormControl fullWidth>
+                          <InputLabel id={`respuesta-${pregunta.id}-label`}>
+                            ¿Qué opinas?
+                          </InputLabel>
+                          <Select
+                            name="tipoRespuesta"
+                            value={respuestas[pregunta.id]?.tipoRespuesta || ""}
+                            onChange={(event) => {
+                              const tipoRespuestaId = event.target.value;
+                              setRespuestas((prevRespuestas) => ({
+                                ...prevRespuestas,
+                                [pregunta.id]: {
+                                  ...prevRespuestas[pregunta.id],
+                                  tipoRespuesta: tipoRespuestaId,
+                                },
+                              }));
+                            }}
+                            label="tipoRespuesta"
+                            required
+                          >
+                            {tipoRespuesta.map((tipo) => (
+                              <MenuItem key={tipo.id} value={tipo.id}>
+                                {tipo.descripcion}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                          {pregunta.tieneComentario && (
+                      <Grid item xs={12}>
+                        <Typography variant="body2">
+                          {pregunta.descripcionComentario}
+                        </Typography>
+                        <TextField
+                          label="Comentario"
+                          value={userComments[pregunta.id] || ""}
+                          onChange={(event) =>
+                            handleComentarioChange(event, pregunta.id)
+                          }
+                          fullWidth
+                          multiline
+                          rows={4}
+                          variant="outlined"
+                        />
+                      </Grid>
+                    )}
+                        </FormControl>
+                      </Grid>
                     )}
                   </Grid>
                 </Box>
@@ -458,17 +428,8 @@ function Preguntas() {
             </Grid>
           ))}
         </Grid>
-        <Snackbar
-          open={openSnackbar}
-          autoHideDuration={6000}
-          onClose={handleSnackbarClose}
-        >
-          <MuiAlert
-            elevation={6}
-            variant="filled"
-            onClose={handleSnackbarClose}
-            severity={snackbarSeverity}
-          >
+        <Snackbar open={openSnackbar} autoHideDuration={6000}>
+          <MuiAlert elevation={6} variant="filled" severity={snackbarSeverity}>
             {snackbarMessage}
           </MuiAlert>
         </Snackbar>
