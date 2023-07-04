@@ -1,5 +1,6 @@
 .navbar {
-  background-color: #3F51B5;
+  /*background-color: #3F51B5;*/
+  background: linear-gradient(to right, #889eff, #3F51B5) !important;
   padding: 10px;
   z-index: 1000;
   position: relative;
