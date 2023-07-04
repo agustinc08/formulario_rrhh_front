@@ -154,7 +154,7 @@ const Buscador = () => {
       : [];
   console.log();
   return (
-    <div>
+    <div className="divMain">
       <Container>
         <Box sx={{ paddingTop: 20 }}>
           <Typography variant="h4" align="center" gutterBottom>

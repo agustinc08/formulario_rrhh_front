@@ -24,6 +24,9 @@ td{
   font-size: 16px !important;
 }
 
+.divMain{
+  margin-bottom: 60px !important;
+}
 
 ::-webkit-scrollbar {
   width: 9px;
