@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
 import {
   Typography,
   ListItem,
@@ -13,7 +14,6 @@ import {
   Grid,
   Divider,
   Container,
-  Input,
 } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
@@ -21,7 +21,6 @@ import Pagination from "@material-ui/lab/Pagination";
 import "../css/global.css";
 import "../css/formulario.css";
 import useStyles from "../styles/formularioStyle";
-import { useHistory } from "react-router-dom";
 
 function Preguntas() {
   const classes = useStyles();
@@ -79,29 +78,29 @@ function Preguntas() {
   }, []);
 
   useEffect(() => {
-  async function cargarPreguntasPorSeccion(seccionId) {
-    if (seccionId) {
-      try {
-        const [preguntasResponse, tiposPreguntaResponse] = await Promise.all([
-          axios.get(`http://localhost:3000/preguntas/${seccionId}`),
-          axios.get("http://localhost:3000/tipoPregunta"),
-        ]);
+    async function cargarPreguntasPorSeccion(seccionId) {
+      if (seccionId) {
+        try {
+          const [preguntasResponse, tiposPreguntaResponse] = await Promise.all([
+            axios.get(`http://localhost:3000/preguntas/${seccionId}`),
+            axios.get("http://localhost:3000/tipoPregunta"),
+          ]);
 
-        setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
-          ...prevPreguntasPorSeccion,
-          [seccionId]: preguntasResponse.data,
-        }));
-        setTipoPregunta(tiposPreguntaResponse.data);
-        setCurrentPage(1);
-        setPreguntaActual(preguntasResponse.data[0]?.id);
-      } catch (error) {
-        console.error(error);
+          setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
+            ...prevPreguntasPorSeccion,
+            [seccionId]: preguntasResponse.data,
+          }));
+          setTipoPregunta(tiposPreguntaResponse.data); // Agregar esta línea para establecer los tipos de pregunta
+          setCurrentPage(1);
+          setPreguntaActual(preguntasResponse.data[0]?.id);
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
-  }
 
-  cargarPreguntasPorSeccion(seccionId);
-}, [seccionId, setPreguntaActual]);
+    cargarPreguntasPorSeccion(seccionId);
+  }, [seccionId, setPreguntaActual]);
 
   useEffect(() => {
     if (preguntasPorSeccion[seccionId]) {
@@ -143,7 +142,7 @@ function Preguntas() {
 
   function handleComentarioChange(event, preguntaId) {
     const { value } = event.target;
-
+  
     setComentarios((prevComentarios) => ({
       ...prevComentarios,
       [preguntaId]: value,
@@ -398,7 +397,7 @@ function Preguntas() {
                   </Typography>
                   <br />
                   <Grid container spacing={2}>
-                    {pregunta.tipoPregunta && tipoPregunta && (
+                    {pregunta.tipoPregunta && tipoRespuesta && (
                       <>
                         <Grid item xs={12}>
                           <FormControl fullWidth>
@@ -414,7 +413,7 @@ function Preguntas() {
                               required
                             >
                               {pregunta.tipoPregunta.map((tipoPreguntaId) => {
-                                const tipo = tipoPregunta[tipoPreguntaId];
+                                const tipo = tipoRespuesta[tipoPreguntaId];
                                 return (
                                   <MenuItem key={tipo.id} value={tipo.id}>
                                     {tipo.descripcion}
@@ -430,12 +429,10 @@ function Preguntas() {
                               <InputLabel htmlFor={`comentario-${pregunta.id}`}>
                                 Comentario
                               </InputLabel>
-                              <Input
+                              <TextField
                                 id={`comentario-${pregunta.id}`}
                                 name={`comentario-${pregunta.id}`}
-                                value={
-                                  respuestas[pregunta.id]?.comentario || ""
-                                }
+                                value={comentarios[pregunta.id] || ""}
                                 onChange={(event) =>
                                   handleComentarioChange(event, pregunta.id)
                                 }
