@@ -90,7 +90,7 @@ const Creaciones = () => {
   }, [dependencias, dependenciaId]);
 
   const fetchDependencias = () => {
-    fetch("http://localhost:3000/dependencias")
+    fetch("http://localhost:4000/dependencias")
       .then((response) => response.json())
       .then((data) => {
         const dependenciasOrdenadas = data.sort((a, b) =>
@@ -102,7 +102,7 @@ const Creaciones = () => {
   };
 
   const fetchSecciones = () => {
-    fetch("http://localhost:3000/secciones")
+    fetch("http://localhost:4000/secciones")
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -120,7 +120,7 @@ const Creaciones = () => {
   };
 
   const fetchTipoPreguntas = () => {
-    fetch("http://localhost:3000/tipoPregunta")
+    fetch("http://localhost:4000/tipoPregunta")
       .then((response) => response.json())
       .then((data) => {
         setTipoPreguntas(data); // Guardar los tipos de pregunta en el estado
@@ -131,7 +131,7 @@ const Creaciones = () => {
   };
 
   const fetchFormulario = () => {
-    fetch("http://localhost:3000/formulario")
+    fetch("http://localhost:4000/formulario")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error fetching formularios");
@@ -151,7 +151,7 @@ const Creaciones = () => {
   };
 
   const verificarInicioCreado = () => {
-    fetch(`http://localhost:3000/inicio?formularioId=${formularioId}`)
+    fetch(`http://localhost:4000/inicio?formularioId=${formularioId}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error en la solicitud de inicio");
@@ -223,7 +223,7 @@ const Creaciones = () => {
       },
     };
 
-    fetch("http://localhost:3000/formulario", {
+    fetch("http://localhost:4000/formulario", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -270,7 +270,7 @@ const Creaciones = () => {
   };
 
   const crearSeccion = (descripcion, formularioId) => {
-    fetch("http://localhost:3000/secciones", {
+    fetch("http://localhost:4000/secciones", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -304,7 +304,7 @@ const Creaciones = () => {
   };
 
   const crearTipoPregunta = (descripcion, formularioId) => {
-    fetch("http://localhost:3000/tipoPregunta", {
+    fetch("http://localhost:4000/tipoPregunta", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -335,7 +335,7 @@ const Creaciones = () => {
   };
 
   const crearTipoRespuesta = (descripcion, tipoPreguntaId, formularioId) => {
-    fetch("http://localhost:3000/tipoRespuesta", {
+    fetch("http://localhost:4000/tipoRespuesta", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -394,7 +394,7 @@ const Creaciones = () => {
     tipoPreguntaId,
     tipoRespuestaId,
   }) => {
-    fetch("http://localhost:3000/preguntas", {
+    fetch("http://localhost:4000/preguntas", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -460,7 +460,7 @@ const Creaciones = () => {
       return;
     }
 
-    fetch("http://localhost:3000/inicio", {
+    fetch("http://localhost:4000/inicio", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

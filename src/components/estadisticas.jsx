@@ -34,7 +34,7 @@ const Estadisticas = () => {
   useEffect(() => {
     const obtenerPreguntas = async () => {
       try {
-        const response = await fetch("http://localhost:3000/preguntas");
+        const response = await fetch("http://localhost:4000/preguntas");
         const data = await response.json();
         setPreguntas(data);
         console.log("Preguntas obtenidas:", data);
@@ -46,7 +46,7 @@ const Estadisticas = () => {
 
     const obtenerDependencias = async () => {
       try {
-        const response = await fetch("http://localhost:3000/dependencias");
+        const response = await fetch("http://localhost:4000/dependencias");
         const data = await response.json();
         setDependencias(data);
         console.log("Dependencias obtenidas:", data);
@@ -57,7 +57,7 @@ const Estadisticas = () => {
 
     const obtenerFormularios = async () => {
       try {
-        const response = await fetch("http://localhost:3000/formulario");
+        const response = await fetch("http://localhost:4000/formulario");
         const data = await response.json();
         setDependencias(data);
         console.log("Formularios obtenidos:", data);
@@ -74,7 +74,7 @@ const Estadisticas = () => {
   const fetchRespuestas = async () => {
     try {
       if (selectedDependencia !== "" && selectedPregunta !== "") {
-        const response = await fetch(`http://localhost:3000/respuestas?dependenciaId=${selectedDependencia}&preguntaId=${selectedPregunta}`);
+        const response = await fetch(`http://localhost:4000/respuestas?dependenciaId=${selectedDependencia}&preguntaId=${selectedPregunta}`);
         const data = await response.json();
         setRespuestas(data); // Almacena las respuestas obtenidas en el estado
 

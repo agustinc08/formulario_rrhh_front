@@ -78,13 +78,13 @@ function Login({ onLogin }) {
   
 
   const fetchDependencias = async () => {
-    const response = await fetch("http://localhost:3000/dependencias");
+    const response = await fetch("http://localhost:4000/dependencias");
     const data = await response.json();
     setDependencias(data);
   };
 
   const fetchClaves = async () => {
-    const response = await fetch("http://localhost:3000/claves");
+    const response = await fetch("http://localhost:4000/claves");
     const data = await response.json();
     setClaves(data);
   };

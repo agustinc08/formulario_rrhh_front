@@ -37,7 +37,7 @@ const Navbar = () => {
   }, [dependencias, dependenciaId]);
 
   const fetchClaves = () => {
-    fetch("http://localhost:3000/claves")
+    fetch("http://localhost:4000/claves")
       .then((response) => response.json())
       .then((data) => {
         setClaves(data);
@@ -46,7 +46,7 @@ const Navbar = () => {
   };
 
   const fetchPreguntas = () => {
-    fetch("http://localhost:3000/preguntas")
+    fetch("http://localhost:4000/preguntas")
       .then((response) => response.json())
       .then((data) => {
         const preguntasOrdenadas = data.sort((a, b) => a.id - b.id);
@@ -56,7 +56,7 @@ const Navbar = () => {
   };
 
   const fetchDependencias = () => {
-    fetch("http://localhost:3000/dependencias")
+    fetch("http://localhost:4000/dependencias")
       .then((response) => response.json())
       .then((data) => {
         const dependenciasOrdenadas = data.sort((a, b) => a.id - b.id);
@@ -66,7 +66,7 @@ const Navbar = () => {
   };
 
   const fetchFormulario = () => {
-    fetch("http://localhost:3000/formulario")
+    fetch("http://localhost:4000/formulario")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error fetching formularios");
@@ -82,7 +82,7 @@ const Navbar = () => {
   };
 
   const fetchSecciones = () => {
-    fetch("http://localhost:3000/secciones")
+    fetch("http://localhost:4000/secciones")
       .then((response) => response.json())
       .then((data) => {
         const seccionesOrdenadas = data.sort((a, b) => a.id - b.id);

@@ -55,7 +55,7 @@ function Preguntas() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const { data } = await axios.get("http://localhost:3000/dependencias");
+        const { data } = await axios.get("http://localhost:4000/dependencias");
         setDependencias(data);
       } catch (error) {
         console.error(error);
@@ -67,7 +67,7 @@ function Preguntas() {
   useEffect(() => {
     async function cargarSecciones() {
       try {
-        const { data } = await axios.get("http://localhost:3000/secciones");
+        const { data } = await axios.get("http://localhost:4000/secciones");
         setSecciones(data);
         setSeccionId(data[0]?.id); // Establecer la primera sección como sección actual
       } catch (error) {
@@ -103,7 +103,7 @@ function Preguntas() {
   useEffect(() => {
     async function fetchTipoRespuesta() {
       try {
-        const { data } = await axios.get("http://localhost:3000/tipoRespuesta");
+        const { data } = await axios.get("http://localhost:4000/tipoRespuesta");
         setTipoRespuesta(data);
       } catch (error) {
         console.error(error);
@@ -141,7 +141,7 @@ function Preguntas() {
   ) {
     if (seccionId) {
       axios
-        .get(`http://localhost:3000/preguntas/${seccionId}`)
+        .get(`http://localhost:4000/preguntas/${seccionId}`)
         .then((response) => {
           setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
             ...prevPreguntasPorSeccion,
@@ -249,7 +249,7 @@ function Preguntas() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/respuestas",
+        "http://localhost:4000/respuestas",
         createRespuestaDto
       );
       console.log(response.data);

@@ -27,7 +27,7 @@ function Inicio() {
   useEffect(() => {
     const fetchInicioData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/inicio");
+        const response = await fetch("http://localhost:4000/inicio");
         const data = await response.json();
         setInicioData(data);
       } catch (error) {
@@ -37,7 +37,7 @@ function Inicio() {
 
     const fetchSecciones = async () => {
       try {
-        const response = await fetch("http://localhost:3000/secciones");
+        const response = await fetch("http://localhost:4000/secciones");
         const data = await response.json();
         setSecciones(data);
       } catch (error) {
