@@ -7,7 +7,6 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Alert from "@material-ui/lab/Alert";
 import Grid from "@material-ui/core/Grid";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import IconButton from "@material-ui/core/IconButton";
@@ -150,34 +149,6 @@ const Creaciones = () => {
       });
   };
 
-  const verificarInicioCreado = () => {
-    fetch(`http://localhost:4000/inicio?formularioId=${formularioId}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Error en la solicitud de inicio");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data && data.length > 0) {
-          // Mostrar alerta de error si ya existe un inicio para el formulario actual
-          setAlertaInicioExistente(true);
-        } else {
-          // Crear el inicio si no hay ningún inicio creado para el formulario actual
-          crearInicio({
-            formularioId: formularioId,
-            tituloPrincipal: tituloPrincipal,
-            introduccionDescripcion: introduccionDescripcion,
-            objetivoDescripcion: objetivoDescripcion,
-            parrafo: parrafo,
-          });
-        }
-      })
-      .catch((error) => {
-        console.error("Error al verificar el inicio creado:", error);
-      });
-  };
-
   const handleComentarioCheckboxChange = (event) => {
     setTieneComentario(event.target.checked);
   };
@@ -213,16 +184,16 @@ const Creaciones = () => {
 
   const crearFormulario = (formularioData) => {
     const dependencias = formularioData.dependencias.map(
-      (dependencia) => dependencia.id
+      (dependencia) => ({ id: dependencia.id }) // Crear objetos con campo "id"
     );
-
+  
     const formularioCreateData = {
       nombre: formularioData.nombre,
       dependencias: {
-        connect: dependencias,
+        connect: dependencias, // Pasar el arreglo de objetos
       },
     };
-
+  
     fetch("http://localhost:4000/formulario", {
       method: "POST",
       headers: {
@@ -237,7 +208,9 @@ const Creaciones = () => {
           setAlertaFormulario(true);
         }
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   const handleSeccionSubmit = (event) => {
@@ -317,7 +290,7 @@ const Creaciones = () => {
       .then((response) => {
         if (response.ok) {
           console.log("Tipo Pregunta creada:", descripcion);
-          setTipoPreguntaDescripcion();
+          setTipoPreguntaDescripcion(""); // Establecer un valor vacío después de crear el tipo de pregunta
         } else {
           throw new Error("Error al crear el Tipo de Pregunta.");
         }
@@ -424,6 +397,34 @@ const Creaciones = () => {
       .catch((error) => {
         console.error(error);
         setErrorPregunta(true);
+      });
+  };
+
+  const verificarInicioCreado = () => {
+    fetch(`http://localhost:4000/inicio?formularioId=${formularioId}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error en la solicitud de inicio");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data && data.length > 0) {
+          // Mostrar alerta de error si ya existe un inicio para el formulario actual
+          setAlertaInicioExistente(true);
+        } else {
+          // Crear el inicio si no hay ningún inicio creado para el formulario actual
+          crearInicio({
+            formularioId: formularioId,
+            tituloPrincipal: tituloPrincipal,
+            introduccionDescripcion: introduccionDescripcion,
+            objetivoDescripcion: objetivoDescripcion,
+            parrafo: parrafo,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error al verificar el inicio creado:", error);
       });
   };
 
@@ -700,7 +701,6 @@ const Creaciones = () => {
             </form>
           </Box>
         </Grid>{" "}
-        {/* CIERRE GridIzquierdo */}
         <Grid
           item
           xs={12}
@@ -954,8 +954,8 @@ const Creaciones = () => {
               )}
             </form>
           </Box>
-        </Grid>{/*CIERRE GridDerecho*/}
-      </Grid>{/*CIERRE GridPrincipal*/}
+        </Grid>
+      </Grid>
     </div>
   );
 };
