@@ -131,7 +131,7 @@ function Preguntas() {
 	}
 
 	function handleComentarioChange(event, preguntaId) {
-		const { value } = event.target;
+		const value = event.target.value;
 
 		setUserComments((prevUserComments) => ({
 			...prevUserComments,
@@ -169,98 +169,108 @@ function Preguntas() {
 		}
 	}
 
+	function validarFormulario() {
+		// Verificar si todas las preguntas tienen un tipo de respuesta
+		const preguntasSinTipoRespuesta = preguntas.filter(
+			(pregunta) => !respuestas[pregunta.id]?.tipoRespuesta
+		);
+
+		// Verificar si hay comentarios incompletos
+		const preguntasConComentarioIncompleto = preguntas.filter(
+			(pregunta) =>
+				pregunta.tieneComentario &&
+				!userComments[pregunta.id]?.trim() &&
+				respuestas[pregunta.id]?.tipoRespuesta
+		);
+
+		if (preguntasSinTipoRespuesta.length > 0 || preguntasConComentarioIncompleto.length > 0) {
+			setError(true);
+			setPreguntasSinSeleccion(preguntasSinTipoRespuesta.length > 0);
+			setPreguntasSinResponder(
+				preguntasConComentarioIncompleto.reduce((acc, pregunta) => {
+					acc[pregunta.id] = true;
+					return acc;
+				}, {})
+			);
+			return false;
+		}
+
+		setError(false);
+		setPreguntasSinSeleccion(false);
+		setPreguntasSinResponder({});
+		return true;
+	}
+
 	async function enviarRespuestas(event) {
 		event.preventDefault();
-		const respuestasData = [];
-		// ...
-	
-		// Verificar si hay preguntas sin comentario o con comentario vacío
-		// for (const preguntaId in userComments) {
-		//   const comentario = userComments[preguntaId];
-		//   if (
-		//     !comentario &&
-		//     preguntasRequierenComentario.includes(parseInt(preguntaId))
-		//   ) {
-		//     preguntasSinComentario = true;
-		//     break;
-		//   }
-		// }
-	
-		// if (preguntasSinComentario) {
-		//   setError(true);
-		//   setSnackbarMessage(
-		//     "Por favor, proporciona un comentario en las preguntas que lo requieran."
-		//   );
-		//   setSnackbarSeverity("error");
-		//   setOpenSnackbar(true);
-		//   return;
-		// }
-	
-		// Verificar si hay preguntas sin selección
-		// for (const preguntaId in respuestas) {
-		//   if (error) {
-		//     break;
-		//   }
-		//   const respuesta = respuestas[preguntaId];
-		//   if (
-		//     !respuesta.tipoRespuesta ||
-		//     !respuesta.comentario ||
-		//     !respuesta.edad ||
-		//     !respuesta.genero ||
-		//     !respuesta.dependenciaId
-		//   ) {
-		//     preguntasSinSeleccion[preguntaId] = true;
-		//   }
-		// }
-	
-		// if (Object.keys(preguntasSinSeleccion).length > 0) {
-		//   setError(true);
-		//   setPreguntasSinSeleccion(true);
-		//   setPreguntasSinResponder(preguntasSinSeleccion);
-		//   setSnackbarMessage(
-		//     "Por favor, selecciona una opción en todas las preguntas."
-		//   );
-		//   setSnackbarSeverity("error");
-		//   setPreguntaActual(Object.keys(preguntasSinSeleccion)[0]);
-		//   return;
-		// }
-	
-		// ...
-	
-		const formularioId = await getFormularioActivo();
-	
-		if (!formularioId) {
-			console.error("No se encontró un formulario activo.");
-			return;
+	  
+		if (!preguntaActual || !preguntas) {
+		  return;
 		}
-	
-		const createRespuestaDto = {
-			respuestas: respuestasData,
-			formularioId: formularioId,
-		};
-	
-		try {
+	  
+		const esFormularioValido = validarFormulario();
+	  
+		if (esFormularioValido) {
+		  try {
+			const formularioId = await getFormularioActivo();
+	  
+			const createRespuestaDto = {
+			  preguntasRespuestas: preguntas.map((pregunta) => {
+				return {
+				  preguntaId: pregunta.id,
+				  formularioId: formularioId,
+				  tipoRespuestaId: respuestas[pregunta.id]?.tipoRespuesta || null,
+				  dependenciaId: dependencia,
+				  edad: edad,
+				  genero: genero,
+				  comentario: {
+					respuestaComentario: userComments[pregunta.id] || "",
+					preguntaId: pregunta.id,
+					respuestaId: null, // El ID de la respuesta se asignará después de crearla
+					formularioId: formularioId,
+					dependenciaId: dependencia,
+				  },
+				};
+			  }),
+			};
+	  
 			const response = await axios.post(
-				"http://localhost:4000/respuestas",
-				createRespuestaDto
+			  "http://localhost:4000/respuestas",
+			  createRespuestaDto
 			);
-			console.log(response.data);
-			setSnackbarMessage("El formulario fue enviado correctamente.");
+	  
+			const respuestasCreadas = response.data;
+	  
+			// Actualizar los IDs de las respuestas en el objeto createRespuestaDto
+			const createRespuestaDtoConRespuestaIds = createRespuestaDto.preguntasRespuestas.map(
+			  (preguntaRespuesta, index) => {
+				preguntaRespuesta.comentario.respuestaId = respuestasCreadas[index].id;
+				return preguntaRespuesta;
+			  }
+			);
+	  
+			// Enviar el objeto actualizado con los IDs de las respuestas
+			await axios.post(
+			  "http://localhost:4000/respuestas",
+			  { preguntasRespuestas: createRespuestaDtoConRespuestaIds }
+			);
+	  
+			setEdad("");
+			setGenero("");
+			setDependencia("");
+			setUserComments({});
+			setRespuestas({});
+			setSnackbarMessage("Respuestas enviadas correctamente");
 			setSnackbarSeverity("success");
 			setOpenSnackbar(true);
-			setRespuestas(respuestasData);
-			redirectTimer.current = setTimeout(() => {
-				history.push("/inicio");
-			}, 2000);
-		} catch (error) {
+		  } catch (error) {
 			console.error(error);
-			setSnackbarMessage(
-				"Su formulario no pudo ser enviado. Faltan respuestas."
-			);
+			setSnackbarMessage("Error al enviar las respuestas");
 			setSnackbarSeverity("error");
 			setOpenSnackbar(true);
+		  }
 		}
-	}
+	  }
 
 	return (
 		<Container className="mb80px">
@@ -280,6 +290,11 @@ function Preguntas() {
 				{preguntasSinSeleccion && (
 					<Typography variant="body1" color="error">
 						Por favor, selecciona una opción en todas las preguntas.
+					</Typography>
+				)}
+				{Object.keys(preguntasSinResponder).length > 0 && (
+					<Typography variant="body1" color="error">
+						Por favor, completa todos los comentarios.
 					</Typography>
 				)}
 				{isFirstPage && (
@@ -345,13 +360,13 @@ function Preguntas() {
 						</Grid>
 					</>
 				)}
-				<Box height={50} />
 				<Grid container spacing={2}>
 					{preguntasPorSeccion[seccionId]?.map((pregunta) => (
 						<Grid item xs={12} md={6} key={pregunta.id}>
 							<ListItem style={{ height: "100%" }}>
 								<Box
-									className={classes.pregunta}
+									className={`${classes.pregunta} ${preguntasSinResponder[pregunta.id] ? classes.preguntaIncompleta : ""
+										}`}
 									display="flex"
 									flexDirection="column"
 									boxShadow={6}
@@ -415,7 +430,7 @@ function Preguntas() {
 																	}
 																	fullWidth
 																	multiline
-																	minRows={4} // Replace rows with minRows
+																	minRows={4}
 																	variant="outlined"
 																/>
 															</Grid>

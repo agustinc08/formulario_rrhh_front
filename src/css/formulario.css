@@ -18,6 +18,10 @@
     list-style: none;
     padding: 0;
   }
+
+  .formulario .preguntaIncompleta {
+    border: 2px solid red;
+  }
   
   .formulario-item {
     margin-bottom: 20px;
