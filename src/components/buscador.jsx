@@ -111,6 +111,10 @@ const Buscador = () => {
       } else if (formularioId) {
         url += `/formulario/${formularioId}`;
       }
+
+      const response = await fetch(url);
+      const data = await response.json();
+      setRespuestas(data);
     } catch (error) {
       console.error("Error al buscar respuestas:", error);
     }
@@ -303,14 +307,13 @@ const Buscador = () => {
             </TableCell>
             <TableCell>
               <TableSortLabel
-                active={
-                  sortConfig.field === "expresion" ||
-                  sortConfig.field === "clasificaciones" ||
-                  sortConfig.field === "grado" ||
-                  sortConfig.field === "calificaciones"
+                active={sortConfig.field === "tipoRespuesta"}
+                direction={
+                  sortConfig.field === "tipoRespuesta"
+                    ? sortConfig.direction
+                    : "asc"
                 }
-                direction={sortConfig.direction}
-                onClick={() => handleSort("expresion")}
+                onClick={() => handleSort("tipoRespuesta")}
               >
                 Respuestas
               </TableSortLabel>
@@ -334,16 +337,16 @@ const Buscador = () => {
           {sortedRespuestas.map((respuesta) => (
             <TableRow key={respuesta.id}>
               <TableCell>{respuesta.id}</TableCell>
-              <TableCell>{respuesta.fechaFormateada}</TableCell>
-              <TableCell>{respuesta.nombreDependencia}</TableCell>
-              <TableCell>{respuesta.edadFormateada}</TableCell>
+              <TableCell>{respuesta.createdAt}</TableCell>
+              <TableCell>{respuesta.dependenciaId}</TableCell>
+              <TableCell>{respuesta.edad}</TableCell>
               <TableCell>{respuesta.genero}</TableCell>
-              <TableCell>{respuesta.tipoRespuesta}</TableCell>
               <TableCell>
-                {respuesta.comentarios &&
-                  respuesta.comentarios.map((comentario) => (
-                    <div key={comentario.id}>{comentario.comentario}</div>
-                  ))}
+              {respuesta.tipoRespuestaId}
+              </TableCell>
+              <TableCell>
+                {respuesta.comentario &&
+                  respuesta.comentario.respuestaComentario}
               </TableCell>
             </TableRow>
           ))}
