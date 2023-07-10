@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect,  useRef, useCallback } from "react";
 import axios from "axios";
 import {
 	Typography,
@@ -46,11 +46,6 @@ function Preguntas() {
 	const [preguntasSinSeleccion, setPreguntasSinSeleccion] = useState(false);
 	const [preguntasSinResponder, setPreguntasSinResponder] = useState({});
 	const [preguntaActual, setPreguntaActual] = useState(null);
-	const [preguntasRequierenComentario, setPreguntasRequierenComentario] =
-		useState([]);
-
-	const history = useHistory();
-	const redirectTimer = useRef(null);
 
 	useEffect(() => {
 		async function fetchData() {
@@ -77,23 +72,41 @@ function Preguntas() {
 		cargarSecciones();
 	}, []);
 
-	useEffect(() => {
-		cargarPreguntasPorSeccion();
-	}, [seccionId]);
-
-	useEffect(() => {
-		if (preguntasPorSeccion[seccionId]) {
-			const startIndex = (currentPage - 1) * 5;
-			const endIndex = startIndex + 5;
-			const slicedPreguntas = preguntasPorSeccion[seccionId]?.slice(
-				startIndex,
-				endIndex
+	const cargarPreguntasPorSeccion = useCallback(async () => {
+		if (seccionId) {
+		  try {
+			const response = await axios.get(
+			  `http://localhost:4000/preguntas/${seccionId}`
 			);
-			setPreguntas(slicedPreguntas);
-		} else {
-			cargarPreguntasPorSeccion();
+			setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
+			  ...prevPreguntasPorSeccion,
+			  [seccionId]: response.data,
+			}));
+			setCurrentPage(1);
+			setPreguntaActual(response.data[0]?.id); // Establecer la primera pregunta como pregunta actual
+		  } catch (error) {
+			console.error(error);
+		  }
 		}
-	}, [seccionId, currentPage]);
+	  }, [seccionId]);
+	  
+	  useEffect(() => {
+		cargarPreguntasPorSeccion();
+	  }, [cargarPreguntasPorSeccion]);
+	  
+	  useEffect(() => {
+		if (preguntasPorSeccion[seccionId]) {
+		  const startIndex = (currentPage - 1) * 5;
+		  const endIndex = startIndex + 5;
+		  const slicedPreguntas = preguntasPorSeccion[seccionId]?.slice(
+			startIndex,
+			endIndex
+		  );
+		  setPreguntas(slicedPreguntas);
+		} else {
+		  cargarPreguntasPorSeccion();
+		}
+	  }, [seccionId, currentPage, preguntasPorSeccion, cargarPreguntasPorSeccion]);
 
 	useEffect(() => {
 		async function fetchTipoRespuesta() {
@@ -143,29 +156,10 @@ function Preguntas() {
 		try {
 			const { data } = await axios.get("http://localhost:4000/formulario");
 			const formularioActivo = data.find((formulario) => formulario.estaActivo);
-			console.log(formularioActivo)
 			return formularioActivo ? formularioActivo.id : null;
 		} catch (error) {
 			console.error(error);
 			return null;
-		}
-	}
-
-	async function cargarPreguntasPorSeccion() {
-		if (seccionId) {
-			try {
-				const response = await axios.get(
-					`http://localhost:4000/preguntas/${seccionId}`
-				);
-				setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
-					...prevPreguntasPorSeccion,
-					[seccionId]: response.data,
-				}));
-				setCurrentPage(1);
-				setPreguntaActual(response.data[0]?.id); // Establecer la primera pregunta como pregunta actual
-			} catch (error) {
-				console.error(error);
-			}
 		}
 	}
 
@@ -233,6 +227,9 @@ function Preguntas() {
 						};
 					}),
 				};
+
+
+				console.log(createRespuestaDto); // Verificar los valores aquí
 
 				const response = await axios.post(
 					"http://localhost:4000/respuestas",

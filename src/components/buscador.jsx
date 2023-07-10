@@ -152,7 +152,6 @@ const Buscador = () => {
           }
         })
       : [];
-  console.log();
   return (
     <div className="divMain mb80px">
       <Container>
