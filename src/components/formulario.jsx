@@ -93,18 +93,19 @@ function Preguntas() {
 	}, []);
 
 	const cargarPreguntasPorSeccion = useCallback(async () => {
+		if (!seccionId) return; // Don't make the request if seccionId is null
 		try {
-			const response = await axios.get(`http://localhost:4000/preguntas/${seccionId}`);
-			setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
-				...prevPreguntasPorSeccion,
-				[seccionId]: response.data,
-			}));
-			setCurrentPage(1);
-			setPreguntaActual(response.data[0]?.id); // Establecer la primera pregunta como pregunta actual
+		  const response = await axios.get(`http://localhost:4000/preguntas/${seccionId}`);
+		  setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
+			...prevPreguntasPorSeccion,
+			[seccionId]: response.data,
+		  }));
+		  setCurrentPage(1);
+		  setPreguntaActual(response.data[0]?.id); // Establecer la primera pregunta como pregunta actual
 		} catch (error) {
-			console.error(error);
+		  console.error(error);
 		}
-	}, [seccionId]);
+	  }, [seccionId]);
 	
 	useEffect(() => {
 		(async () => {
