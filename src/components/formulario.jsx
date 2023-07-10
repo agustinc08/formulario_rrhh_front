@@ -203,74 +203,74 @@ function Preguntas() {
 
 	async function enviarRespuestas(event) {
 		event.preventDefault();
-	  
+
 		if (!preguntaActual || !preguntas) {
-		  return;
+			return;
 		}
-	  
+
 		const esFormularioValido = validarFormulario();
-	  
+
 		if (esFormularioValido) {
-		  try {
-			const formularioId = await getFormularioActivo();
-	  
-			const createRespuestaDto = {
-			  preguntasRespuestas: preguntas.map((pregunta) => {
-				return {
-				  preguntaId: pregunta.id,
-				  formularioId: formularioId,
-				  dependenciaId: dependencia,
-				  edad: edad,
-				  genero: genero,
-				  tipoRespuestaId: respuestas[pregunta.id]?.tipoRespuesta || null,
-				  comentario: {
-					respuestaComentario: userComments[pregunta.id] || "",
-					preguntaId: pregunta.id,
-					respuestaId: null, // El ID de la respuesta se asignará después de crearla
-					formularioId: formularioId,
-					dependenciaId: dependencia,
-				  },
+			try {
+				const formularioId = await getFormularioActivo();
+
+				const createRespuestaDto = {
+					preguntasRespuestas: preguntas.map((pregunta) => {
+						return {
+							preguntaId: pregunta.id,
+							formularioId: formularioId,
+							tipoRespuestaId: respuestas[pregunta.id]?.tipoRespuesta || null,
+							dependenciaId: dependencia,
+							edad: edad,
+							genero: genero,
+							comentario: {
+								respuestaComentario: userComments[pregunta.id] || "",
+								preguntaId: pregunta.id,
+								respuestaId: null, // El ID de la respuesta se asignará después de crearla
+								formularioId: formularioId,
+								dependenciaId: dependencia,
+							},
+						};
+					}),
 				};
-			  }),
-			};
-	  
-			const response = await axios.post(
-			  "http://localhost:4000/respuestas",
-			  createRespuestaDto
-			);
-	  
-			const respuestasCreadas = response.data;
-	  
-			// Actualizar los IDs de las respuestas en el objeto createRespuestaDto
-			const createRespuestaDtoConRespuestaIds = createRespuestaDto.preguntasRespuestas.map(
-			  (preguntaRespuesta, index) => {
-				preguntaRespuesta.comentario.respuestaId = respuestasCreadas[index].id;
-				return preguntaRespuesta;
-			  }
-			);
-	  
-			// Enviar el objeto actualizado con los IDs de las respuestas
-			await axios.post(
-			  "http://localhost:4000/respuestas",
-			  { preguntasRespuestas: createRespuestaDtoConRespuestaIds }
-			);
-	  
-			setEdad("");
-			setGenero("");
-			setDependencia("");
-			setUserComments({});
-			setRespuestas({});
-			setSnackbarMessage("Respuestas enviadas correctamente");
-			setSnackbarSeverity("success");
-			setOpenSnackbar(true);
-		  } catch (error) {
-			console.error(error);
-			setSnackbarMessage("Error al enviar las respuestas");
-			setSnackbarSeverity("error");
-			setOpenSnackbar(true);
-		  }
+
+				const response = await axios.post(
+					"http://localhost:4000/respuestas",
+					createRespuestaDto
+				);
+
+				const respuestasCreadas = response.data;
+
+				// Actualizar los IDs de las respuestas en el objeto createRespuestaDto
+				const createRespuestaDtoConRespuestaIds = createRespuestaDto.preguntasRespuestas.map(
+					(preguntaRespuesta, index) => {
+						preguntaRespuesta.comentario.respuestaId = respuestasCreadas[index].id;
+						return preguntaRespuesta;
+					}
+				);
+
+				// Enviar el objeto actualizado con los IDs de las respuestas
+				await axios.post(
+					"http://localhost:4000/respuestas",
+					{ preguntasRespuestas: createRespuestaDtoConRespuestaIds }
+				);
+
+				setEdad("");
+				setGenero("");
+				setDependencia("");
+				setUserComments({});
+				setRespuestas({});
+				setSnackbarMessage("Respuestas enviadas correctamente");
+				setSnackbarSeverity("success");
+				setOpenSnackbar(true);
+			} catch (error) {
+				console.error(error);
+				setSnackbarMessage("Error al enviar las respuestas");
+				setSnackbarSeverity("error");
+				setOpenSnackbar(true);
+			}
 		}
-	  }
+	}
 
 	return (
 		<Container className="mb80px">
@@ -376,9 +376,11 @@ function Preguntas() {
 									width={"100%"}
 									value={pregunta.id}
 								>
-									<Typography className="mb20px">
-										<Box sx={{ fontSize: 18 }}>{pregunta.descripcion}</Box>
-									</Typography>
+									<div className="mb20px">
+										<Typography variant="body2">
+											{pregunta.descripcionComentario}
+										</Typography>
+									</div>
 									<Grid container spacing={2}>
 										{pregunta.tipoRespuesta &&
 											tipoRespuesta[pregunta.tipoPreguntaId] && (
