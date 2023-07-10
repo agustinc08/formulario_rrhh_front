@@ -378,7 +378,7 @@ function Preguntas() {
 								>
 									<div className="mb20px">
 										<Typography variant="body2">
-											{pregunta.descripcionComentario}
+											{pregunta.descripcion}
 										</Typography>
 									</div>
 									<Grid container spacing={2}>

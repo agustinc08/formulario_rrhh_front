@@ -63,7 +63,7 @@ function Login({ onLogin }) {
           dependencia.rol === "dependencia" ? "dependencia" : "admin",
           dependencia.id,
         );
-        history.push(rol === "admin" ? "/creacion" : "/seleccion");
+        history.push(rol === "admin" ? "/creacion" : "/inicio");
       } else {
         setErrorMessage("La clave es incorrecta para esta dependencia.");
         setOpen(true);

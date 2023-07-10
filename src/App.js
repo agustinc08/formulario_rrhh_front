@@ -39,21 +39,21 @@ function App() {
 
   return (
     <Router>
-    <Switch>
-      <Route exact path="/">
-        <Redirect to={redirectPath} />
-      </Route>
-      <Route exact path="/inicio">
-        {isLoggedIn ? (
-          <React.Fragment>
-            <Navbar />
-            <Inicio />
-            <Footer />
-          </React.Fragment>
-        ) : (
-          <Redirect to="/login" />
-        )}
-      </Route>
+      <Switch>
+        <Route exact path="/">
+          <Redirect to={redirectPath} />
+        </Route>
+        <Route exact path="/inicio">
+          {isLoggedIn ? (
+            <React.Fragment>
+              {rol === "admin" && <Navbar />}
+              <Inicio />
+              <Footer />
+            </React.Fragment>
+          ) : (
+            <Redirect to="/login" />
+          )}
+        </Route>
         <Route exact path="/formulario">
           {isLoggedIn ? (
             <React.Fragment>
@@ -122,7 +122,7 @@ function App() {
             <Login onLogin={handleLogin} />
           )}
         </Route>
-          
+
         <React.Fragment>
           <Navbar />
           <Route component={NotFound} />
