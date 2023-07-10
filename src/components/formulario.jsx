@@ -286,7 +286,7 @@ function Preguntas() {
 									value={pregunta.id}
 								>
 									<div className="mb20px">
-										<Typography variant="body2">
+										<Typography variant="h6">
 											{pregunta.descripcion}
 										</Typography>
 									</div>

@@ -313,9 +313,20 @@ const Buscador = () => {
                     ? sortConfig.direction
                     : "asc"
                 }
-                onClick={() => handleSort("tipoRespuesta")}
+                onClick={() => handleSort("tipoRespuesta.descripcion")}
               >
                 Respuestas
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortConfig.field === "preguntaId"}
+                direction={
+                  sortConfig.field === "preguntaId" ? sortConfig.direction : "asc"
+                }
+                onClick={() => handleSort("preguntaId")}
+              >
+                Pregunta
               </TableSortLabel>
             </TableCell>
             <TableCell>
@@ -342,8 +353,9 @@ const Buscador = () => {
               <TableCell>{respuesta.edad}</TableCell>
               <TableCell>{respuesta.genero}</TableCell>
               <TableCell>
-              {respuesta.tipoRespuestaId}
+                {respuesta.tipoRespuestaId}
               </TableCell>
+              <TableCell>{respuesta.preguntaId}</TableCell>
               <TableCell>
                 {respuesta.comentario &&
                   respuesta.comentario.respuestaComentario}
