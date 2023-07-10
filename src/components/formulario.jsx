@@ -219,10 +219,10 @@ function Preguntas() {
 				return {
 				  preguntaId: pregunta.id,
 				  formularioId: formularioId,
-				  tipoRespuestaId: respuestas[pregunta.id]?.tipoRespuesta || null,
 				  dependenciaId: dependencia,
 				  edad: edad,
 				  genero: genero,
+				  tipoRespuestaId: respuestas[pregunta.id]?.tipoRespuesta || null,
 				  comentario: {
 					respuestaComentario: userComments[pregunta.id] || "",
 					preguntaId: pregunta.id,
