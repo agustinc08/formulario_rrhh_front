@@ -176,6 +176,7 @@ const Buscador = () => {
       );
     } else {
       setSelectedDependencias([...selectedDependencias, value]);
+      console.log("dalebokeeeeee")
     }
   };
 
