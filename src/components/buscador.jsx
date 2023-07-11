@@ -27,6 +27,9 @@ const Buscador = () => {
   const [dependencias, setDependencias] = useState([]);
   const [respuestas, setRespuestas] = useState([]);
   const [formularios, setFormularios] = useState([]);
+  const [tipoRespuestaDescripciones, setTipoRespuestaDescripciones] = useState({});
+  const [preguntaDescripciones, setPreguntaDescripciones] = useState({});
+  const [dependenciaNombres, setDependenciaNombres] = useState({});
   const [selectedPregunta, setSelectedPregunta] = useState("");
   const [selectedDependencia, setSelectedDependencia] = useState("");
   const [selectedFormulario, setSelectedFormulario] = useState("");
@@ -43,6 +46,12 @@ const Buscador = () => {
         const data = await response.json();
         setPreguntas(data);
         console.log("Preguntas obtenidas:", data);
+    
+        const descripciones = {};
+        data.forEach((pregunta) => {
+          descripciones[pregunta.id] = pregunta.descripcion;
+        });
+        setPreguntaDescripciones(descripciones);
       } catch (error) {
         console.error("Error al obtener las preguntas:", error);
       }
@@ -54,6 +63,12 @@ const Buscador = () => {
         const data = await response.json();
         setDependencias(data);
         console.log("Dependencias obtenidas:", data);
+    
+        const nombres = {};
+        data.forEach((dependencia) => {
+          nombres[dependencia.id] = dependencia.nombreDependencia;
+        });
+        setDependenciaNombres(nombres);
       } catch (error) {
         console.error("Error al obtener las dependencias:", error);
       }
@@ -70,6 +85,21 @@ const Buscador = () => {
       }
     };
 
+    const obtenerTipoRespuesta = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/tipoRespuesta");
+        const data = await response.json();
+        const descripciones = {};
+        data.forEach((tipoRespuesta) => {
+          descripciones[tipoRespuesta.id] = tipoRespuesta.descripcion;
+        });
+        setTipoRespuestaDescripciones(descripciones);
+      } catch (error) {
+        console.error("Error al obtener los tipos de respuesta:", error);
+      }
+    };
+
+    obtenerTipoRespuesta();
     obtenerPreguntas();
     obtenerDependencias();
     obtenerFormularios();
@@ -348,14 +378,12 @@ const Buscador = () => {
           {sortedRespuestas.map((respuesta) => (
             <TableRow key={respuesta.id}>
               <TableCell>{respuesta.id}</TableCell>
-              <TableCell>{respuesta.createdAt}</TableCell>
-              <TableCell>{respuesta.dependenciaId}</TableCell>
+              <TableCell>{new Date(respuesta.createdAt).toLocaleDateString()}</TableCell>
+              <TableCell>{dependenciaNombres[respuesta.dependenciaId]}</TableCell>
               <TableCell>{respuesta.edad}</TableCell>
               <TableCell>{respuesta.genero}</TableCell>
-              <TableCell>
-                {respuesta.tipoRespuestaId}
-              </TableCell>
-              <TableCell>{respuesta.preguntaId}</TableCell>
+              <TableCell>{tipoRespuestaDescripciones[respuesta.tipoRespuestaId]}</TableCell>
+              <TableCell>{preguntaDescripciones[respuesta.preguntaId]}</TableCell>
               <TableCell>
                 {respuesta.comentario &&
                   respuesta.comentario.respuestaComentario}
