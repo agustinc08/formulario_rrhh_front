@@ -10,6 +10,8 @@ import {
   InputLabel,
   Box,
   Divider,
+  Chip,
+  ListItemIcon,
 } from "@material-ui/core";
 import {
   Table,
@@ -19,6 +21,7 @@ import {
   TableCell,
   TableSortLabel,
 } from "@material-ui/core";
+import CheckIcon from "@material-ui/icons/Check";
 import "../css/global.css";
 import useStyles from "../styles/buscadorStyle";
 
@@ -27,11 +30,15 @@ const Buscador = () => {
   const [dependencias, setDependencias] = useState([]);
   const [respuestas, setRespuestas] = useState([]);
   const [formularios, setFormularios] = useState([]);
-  const [tipoRespuestaDescripciones, setTipoRespuestaDescripciones] = useState({});
+  const [tipoRespuestaDescripciones, setTipoRespuestaDescripciones] = useState(
+    {}
+  );
   const [preguntaDescripciones, setPreguntaDescripciones] = useState({});
   const [dependenciaNombres, setDependenciaNombres] = useState({});
-  const [selectedPregunta, setSelectedPregunta] = useState("");
-  const [selectedDependencia, setSelectedDependencia] = useState("");
+  const [selectedPreguntas, setSelectedPreguntas] = useState([]);
+  const [selectedPregunta, setSelectedPregunta] = useState([]);
+  const [selectedDependencia, setSelectedDependencia] = useState([]); // Cambio en el estado para almacenar múltiples selecciones
+  const [selectedDependencias, setSelectedDependencias] = useState([]); // Cambio en el estado para almacenar múltiples selecciones
   const [selectedFormulario, setSelectedFormulario] = useState("");
   const [sortConfig, setSortConfig] = useState({
     field: null,
@@ -46,7 +53,7 @@ const Buscador = () => {
         const data = await response.json();
         setPreguntas(data);
         console.log("Preguntas obtenidas:", data);
-    
+
         const descripciones = {};
         data.forEach((pregunta) => {
           descripciones[pregunta.id] = pregunta.descripcion;
@@ -63,7 +70,7 @@ const Buscador = () => {
         const data = await response.json();
         setDependencias(data);
         console.log("Dependencias obtenidas:", data);
-    
+
         const nombres = {};
         data.forEach((dependencia) => {
           nombres[dependencia.id] = dependencia.nombreDependencia;
@@ -110,9 +117,7 @@ const Buscador = () => {
       let url = "http://localhost:4000/respuestas";
 
       const preguntaId =
-        selectedPregunta !== undefined && selectedPregunta !== ""
-          ? parseInt(selectedPregunta)
-          : null;
+        selectedPregunta.length > 0 ? selectedPregunta.map(Number) : null;
 
       let dependenciaId = null;
       if (selectedDependencia !== "") {
@@ -151,13 +156,27 @@ const Buscador = () => {
   };
 
   const handlePreguntaChange = (event) => {
-    setSelectedPregunta(event.target.value);
-    console.log("Pregunta seleccionada:", event.target.value);
+    const value = event.target.value;
+    const isSelected = selectedPreguntas.includes(value);
+
+    if (isSelected) {
+      setSelectedPreguntas(selectedPreguntas.filter((item) => item !== value));
+    } else {
+      setSelectedPreguntas([...selectedPreguntas, value]);
+    }
   };
 
   const handleDependenciaChange = (event) => {
-    setSelectedDependencia(event.target.value);
-    console.log("Dependencia seleccionada:", event.target.value);
+    const value = event.target.value;
+    const isSelected = selectedDependencias.includes(value);
+
+    if (isSelected) {
+      setSelectedDependencias(
+        selectedDependencias.filter((item) => item !== value)
+      );
+    } else {
+      setSelectedDependencias([...selectedDependencias, value]);
+    }
   };
 
   const handleFormularioChange = (event) => {
@@ -186,6 +205,7 @@ const Buscador = () => {
           }
         })
       : [];
+
   return (
     <div className="divMain mb80px">
       <Container>
@@ -200,19 +220,34 @@ const Buscador = () => {
             <FormControl variant="standard" fullWidth size="small">
               <InputLabel>Pregunta</InputLabel>
               <Select
-                value={selectedPregunta}
+                value={selectedPreguntas}
                 onChange={handlePreguntaChange}
                 variant="standard"
                 className={classes.select}
                 fullWidth
+                multiple
+                renderValue={(selected) => (
+                  <div className={classes.chips}>
+                    {selected.map((value) => (
+                      <Chip
+                        key={value}
+                        label={preguntaDescripciones[value]}
+                        className={classes.chip}
+                      />
+                    ))}
+                  </div>
+                )}
               >
-                <MenuItem value="">Todas las preguntas</MenuItem>
-                {preguntas.length > 0 &&
-                  preguntas.map((pregunta) => (
-                    <MenuItem key={pregunta.id} value={pregunta.id}>
-                      {pregunta.descripcion}
-                    </MenuItem>
-                  ))}
+                {preguntas.map((pregunta) => (
+                  <MenuItem key={pregunta.id} value={pregunta.id}>
+                    {selectedPreguntas.includes(pregunta.id) ? (
+                      <ListItemIcon>
+                        <CheckIcon />
+                      </ListItemIcon>
+                    ) : null}
+                    {pregunta.descripcion}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
@@ -220,22 +255,39 @@ const Buscador = () => {
             <FormControl variant="standard" fullWidth size="small">
               <InputLabel>Dependencia</InputLabel>
               <Select
-                value={selectedDependencia}
+                value={selectedDependencias}
                 onChange={handleDependenciaChange}
                 variant="standard"
                 className={classes.select}
                 fullWidth
+                multiple
+                renderValue={(selected) => (
+                  <div className={classes.chips}>
+                    {selected.map((value) => (
+                      <Chip
+                        key={value}
+                        label={dependenciaNombres[value]}
+                        className={classes.chip}
+                      />
+                    ))}
+                  </div>
+                )}
               >
-                <MenuItem value="">Todas las dependencias</MenuItem>
-                {dependencias.length > 0 &&
-                  dependencias.map((dependencia) => (
-                    <MenuItem
-                      key={dependencia.id}
-                      value={dependencia.nombreDependencia}
-                    >
-                      {dependencia.nombreDependencia}
-                    </MenuItem>
-                  ))}
+                {dependencias.map((dependencia) => (
+                  <MenuItem
+                    key={dependencia.id}
+                    value={dependencia.nombreDependencia}
+                  >
+                    {selectedDependencias.includes(
+                      dependencia.nombreDependencia
+                    ) ? (
+                      <ListItemIcon>
+                        <CheckIcon />
+                      </ListItemIcon>
+                    ) : null}
+                    {dependencia.nombreDependencia}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
@@ -250,12 +302,11 @@ const Buscador = () => {
                 fullWidth
               >
                 <MenuItem value="">Todos los formularios</MenuItem>
-                {formularios.length > 0 &&
-                  formularios.map((formulario) => (
-                    <MenuItem key={formulario.id} value={formulario.nombre}>
-                      {formulario.nombre}
-                    </MenuItem>
-                  ))}
+                {formularios.map((formulario) => (
+                  <MenuItem key={formulario.id} value={formulario.nombre}>
+                    {formulario.nombre}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
@@ -352,7 +403,9 @@ const Buscador = () => {
               <TableSortLabel
                 active={sortConfig.field === "preguntaId"}
                 direction={
-                  sortConfig.field === "preguntaId" ? sortConfig.direction : "asc"
+                  sortConfig.field === "preguntaId"
+                    ? sortConfig.direction
+                    : "asc"
                 }
                 onClick={() => handleSort("preguntaId")}
               >
@@ -378,12 +431,20 @@ const Buscador = () => {
           {sortedRespuestas.map((respuesta) => (
             <TableRow key={respuesta.id}>
               <TableCell>{respuesta.id}</TableCell>
-              <TableCell>{new Date(respuesta.createdAt).toLocaleDateString()}</TableCell>
-              <TableCell>{dependenciaNombres[respuesta.dependenciaId]}</TableCell>
+              <TableCell>
+                {new Date(respuesta.createdAt).toLocaleDateString()}
+              </TableCell>
+              <TableCell>
+                {dependenciaNombres[respuesta.dependenciaId]}
+              </TableCell>
               <TableCell>{respuesta.edad}</TableCell>
               <TableCell>{respuesta.genero}</TableCell>
-              <TableCell>{tipoRespuestaDescripciones[respuesta.tipoRespuestaId]}</TableCell>
-              <TableCell>{preguntaDescripciones[respuesta.preguntaId]}</TableCell>
+              <TableCell>
+                {tipoRespuestaDescripciones[respuesta.tipoRespuestaId]}
+              </TableCell>
+              <TableCell>
+                {preguntaDescripciones[respuesta.preguntaId]}
+              </TableCell>
               <TableCell>
                 {respuesta.comentario &&
                   respuesta.comentario.respuestaComentario}
