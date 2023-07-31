@@ -25,27 +25,38 @@ function Inicio() {
   const [secciones, setSecciones] = useState([]);
 
   useEffect(() => {
-    const fetchInicioData = async () => {
+    const fetchActiveInicio = async () => {
       try {
-        const response = await fetch("http://localhost:4000/inicio");
+        const response = await fetch("http://localhost:4000/inicio/active"); // Use a new route to fetch the active inicio
         const data = await response.json();
         setInicioData(data);
       } catch (error) {
-        console.log("Error fetching inicio data:", error);
+        console.log("Error fetching active inicio data:", error);
       }
-    };
+    };    
 
     const fetchSecciones = async () => {
       try {
-        const response = await fetch("http://localhost:4000/secciones");
+        const response = await fetch("http://localhost:4000/secciones/conFormularioActivo"); // Use a new route to fetch secciones with active formulario
+        if (!response.ok) {
+          throw new Error('Failed to fetch secciones with active formulario');
+        }
         const data = await response.json();
-        setSecciones(data);
+        // Validate the received data before setting the state
+        if (Array.isArray(data) && data.length > 0) {
+          // Validate each seccion's id to ensure it is a valid integer
+          const validSecciones = data.filter((seccion) => typeof seccion.id === 'number');
+          setSecciones(validSecciones);
+        } else {
+          console.log("No secciones with active formulario found.");
+        }
       } catch (error) {
-        console.log("Error fetching secciones:", error);
+        console.log("Error fetching secciones with active formulario:", error);
       }
     };
+    
 
-    fetchInicioData();
+    fetchActiveInicio(); 
     fetchSecciones();
   }, []);
 
@@ -57,7 +68,7 @@ function Inicio() {
     <Container className="mb80px">
       {isLoggedIn() ? (
         <>
-          {inicioData && (
+              {inicioData ? ( // Check if inicioData exists
             <>
               <Typography variant="h1" className={classes.tituloPrincipal}>
                 {inicioData.tituloPrincipal}
@@ -106,6 +117,10 @@ function Inicio() {
                 </Button>
               </Box>
             </>
+          ) : (
+            <Typography variant="body1">
+              No hay un formulario activo actualmente.
+            </Typography>
           )}
         </>
       ) : (
