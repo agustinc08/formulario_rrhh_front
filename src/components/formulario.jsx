@@ -82,42 +82,38 @@ function Preguntas() {
 	}, []);
 
 	const validarSeccionCompleta = (seccionId) => {
-		console.log("validarSeccionCompleta: chek seccion completa.");
-	
+		console.log("validarSeccionCompleta: check seccion completa.");
+	  
 		const preguntas = preguntasPorSeccion[seccionId];
 		if (!preguntas) return false;
-	
+	  
+		const preguntasSinResponder = {}; // Agregar esto para restablecer preguntasSinResponder en cada validación
+	  
 		for (const pregunta of preguntas) {
-			if (!pregunta) continue;
-			if (!respuestas[pregunta.id]?.tipoRespuesta) {
-			  console.log("validarSeccionCompleta: Pregunta Incompleta:", pregunta.id);
-			  return false;
-			}
-			if (
-				pregunta.tipoRespuesta &&
-				!respuestas[pregunta.id]?.tipoRespuesta
-			  ){
-			  // La pregunta tiene tipoRespuesta pero no ha sido respondida
-			  console.log("Pregunta sin responder:", pregunta.id);
-			  preguntasSinResponder[pregunta.id] = true;
-			}else if (
-				pregunta.tieneComentario &&
-				(!userComments[pregunta.id] ||
-				  !userComments[pregunta.id].respuestaComentario ||
-				  userComments[pregunta.id].respuestaComentario.trim() === "")
-			  ){
-			  // La pregunta tiene comentario pero no se ha proporcionado
-			  console.log("Pregunta incompleta:", pregunta.id);
-			  preguntasSinResponder[pregunta.id] = true;
-			} else {
-			  // La pregunta ha sido respondida correctamente
-			  preguntasSinResponder[pregunta.id] = false;
-			}
+		  if (!pregunta) continue;
+		  if (!respuestas[pregunta.id]?.tipoRespuesta) {
+			console.log("validarSeccionCompleta: Pregunta Incompleta:", pregunta.id);
+			return false;
 		  }
-	
+		  if (
+			pregunta.tieneComentario &&
+			(!userComments[pregunta.id] ||
+			  !userComments[pregunta.id].respuestaComentario ||
+			  userComments[pregunta.id].respuestaComentario.trim() === "")
+		  ) {
+			// La pregunta tiene comentario pero no se ha proporcionado
+			console.log("Pregunta incompleta:", pregunta.id);
+			preguntasSinResponder[pregunta.id] = true;
+		  } else {
+			// La pregunta ha sido respondida correctamente
+			preguntasSinResponder[pregunta.id] = false;
+		  }
+		}
+	  
+		setPreguntasSinResponder(preguntasSinResponder); // Actualizar el estado preguntasSinResponder
 		console.log("validarSeccionCompleta: Section is complete.");
 		return true;
-	};
+	  };
 
 	useEffect(() => {
 
@@ -161,6 +157,17 @@ function Preguntas() {
 		  setCurrentPage(1);
 		  setPreguntaActual(response.data[0]?.id);
 	  
+		  // Actualizar el estado preguntasSinResponder para la nueva sección
+		  const preguntasSinResponder = {};
+		  for (const pregunta of response.data) {
+			if (pregunta.tieneComentario && (!userComments[pregunta.id] || userComments[pregunta.id].trim() === "")) {
+			  preguntasSinResponder[pregunta.id] = true;
+			} else {
+			  preguntasSinResponder[pregunta.id] = false;
+			}
+		  }
+		  setPreguntasSinResponder(preguntasSinResponder);
+	  
 		  const seccionCompleta = validarSeccionCompleta(seccionId);
 		  setSeccionesCompletas((prevSeccionesCompletas) => ({
 			...prevSeccionesCompletas,
@@ -169,7 +176,7 @@ function Preguntas() {
 		} catch (error) {
 		  console.error(error);
 		}
-	  }, [seccionId, validarSeccionCompleta]);
+	  }, [seccionId, validarSeccionCompleta, userComments]);	  
 
 	useEffect(() => {
 		cargarPreguntasPorSeccion();
@@ -216,23 +223,35 @@ function Preguntas() {
 	}
 
 	function handleComentarioChange(event, preguntaId) {
-		console.log("handleComentarioChange: Question:", preguntaId, "Comment:", event.target.value);
+		console.log(
+		  "handleComentarioChange: Question:",
+		  preguntaId,
+		  "Comment:",
+		  event.target.value
+		);
 	  
 		const value = event.target.value;
 	  
 		setUserComments((prevUserComments) => ({
-			...prevUserComments,
-			[preguntaId]: event.target.value, // Set the respuestaComentario as a string directly
-		  }));
+		  ...prevUserComments,
+		  [preguntaId]: {
+			...prevUserComments[preguntaId],
+			respuestaComentario: value,
+		  },
+		}));
 	  
+		// Llamar a validarSeccionCompleta después de actualizar userComments
+		validarSeccionCompleta(seccionId);
+	  }
+	
+	useEffect(() => {
 		// Update the completeness status of the section
 		const seccionCompleta = validarSeccionCompleta(seccionId);
 		setSeccionesCompletas((prevSeccionesCompletas) => ({
 		  ...prevSeccionesCompletas,
 		  [seccionId]: seccionCompleta,
 		}));
-	  }
-
+	  }, [seccionId, userComments]);
 
 	async function getFormularioActivo() {
 		try {
