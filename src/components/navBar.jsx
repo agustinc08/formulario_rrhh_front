@@ -229,10 +229,11 @@ const Navbar = () => {
               <TextField // Agregado para el buscador
                 label="Buscar"
                 variant="outlined"
+                size="small"
                 value={searchValue}
                 onChange={handleSearchChange}
-                fullWidth
                 margin="normal"
+                style={{ width: '90%'}}
               />
               <Table>
                 <TableHead>
