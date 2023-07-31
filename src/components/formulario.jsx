@@ -82,24 +82,38 @@ function Preguntas() {
 	}, []);
 
 	const validarSeccionCompleta = (seccionId) => {
-		console.log("validarSeccionCompleta: Checking section completeness...");
+		console.log("validarSeccionCompleta: chek seccion completa.");
 	
 		const preguntas = preguntasPorSeccion[seccionId];
 		if (!preguntas) return false;
 	
 		for (const pregunta of preguntas) {
+			if (!pregunta) continue;
 			if (!respuestas[pregunta.id]?.tipoRespuesta) {
-				console.log("validarSeccionCompleta: Incomplete question:", pregunta.id);
-				return false;
+			  console.log("validarSeccionCompleta: Pregunta Incompleta:", pregunta.id);
+			  return false;
 			}
 			if (
+				pregunta.tipoRespuesta &&
+				!respuestas[pregunta.id]?.tipoRespuesta
+			  ){
+			  // La pregunta tiene tipoRespuesta pero no ha sido respondida
+			  console.log("Pregunta sin responder:", pregunta.id);
+			  preguntasSinResponder[pregunta.id] = true;
+			}else if (
 				pregunta.tieneComentario &&
-				(!userComments[pregunta.id] || userComments[pregunta.id].trim() === "")
-			) {
-				console.log("validarSeccionCompleta: Missing comment for question:", pregunta.id);
-				return false;
+				(!userComments[pregunta.id] ||
+				  !userComments[pregunta.id].respuestaComentario ||
+				  userComments[pregunta.id].respuestaComentario.trim() === "")
+			  ){
+			  // La pregunta tiene comentario pero no se ha proporcionado
+			  console.log("Pregunta incompleta:", pregunta.id);
+			  preguntasSinResponder[pregunta.id] = true;
+			} else {
+			  // La pregunta ha sido respondida correctamente
+			  preguntasSinResponder[pregunta.id] = false;
 			}
-		}
+		  }
 	
 		console.log("validarSeccionCompleta: Section is complete.");
 		return true;
@@ -137,27 +151,25 @@ function Preguntas() {
 
 	const cargarPreguntasPorSeccion = useCallback(async () => {
 		if (!seccionId) return;
-
+	  
 		try {
-			const response = await axios.get(
-				`http://localhost:4000/preguntas/${seccionId}`
-			);
-			setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
-				...prevPreguntasPorSeccion,
-				[seccionId]: response.data,
-			}));
-			setCurrentPage(1);
-			setPreguntaActual(response.data[0]?.id);
-
-			const seccionCompleta = validarSeccionCompleta(seccionId);
-			setSeccionesCompletas((prevSeccionesCompletas) => ({
-				...prevSeccionesCompletas,
-				[seccionId]: seccionCompleta,
-			}));
+		  const response = await axios.get(`http://localhost:4000/preguntas/${seccionId}`);
+		  setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
+			...prevPreguntasPorSeccion,
+			[seccionId]: response.data,
+		  }));
+		  setCurrentPage(1);
+		  setPreguntaActual(response.data[0]?.id);
+	  
+		  const seccionCompleta = validarSeccionCompleta(seccionId);
+		  setSeccionesCompletas((prevSeccionesCompletas) => ({
+			...prevSeccionesCompletas,
+			[seccionId]: seccionCompleta,
+		  }));
 		} catch (error) {
-			console.error(error);
+		  console.error(error);
 		}
-	}, [seccionId, validarSeccionCompleta, setPreguntaActual]);
+	  }, [seccionId, validarSeccionCompleta]);
 
 	useEffect(() => {
 		cargarPreguntasPorSeccion();
@@ -205,21 +217,21 @@ function Preguntas() {
 
 	function handleComentarioChange(event, preguntaId) {
 		console.log("handleComentarioChange: Question:", preguntaId, "Comment:", event.target.value);
-
+	  
 		const value = event.target.value;
-
+	  
 		setUserComments((prevUserComments) => ({
 			...prevUserComments,
-			[preguntaId]: value,
-		}));
-
+			[preguntaId]: event.target.value, // Set the respuestaComentario as a string directly
+		  }));
+	  
 		// Update the completeness status of the section
 		const seccionCompleta = validarSeccionCompleta(seccionId);
 		setSeccionesCompletas((prevSeccionesCompletas) => ({
-			...prevSeccionesCompletas,
-			[seccionId]: seccionCompleta,
+		  ...prevSeccionesCompletas,
+		  [seccionId]: seccionCompleta,
 		}));
-	}
+	  }
 
 
 	async function getFormularioActivo() {
@@ -235,81 +247,95 @@ function Preguntas() {
 
 	async function enviarRespuestas(event) {
 		event.preventDefault();
-		try {
-			const seccionesIncompletas = Object.values(seccionesCompletas).some(
-				(completa) => completa === false
-			);
-
-			console.log("Edad:", edad);
-			console.log("Género:", genero);
-			console.log("Dependencia:", dependencia);
-
-			if (!edad || !genero || !dependencia) {
-				setSnackbarMessage("Completa todos los campos antes de enviar el formulario");
-				setSnackbarSeverity("error");
-				setOpenSnackbar(true);
-				return;
-			}
-
-			if (seccionesIncompletas) {
-				setSnackbarMessage("Completa todas las preguntas antes de enviar el formulario");
-				setSnackbarSeverity("error");
-				setOpenSnackbar(true);
-				return;
-			}
-
-			const formularioId = await getFormularioActivo();
-			if (!formularioId) {
-				throw new Error("No hay formulario activo");
-			}
-
-			const preguntasRespuestas = Object.entries(respuestas).map(
-				([preguntaId, respuesta]) => {
-					const pregunta = preguntasPorSeccion[seccionId].find(
-						(pregunta) => pregunta.id === parseInt(preguntaId)
-					);
-
-					const respuestaData = {
-						preguntaId: parseInt(preguntaId),
-						formularioId,
-						tipoRespuestaId: respuesta.tipoRespuesta,
-						dependenciaId: dependencia,
-						edad,
-						genero,
-					};
-
-					if (pregunta.tieneComentario) {
-						respuestaData.comentario = {
-							respuestaComentario: userComments[preguntaId],
-							preguntaId: parseInt(preguntaId),
-							respuestaId: respuesta.tipoRespuesta,
-							formularioId,
-							dependenciaId: dependencia,
-						};
-					}
-
-					return respuestaData;
-				}
-			);
-
-			console.log("Data being sent to the server:", preguntasRespuestas);
-
-			const response = await axios.post("http://localhost:4000/respuestas", {
-				preguntasRespuestas,
-			});
-
-			console.log("Response from the server:", response.data);
-
-			setSnackbarMessage("Respuestas enviadas correctamente");
-			setSnackbarSeverity("success");
-		} catch (error) {
-			console.error(error);
-			setSnackbarMessage("Error al enviar las respuestas");
-			setSnackbarSeverity("error");
-		} finally {
-			setOpenSnackbar(true);
+	  
+		// Asegurarse de que las preguntas de la sección actual estén disponibles
+		if (!preguntasPorSeccion[seccionId]) {
+		  await cargarPreguntasPorSeccion();
 		}
-	}
+	  
+		try {
+		  const seccionCompleta = validarSeccionCompleta(seccionId);
+		  if (!edad || !genero || !dependencia || !seccionCompleta) {
+			setSnackbarMessage("Completa todos los campos y preguntas antes de enviar el formulario");
+			setSnackbarSeverity("error");
+			setOpenSnackbar(true);
+			return;
+		  }
+	  
+		  const formularioId = await getFormularioActivo();
+		  if (!formularioId) {
+			throw new Error("No hay formulario activo");
+		  }
+	  
+		  // Validar que todos los comentarios requeridos hayan sido respondidos
+		  const comentariosPendientes = preguntasPorSeccion[seccionId]?.filter((pregunta) => {
+			return pregunta.tieneComentario && (!userComments[pregunta.id] || userComments[pregunta.id].trim() === "");
+		  });
+	  
+		  if (comentariosPendientes.length > 0) {
+			setSnackbarMessage("Completa todos los comentarios antes de enviar el formulario");
+			setSnackbarSeverity("error");
+			setOpenSnackbar(true);
+			return;
+		  }
+	  
+		  const preguntasRespuestas = Object.entries(respuestas).map(([preguntaId, respuesta]) => {
+			const pregunta = preguntasPorSeccion[seccionId].find((preg) => preg.id === parseInt(preguntaId));
+	  
+			// Ensure that pregunta is defined and provide a default value for tieneComentario
+			const tieneComentario = pregunta?.tieneComentario || false;
+	  
+			if (pregunta && pregunta.tipoRespuesta) {
+			  return {
+				preguntaId: parseInt(preguntaId),
+				formularioId,
+				tipoRespuestaId: respuesta.tipoRespuesta,
+				dependenciaId: dependencia,
+				edad,
+				genero,
+				tieneComentario, // Include tieneComentario in the request payload
+				comentario: {
+				  respuestaComentario: tieneComentario ? userComments[pregunta.id] || "" : undefined,
+				  preguntaId: parseInt(preguntaId),
+				  respuestaId: respuesta.tipoRespuesta,
+				  formularioId,
+				  dependenciaId: dependencia,
+				},
+			  };
+			} else {
+			  return {
+				preguntaId: parseInt(preguntaId),
+				formularioId,
+				tipoRespuestaId: respuesta.tipoRespuesta,
+				dependenciaId: dependencia,
+				edad,
+				genero,
+			  };
+			}
+		  });
+	  
+		  console.log("Data being sent to the server:", preguntasRespuestas);
+	  
+		  const response = await axios.post("http://localhost:4000/respuestas", {
+			preguntasRespuestas,
+		  });
+
+		  console.log("Data being sent to the server:", preguntasRespuestas);
+	  
+		  console.log("Response from the server:", response.data);
+	  
+		  console.log(response);
+	  
+		  setSnackbarMessage("Respuestas enviadas correctamente");
+		  setSnackbarSeverity("success");
+		} catch (error) {
+		  console.error(error);
+		  setSnackbarMessage("Error al enviar las respuestas");
+		  setSnackbarSeverity("error");
+		} finally {
+		  setOpenSnackbar(true);
+		}
+	  }
 
 	return (
 		<Container className="mb80px">
