@@ -118,9 +118,11 @@ function Inicio() {
               </Box>
             </>
           ) : (
-            <Typography variant="body1">
-              No hay un formulario activo actualmente.
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+              <Typography variant="body1">
+                No hay un formulario activo actualmente.
+              </Typography>
+            </Box>
           )}
         </>
       ) : (

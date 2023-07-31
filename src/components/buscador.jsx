@@ -144,7 +144,7 @@ const Buscador = () => {
       const data = await response.json();
       setRespuestas(data);
     } catch (error) {
-      console.error("Error al buscar respuestas:", error);
+      console.error("Error al buscar respuestas: ", error);
     }
   };
 
@@ -159,7 +159,7 @@ const Buscador = () => {
 
   const handleFormularioChange = (event) => {
     setSelectedFormulario(event.target.value);
-    console.log("Formulario seleccionado:", event.target.value);
+    console.log("Formulario seleccionado: ", event.target.value);
   };
 
   const handleSort = (field) => {
@@ -196,7 +196,7 @@ const Buscador = () => {
         <Grid container spacing={4} className={classes.centrar}>
           <Grid item xs={12} sm={4} lg={3}>
             <FormControl variant="standard" fullWidth size="small">
-              <InputLabel>Pregunta</InputLabel>
+              <InputLabel>Preguntas</InputLabel>
               <Select
                 value={selectedPregunta || []}
                 onChange={handlePreguntaChange}
@@ -234,9 +234,12 @@ const Buscador = () => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4} lg={3}>
-            <FormControl className={classes.textField}>
+            <FormControl variant="standard" fullWidth size="small">
               <InputLabel id="dependencias-label">Dependencias</InputLabel>
               <Select
+                variant="standard"
+                className={classes.select}
+                fullWidth
                 labelId="dependencias-label"
                 multiple
                 value={selectedDependencias || []}
