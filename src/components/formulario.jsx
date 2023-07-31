@@ -398,6 +398,7 @@ function Preguntas() {
 									borderRadius={5}
 									p={2}
 									mb={2}
+									mt={4}
 									width={"100%"}
 									value={pregunta.id}
 								>
