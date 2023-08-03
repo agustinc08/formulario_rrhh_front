@@ -35,6 +35,7 @@ function Preguntas() {
   const [seccionId, setSeccionId] = useState(null);
   const [secciones, setSecciones] = useState([]);
   const [preguntasPorSeccion, setPreguntasPorSeccion] = useState({});
+  const [userComments, setUserComments] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [respuestas, setRespuestas] = useState({});
   const [tipoRespuesta, setTipoRespuesta] = useState({});
@@ -45,12 +46,28 @@ function Preguntas() {
   const [preguntasSinResponder, setPreguntasSinResponder] = useState({});
   const [preguntaActual, setPreguntaActual] = useState(null);
   const [seccionesCompletas, setSeccionesCompletas] = useState({});
-  const [activeFormularioId, setActiveFormularioId] = useState(null);
-  const [userComments, setUserComments] = useState({});
-  const [userCommentsBySection, setUserCommentsBySection] = useState({});
+
+  const validarSeccionCompleta = (seccionId) => {
+    const preguntas = preguntasPorSeccion[seccionId];
+    if (!preguntas) return false;
+
+    for (const pregunta of preguntas) {
+      if (!respuestas[pregunta.id] || !respuestas[pregunta.id].tipoRespuesta) {
+        return false;
+      }
+      if (
+        pregunta.tieneComentario &&
+        (!userComments[pregunta.id] || userComments[pregunta.id].trim() === "")
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  };
 
   useEffect(() => {
-    async function cargarDependencias() {
+    async function fetchData() {
       try {
         const { data } = await axios.get("http://localhost:4000/dependencias");
         setDependencias(data);
@@ -58,7 +75,7 @@ function Preguntas() {
         console.error(error);
       }
     }
-    cargarDependencias();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -82,70 +99,12 @@ function Preguntas() {
     fetchTipoRespuesta();
   }, []);
 
-  const validarSeccionCompleta = useCallback(
-    (seccionId) => {
-      console.log("validarSeccionCompleta: check seccion completa.");
-
-      const preguntas = preguntasPorSeccion[seccionId];
-      if (!preguntas) return false;
-
-      const preguntasSinResponder = {}; // Agregar esto para restablecer preguntasSinResponder en cada validación
-
-      for (const pregunta of preguntas) {
-        if (!pregunta) continue;
-        if (!respuestas[pregunta.id]?.tipoRespuesta) {
-          console.log(
-            "validarSeccionCompleta: Pregunta Incompleta:",
-            pregunta.id
-          );
-          return false;
-        }
-        if (
-          pregunta.tieneComentario &&
-          (!userComments[pregunta.id] ||
-            !userComments[pregunta.id].respuestaComentario ||
-            userComments[pregunta.id].respuestaComentario.trim() === "")
-        ) {
-          // La pregunta tiene comentario pero no se ha proporcionado
-          console.log("Pregunta incompleta:", pregunta.id);
-          preguntasSinResponder[pregunta.id] = true;
-        } else {
-          // La pregunta ha sido respondida correctamente
-          preguntasSinResponder[pregunta.id] = false;
-        }
-      }
-
-      setPreguntasSinResponder(preguntasSinResponder); // Actualizar el estado preguntasSinResponder
-      console.log("validarSeccionCompleta: Section is complete.");
-      return true;
-    },
-    [preguntasPorSeccion, respuestas, userComments]
-  );
-
   useEffect(() => {
-    async function getActiveFormularioId() {
-      try {
-        const { data } = await axios.get("http://localhost:4000/formulario");
-        const formularioActivo = data.find(
-          (formulario) => formulario.estaActivo
-        );
-        return formularioActivo ? formularioActivo.id : null;
-      } catch (error) {
-        console.error(error);
-        return null;
-      }
-    }
-
     async function cargarSecciones() {
       try {
-        const formularioId = await getActiveFormularioId();
-        if (formularioId) {
-          const { data } = await axios.get(
-            `http://localhost:4000/formulario/${formularioId}/secciones`
-          );
-          setSecciones(data);
-          setSeccionId(data[0]?.id); // Establecer la primera sección como sección actual
-        }
+        const { data } = await axios.get("http://localhost:4000/secciones");
+        setSecciones(data);
+        setSeccionId(data[0]?.id); // Establecer la primera sección como sección actual
       } catch (error) {
         console.error(error);
       }
@@ -154,53 +113,34 @@ function Preguntas() {
   }, []);
 
   const cargarPreguntasPorSeccion = useCallback(async () => {
-    try {
-      for (const seccion of secciones) {
-        const response = await axios.get(
-          `http://localhost:4000/preguntas/${seccion.id}`
-        );
-        setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
-          ...prevPreguntasPorSeccion,
-          [seccion.id]: response.data,
-        }));
+    if (!seccionId) return;
 
-        // Actualizar el estado preguntasSinResponder para la nueva sección
-        const preguntasSinResponder = {};
-        for (const pregunta of response.data) {
-          if (
-            pregunta.tieneComentario &&
-            userComments[`${seccion.id}-${pregunta.id}`] &&
-            typeof userComments[`${seccion.id}-${pregunta.id}`] === "string"
-          ) {
-            // Llamar a trim() solo si userComments[`${seccion.id}-${pregunta.id}`] es una cadena
-            if (userComments[`${seccion.id}-${pregunta.id}`].trim() === "") {
-              // La pregunta tiene comentario pero no se ha proporcionado
-              console.log("Pregunta incompleta:", pregunta.id);
-              preguntasSinResponder[`${seccion.id}-${pregunta.id}`] = true;
-            } else {
-              // La pregunta ha sido respondida correctamente
-              preguntasSinResponder[`${seccion.id}-${pregunta.id}`] = false;
-            }
-          } else {
-            // Si no hay comentario o no es una cadena, tratar como incompleta
-            preguntasSinResponder[`${seccion.id}-${pregunta.id}`] = true;
-          }
-        }
-        setPreguntasSinResponder(preguntasSinResponder);
-        const seccionCompleta = validarSeccionCompleta(seccion.id);
-        setSeccionesCompletas((prevSeccionesCompletas) => ({
-          ...prevSeccionesCompletas,
-          [seccion.id]: seccionCompleta,
-        }));
-      }
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/preguntas/${seccionId}`
+      );
+      setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
+        ...prevPreguntasPorSeccion,
+        [seccionId]: response.data,
+      }));
+      setCurrentPage(1);
+      setPreguntaActual(response.data[0]?.id);
+
+      const seccionCompleta = validarSeccionCompleta(seccionId);
+      setSeccionesCompletas((prevSeccionesCompletas) => ({
+        ...prevSeccionesCompletas,
+        [seccionId]: seccionCompleta,
+      }));
     } catch (error) {
       console.error(error);
     }
-  }, [secciones, userComments, validarSeccionCompleta]);
+  }, [seccionId, validarSeccionCompleta, setPreguntaActual]);
 
   useEffect(() => {
-    cargarPreguntasPorSeccion();
-  }, []);
+    (async () => {
+      await cargarPreguntasPorSeccion();
+    })();
+  }, [cargarPreguntasPorSeccion]);
 
   useEffect(() => {
     if (preguntasPorSeccion[seccionId]) {
@@ -214,7 +154,13 @@ function Preguntas() {
     } else {
       cargarPreguntasPorSeccion();
     }
-  }, [seccionId, currentPage, preguntasPorSeccion]);
+  }, [
+    seccionId,
+    currentPage,
+    preguntasPorSeccion,
+    cargarPreguntasPorSeccion,
+    setPreguntas,
+  ]);
 
   function handleEdadChange(event) {
     setEdad(event.target.value);
@@ -229,35 +175,13 @@ function Preguntas() {
   }
 
   function handleComentarioChange(event, preguntaId) {
-      const value = event.target.value;
+    const value = event.target.value;
 
     setUserComments((prevUserComments) => ({
       ...prevUserComments,
-      [preguntaId]: {
-        ...prevUserComments[preguntaId],
-        respuestaComentario: value,
-      },
+      [preguntaId]: value,
     }));
-
-    // Actualizar preguntasSinResponder para la pregunta actual
-    setPreguntasSinResponder((prevPreguntasSinResponder) => ({
-      ...prevPreguntasSinResponder,
-      [preguntaId]: value.trim() === "",
-    }));
-
-    // Llamar a validarSeccionCompleta después de actualizar userComments
-    validarSeccionCompleta(seccionId);
   }
-
-  useEffect(() => {
-    // Update the completeness status of the section
-    const seccionCompleta = validarSeccionCompleta(seccionId);
-    setSeccionesCompletas((prevSeccionesCompletas) => ({
-      ...prevSeccionesCompletas,
-      [seccionId]: seccionCompleta,
-    }));
-  }, [seccionId, userComments, validarSeccionCompleta]);
-
   async function getFormularioActivo() {
     try {
       const { data } = await axios.get("http://localhost:4000/formulario");
@@ -271,17 +195,23 @@ function Preguntas() {
 
   async function enviarRespuestas(event) {
     event.preventDefault();
-
-    // Asegurarse de que las preguntas de la sección actual estén disponibles
-    if (!preguntasPorSeccion[seccionId]) {
-      await cargarPreguntasPorSeccion();
-    }
-
     try {
-      const seccionCompleta = validarSeccionCompleta(seccionId);
-      if (!edad || !genero || !dependencia || !seccionCompleta) {
+      const seccionesIncompletas = Object.values(seccionesCompletas).some(
+        (completa) => completa === false
+      );
+
+      if (!edad || !genero || !dependencia) {
         setSnackbarMessage(
-          "Completa todos los campos y preguntas antes de enviar el formulario"
+          "Completa todos los campos antes de enviar el formulario"
+        );
+        setSnackbarSeverity("error");
+        setOpenSnackbar(true);
+        return;
+      }
+
+      if (seccionesIncompletas) {
+        setSnackbarMessage(
+          "Completa todas las preguntas antes de enviar el formulario"
         );
         setSnackbarSeverity("error");
         setOpenSnackbar(true);
@@ -292,80 +222,26 @@ function Preguntas() {
       if (!formularioId) {
         throw new Error("No hay formulario activo");
       }
-
-      // Validar que todos los comentarios requeridos hayan sido respondidos
-      const comentariosPendientes = preguntasPorSeccion[seccionId]?.filter(
-        (pregunta) => {
-          return (
-            pregunta.tieneComentario &&
-            (!userComments[pregunta.id]?.respuestaComentario ||
-              userComments[pregunta.id].respuestaComentario.trim() === "")
-          );
-        }
-      );
-
-      if (comentariosPendientes.length > 0) {
-        setSnackbarMessage(
-          "Completa todos los comentarios antes de enviar el formulario"
-        );
-        setSnackbarSeverity("error");
-        setOpenSnackbar(true);
-        return;
-      }
-
       const preguntasRespuestas = Object.entries(respuestas).map(
-        ([preguntaId, respuesta]) => {
-          const pregunta = preguntasPorSeccion[seccionId].find(
-            (preg) => preg.id === parseInt(preguntaId)
-          );
-
-          // Ensure that pregunta is defined and provide a default value for tieneComentario
-          const tieneComentario = pregunta?.tieneComentario || false;
-
-          if (pregunta && pregunta.tipoRespuesta) {
-            return {
-              preguntaId: parseInt(preguntaId),
-              formularioId,
-              tipoRespuestaId: respuesta.tipoRespuesta,
-              dependenciaId: dependencia,
-              edad,
-              genero,
-              tieneComentario, // Include tieneComentario in the request payload
-              comentario: {
-                respuestaComentario: tieneComentario
-                  ? userComments[pregunta.id]?.respuestaComentario || ""
-                  : undefined,
-                preguntaId: parseInt(preguntaId),
-                respuestaId: respuesta.tipoRespuesta,
-                formularioId,
-                dependenciaId: dependencia,
-              },
-            };
-          } else {
-            return {
-              preguntaId: parseInt(preguntaId),
-              formularioId,
-              tipoRespuestaId: respuesta.tipoRespuesta,
-              dependenciaId: dependencia,
-              edad,
-              genero,
-            };
-          }
-        }
+        ([preguntaId, respuesta]) => ({
+          preguntaId: parseInt(preguntaId),
+          formularioId,
+          tipoRespuestaId: respuesta.tipoRespuesta,
+          dependenciaId: dependencia,
+          edad,
+          genero,
+          comentario: {
+            respuestaComentario: userComments[preguntaId],
+            preguntaId: parseInt(preguntaId),
+            respuestaId: respuesta.tipoRespuesta,
+            formularioId,
+            dependenciaId: dependencia,
+          },
+        })
       );
-
-      console.log("Data being sent to the server:", preguntasRespuestas);
-
-      const response = await axios.post("http://localhost:4000/respuestas", {
+      await axios.post("http://localhost:4000/respuestas", {
         preguntasRespuestas,
       });
-
-      console.log("Data being sent to the server:", preguntasRespuestas);
-
-      console.log("Response from the server:", response.data);
-
-      console.log(response);
-
       setSnackbarMessage("Respuestas enviadas correctamente");
       setSnackbarSeverity("success");
     } catch (error) {
@@ -465,7 +341,6 @@ function Preguntas() {
                   borderRadius={5}
                   p={2}
                   mb={2}
-                  mt={4}
                   width={"100%"}
                   value={pregunta.id}
                 >
@@ -514,10 +389,7 @@ function Preguntas() {
                                 </Typography>
                                 <TextField
                                   label="Comentario"
-                                  value={
-                                    userComments[pregunta.id]
-                                      ?.respuestaComentario || ""
-                                  }
+                                  value={userComments[pregunta.id] || ""}
                                   onChange={(event) =>
                                     handleComentarioChange(event, pregunta.id)
                                   }
@@ -582,7 +454,6 @@ function Preguntas() {
           setSeccionId(selectedSeccionId);
           setIsFirstPage(pageIndex === 0);
           setIsLastPage(pageIndex === secciones.length - 1);
-          cargarPreguntasPorSeccion(); // Agrega esta línea para cargar preguntas de la nueva sección al cambiar de página
         }}
       />
     </Container>
