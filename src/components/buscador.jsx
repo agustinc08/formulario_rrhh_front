@@ -129,17 +129,17 @@ const Buscador = () => {
       }
   
       if (preguntaIds.length > 0) {
-        url += `/pregunta/${preguntaIds.join(",")}`;
+        url += `/pregunta?ids=${preguntaIds.join(",")}`;
       }
-  
+      
       if (dependenciaIds.length > 0) {
-        url += `/dependencia/${dependenciaIds.join(",")}`;
+        url += `/dependencia?ids=${dependenciaIds.join(",")}`;
       }
-  
+      
       if (formularioId) {
-        url += `/formulario/${formularioId}`;
+        url += `/formulario?ids=${formularioId}`;
       }
-  
+
       const response = await fetch(url);
       const data = await response.json();
       setRespuestas(data);
