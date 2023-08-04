@@ -113,13 +113,13 @@ const Buscador = () => {
   const handleBuscarRespuestas = async () => {
     try {
       let url = "http://localhost:4000/respuestas";
-  
+
       const preguntaIds = selectedPregunta.map(Number);
       const dependenciaIds = selectedDependencias.map(
         (dependencia) =>
           dependencias.find((d) => d.nombreDependencia === dependencia)?.id
       );
-  
+
       let formularioId = null;
       if (selectedFormulario !== "") {
         const formulario = formularios.find(
@@ -127,17 +127,21 @@ const Buscador = () => {
         );
         formularioId = formulario ? formulario.id : null;
       }
-  
-      if (preguntaIds.length > 0) {
-        url += `/pregunta?ids=${preguntaIds.join(",")}`;
-      }
-      
-      if (dependenciaIds.length > 0) {
-        url += `/dependencia?ids=${dependenciaIds.join(",")}`;
-      }
-      
-      if (formularioId) {
-        url += `/formulario?ids=${formularioId}`;
+
+      // Construir la URL de búsqueda combinada
+      if (preguntaIds.length > 0 || dependenciaIds.length > 0 || formularioId) {
+        url += "?";
+        const queryParams = [];
+        if (preguntaIds.length > 0) {
+          queryParams.push(`preguntaIds=${preguntaIds.join(",")}`);
+        }
+        if (dependenciaIds.length > 0) {
+          queryParams.push(`dependenciaIds=${dependenciaIds.join(",")}`);
+        }
+        if (formularioId) {
+          queryParams.push(`formularioId=${formularioId}`);
+        }
+        url += queryParams.join("&");
       }
 
       const response = await fetch(url);
