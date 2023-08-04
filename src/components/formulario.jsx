@@ -202,7 +202,7 @@ function Preguntas() {
 
       if (!edad || !genero || !dependencia) {
         setSnackbarMessage(
-          "Completa todos los campos antes de enviar el formulario"
+          "Completa todos los campos antes de enviar el formulario."
         );
         setSnackbarSeverity("error");
         setOpenSnackbar(true);
