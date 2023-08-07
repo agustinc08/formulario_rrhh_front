@@ -10,7 +10,7 @@ import {
   Divider,
 } from "@material-ui/core";
 import "../css/global.css";
-import { Bar, Pie, Doughnut, PolarArea } from "react-chartjs-2";
+import { Bar, Pie, Doughnut } from "react-chartjs-2";
 import useStyles from "../styles/estadisticasStyle";
 
 const Estadisticas = () => {
@@ -25,7 +25,6 @@ const Estadisticas = () => {
   const [edadData, setEdadData] = useState("");
   const [generoData, setGeneroData] = useState("");
   const [tipoRespuestaStats, setTipoRespuestaStats] = useState({});
-
 
   useEffect(() => {
     const obtenerPreguntas = async () => {
@@ -55,7 +54,7 @@ const Estadisticas = () => {
       try {
         const response = await fetch("http://localhost:4000/formulario");
         const data = await response.json();
-        setFormularios(data); // <-- Aquí debe ser setFormularios en lugar de setDependencias
+        setFormularios(data);
         console.log("Formularios obtenidos:", data);
       } catch (error) {
         console.error("Error al obtener los formularios:", error);
@@ -70,74 +69,80 @@ const Estadisticas = () => {
   useEffect(() => {
     fetchRespuestas();
     if (selectedFormulario !== "") {
-      obtenerTiposRespuesta();
+      obtenerTiposRespuesta().catch((error) => {
+        console.error("Error al obtener los tipos de respuesta:", error);
+      });
     }
-    fetchRespuestas();
   }, [selectedDependencia, selectedPregunta, selectedFormulario]);
 
   const obtenerTiposRespuesta = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:4000/formulario/${selectedFormulario}/tiposRespuesta`
-      );
-      const data = await response.json();
-      // Aquí obtienes los tipos de respuesta específicos para el formulario seleccionado
-      console.log("Tipos de Respuesta obtenidos:", data);
-    } catch (error) {
-      console.error("Error al obtener los tipos de respuesta:", error);
-    }
+    const response = await fetch(
+      `http://localhost:4000/formulario/${selectedFormulario}/tiposRespuesta`
+    );
+    const data = await response.json();
+    // Aquí obtienes los tipos de respuesta específicos para el formulario seleccionado
+    console.log("Tipos de Respuesta obtenidos:", data);
+    // Actualizar el estado tipoRespuestaStats con los datos obtenidos
+    setTipoRespuestaStats(data);
   };
 
   const fetchRespuestas = async () => {
     try {
-      if (selectedDependencia !== "" && selectedPregunta !== "") {
-        const response = await fetch(
-          `http://localhost:4000/respuestas?dependenciaId=${selectedDependencia}&preguntaId=${selectedPregunta}`
-        );
-        const data = await response.json();
+      let url = "http://localhost:4000/respuestas";
 
-        // Filtrar las respuestas según las selecciones actuales
+      if (selectedDependencia !== "" && selectedPregunta !== "") {
+        // Si se ha seleccionado una dependencia y una pregunta, agregar los parámetros a la URL
+        url += `?dependenciaId=${selectedDependencia}&preguntaId=${selectedPregunta}`;
+      }
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (selectedDependencia !== "" && selectedPregunta !== "") {
+        // Si se ha seleccionado una dependencia y una pregunta, filtrar las respuestas
         const respuestasFiltradas = data.filter(
           (respuesta) =>
             respuesta.dependenciaId === selectedDependencia &&
             respuesta.preguntaId === selectedPregunta
         );
-
-        setRespuestas(respuestasFiltradas); // Almacena las respuestas filtradas en el estado
+        setRespuestas(respuestasFiltradas);
+      } else {
+        // Si no se ha seleccionado una dependencia y una pregunta, mostrar todas las respuestas
+        setRespuestas(data);
       }
 
-       // Agrupar las respuestas por formulario
-    const respuestasAgrupadasPorFormulario = respuestas.reduce((grouped, respuesta) => {
-      const formularioId = respuesta.formularioId;
-      if (!grouped[formularioId]) {
-        grouped[formularioId] = [];
-      }
-      grouped[formularioId].push(respuesta);
-      return grouped;
-    }, {});
-
-    // Contar las edades dentro de cada formulario
-    const edadCountPorFormulario = {};
-    Object.values(respuestasAgrupadasPorFormulario).forEach((respuestasPorFormulario) => {
-      const edadCount = respuestasPorFormulario.reduce((count, respuesta) => {
-        const edad = respuesta.edad;
-        count[edad] = (count[edad] || 0) + 1;
-        return count;
+      // Agrupar las respuestas por formulario
+      const respuestasAgrupadasPorFormulario = respuestas.reduce((grouped, respuesta) => {
+        const formularioId = respuesta.formularioId;
+        if (!grouped[formularioId]) {
+          grouped[formularioId] = [];
+        }
+        grouped[formularioId].push(respuesta);
+        return grouped;
       }, {});
-      edadCountPorFormulario[respuestasPorFormulario[0].formularioId] = edadCount;
-    });
 
-    // Actualizar el estado edadData con las estadísticas de edad por formulario
-    setEdadData({
-      labels: Object.keys(edadCountPorFormulario),
-      datasets: [
-        {
-          label: "Edad",
-          data: Object.values(edadCountPorFormulario),
-          backgroundColor: ["rgba(75, 192, 192, 0.6)", "rgba(255, 99, 132, 0.6)"],
-        },
-      ],
-    });
+      // Contar las edades dentro de cada formulario
+      const edadCountPorFormulario = {};
+      Object.values(respuestasAgrupadasPorFormulario).forEach((respuestasPorFormulario) => {
+        const edadCount = respuestasPorFormulario.reduce((count, respuesta) => {
+          const edad = respuesta.edad;
+          count[edad] = (count[edad] || 0) + 1;
+          return count;
+        }, {});
+        edadCountPorFormulario[respuestasPorFormulario[0].formularioId] = edadCount;
+      });
+
+      // Actualizar el estado edadData con las estadísticas de edad por formulario
+      setEdadData({
+        labels: Object.keys(edadCountPorFormulario),
+        datasets: [
+          {
+            label: "Edad",
+            data: Object.values(edadCountPorFormulario),
+            backgroundColor: ["rgba(75, 192, 192, 0.6)", "rgba(255, 99, 132, 0.6)"],
+          },
+        ],
+      });
     } catch (error) {
       console.error("Error al obtener las respuestas:", error);
     }
@@ -255,39 +260,39 @@ const Estadisticas = () => {
         </Box>
       </Grid>
       <Grid item xs={12} md={5}>
-      <Box mx={3} my={5}>
-        {Object.keys(tipoRespuestaStats).length > 0 && (
-          <div>
-            <Typography variant="h6" align="center">
-              Estadísticas por tipo de respuesta
-            </Typography>
-            <Bar
-              data={{
-                labels: Object.keys(tipoRespuestaStats),
-                datasets: [
-                  {
-                    label: 'Cantidad',
-                    data: Object.values(tipoRespuestaStats),
-                    backgroundColor: [
-                      'rgba(75, 192, 192, 0.6)',
-                      'rgba(255, 99, 132, 0.6)',
-                      'rgba(54, 162, 235, 0.6)',
-                    ],
+        <Box mx={3} my={5}>
+          {Object.keys(tipoRespuestaStats).length > 0 && (
+            <div>
+              <Typography variant="h6" align="center">
+                Estadísticas por tipo de respuesta
+              </Typography>
+              <Bar
+                data={{
+                  labels: Object.keys(tipoRespuestaStats),
+                  datasets: [
+                    {
+                      label: "Cantidad",
+                      data: Object.values(tipoRespuestaStats),
+                      backgroundColor: [
+                        "rgba(75, 192, 192, 0.6)",
+                        "rgba(255, 99, 132, 0.6)",
+                        "rgba(54, 162, 235, 0.6)",
+                      ],
+                    },
+                  ],
+                }}
+                options={{
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                    },
                   },
-                ],
-              }}
-              options={{
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
-                },
-              }}
-            />
-          </div>
-        )}
-      </Box>
-    </Grid>
+                }}
+              />
+            </div>
+          )}
+        </Box>
+      </Grid>
     </Grid>
   );
 };
