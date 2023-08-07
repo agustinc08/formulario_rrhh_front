@@ -9,10 +9,11 @@ import {
   Table,
   TableHead,
   TableRow,
+  Button,
   TableCell,
   TableBody,
   Paper,
-  TextField, // Agregado para el buscador
+  TextField,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import "../css/navbar.css";
@@ -27,8 +28,9 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [formularios, setFormularios] = useState([]);
   const [dependenciaId, setDependenciaId] = useState("");
-  const [seccionId, setSeccionId] = useState("");
-  const [searchValue, setSearchValue] = useState(""); // Nuevo estado para el valor del buscador
+  const [searchValue, setSearchValue] = useState("");
+  const [open, setOpen] = useState(false);
+  const [selectedList, setSelectedList] = useState("");
 
   useEffect(() => {
     if (dependencias.length > 0 && dependenciaId) {
@@ -109,9 +111,6 @@ const Navbar = () => {
     setMenuOpen(false);
   };
 
-  const [open, setOpen] = useState(false);
-  const [selectedList, setSelectedList] = useState("");
-
   const handleOpen = (list) => {
     setSelectedList(list);
     setOpen(true);
@@ -127,31 +126,101 @@ const Navbar = () => {
   };
 
   // Filtra las preguntas por la descripción en base al valor del buscador
-  const filteredPreguntas = preguntas.filter((pregunta) =>
-    pregunta.descripcion.toLowerCase().includes(searchValue.toLowerCase())
+  const filteredPreguntas = preguntas.filter(
+    (pregunta) =>
+      pregunta.descripcion &&
+      pregunta.descripcion.toLowerCase().includes(searchValue.toLowerCase())
   );
+
+  // Filtra los elementos por el nombreDependencia en base al valor del buscador
+  const filteredDependencias = dependencias.filter(
+    (dependencia) =>
+      dependencia.nombreDependencia &&
+      dependencia.nombreDependencia
+        .toLowerCase()
+        .includes(searchValue.toLowerCase())
+  );
+
+  const filteredSecciones = secciones.filter(
+    (seccion) =>
+      seccion.descripcion &&
+      seccion.descripcion.toLowerCase().includes(searchValue.toLowerCase())
+  );
+
+  // Filtra las claves por la dependencia y clave en base al valor del buscador
+  const filteredClaves = claves.filter(
+    (clave) =>
+      (clave.dependencia &&
+        clave.dependencia.nombreDependencia &&
+        clave.dependencia.nombreDependencia
+          .toLowerCase()
+          .includes(searchValue.toLowerCase())) ||
+      (clave.clave &&
+        clave.clave.toLowerCase().includes(searchValue.toLowerCase()))
+  );
+
+  const filteredFormularios = formularios.filter(
+    (formulario) =>
+      formulario.nombre &&
+      formulario.nombre.toLowerCase().includes(searchValue.toLowerCase())
+  );
+
+  const handleToggleFormularioActivo = async (formularioToToggle) => {
+    try {
+      const updatedFormulario = {
+        ...formularioToToggle,
+        estaActivo: !formularioToToggle.estaActivo,
+      };
+      await fetch(`http://localhost:4000/formulario/${formularioToToggle.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedFormulario),
+      });
+
+      // Fetch the updated formularios from the server
+      fetchFormulario();
+    } catch (error) {
+      console.error("Error updating formulario:", error);
+    }
+  };
+
+  const sortedFormularios = formularios.sort((a, b) => a.id - b.id);
 
   return (
     <>
       <nav className="navbar">
         <ul className="navbar-list">
           <li className="navbar-item">
-            <Link to="/inicio" className="navbar-link">INICIO</Link>
+            <Link to="/inicio" className="navbar-link">
+              INICIO
+            </Link>
           </li>
           <li className="navbar-item">
-            <Link to="/formulario" className="navbar-link">FORMULARIO</Link>
+            <Link to="/formulario" className="navbar-link">
+              FORMULARIO
+            </Link>
           </li>
           <li className="navbar-item">
-            <Link to="/creacion" className="navbar-link">CREACIONES</Link>
+            <Link to="/creacion" className="navbar-link">
+              CREACIONES
+            </Link>
           </li>
           <li className="navbar-item">
-            <Link to="/buscador" className="navbar-link">BUSCADOR</Link>
+            <Link to="/buscador" className="navbar-link">
+              BUSCADOR
+            </Link>
           </li>
           <li className="navbar-item">
-            <Link to="/estadisticas" className="navbar-link">ESTADÍSTICAS</Link>
+            <Link to="/estadisticas" className="navbar-link">
+              ESTADÍSTICAS
+            </Link>
           </li>
           <li className="navbar-item">
-            <span className="navbar-link" onClick={handleMenuOpen}>MENU</span>
+            <span className="navbar-link" onClick={handleMenuOpen}>
+              MENU
+            </span>
             <Menu
               anchorEl={anchorEl}
               open={menuOpen}
@@ -172,9 +241,7 @@ const Navbar = () => {
               <MenuItem onClick={() => handleOpen("secciones")}>
                 Secciones
               </MenuItem>
-              <MenuItem onClick={() => handleOpen("claves")}>
-                Claves
-              </MenuItem>
+              <MenuItem onClick={() => handleOpen("claves")}>Claves</MenuItem>
               <MenuItem onClick={() => handleOpen("formularios")}>
                 Formularios
               </MenuItem>
@@ -184,38 +251,51 @@ const Navbar = () => {
       </nav>
 
       {open && selectedList === "dependencias" && dependencias.length > 0 && (
-  <Modal open={open} onClose={handleClose} className="modal">
-    <Paper className="modalContent smallModal">
-      <TableContainer className="stickyTableContainer">
-        <IconButton
-          aria-label="close"
-          className="closeButton"
-          onClick={handleClose}
-        >
-          <CloseIcon />
-        </IconButton>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell className="columnaId">Número</TableCell>
-              <TableCell className="columnaTexto">Dependencia</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {dependencias.map((dependencia) => (
-              <TableRow key={dependencia.id}>
-                <TableCell className="columnaId">{dependencia.id}</TableCell>
-                <TableCell className="columnaTexto">{dependencia.nombreDependencia}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
-  </Modal>
-)}
+        <Modal open={open} onClose={handleClose} className="modal">
+          <Paper className="modalContent smallModal">
+            <TableContainer className="stickyTableContainer">
+              <IconButton
+                aria-label="close"
+                className="closeButton"
+                onClick={handleClose}
+              >
+                <CloseIcon />
+              </IconButton>
+              <TextField
+                label="Buscar"
+                variant="outlined"
+                size="small"
+                value={searchValue}
+                onChange={handleSearchChange}
+                margin="normal"
+                style={{ width: "90%" }}
+              />
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell className="columnaId">Número</TableCell>
+                    <TableCell className="columnaTexto">Dependencia</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredDependencias.map((dependencia) => (
+                    <TableRow key={dependencia.id}>
+                      <TableCell className="columnaId">
+                        {dependencia.id}
+                      </TableCell>
+                      <TableCell className="columnaTexto">
+                        {dependencia.nombreDependencia}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Modal>
+      )}
 
-{open && selectedList === "preguntas" && (
+      {open && selectedList === "preguntas" && (
         <Modal open={open} onClose={handleClose} className="modal">
           <Paper className="modalContent smallModal">
             <TableContainer>
@@ -226,14 +306,14 @@ const Navbar = () => {
               >
                 <CloseIcon />
               </IconButton>
-              <TextField // Agregado para el buscador
+              <TextField
                 label="Buscar"
                 variant="outlined"
                 size="small"
                 value={searchValue}
                 onChange={handleSearchChange}
                 margin="normal"
-                style={{ width: '90%'}}
+                style={{ width: "90%" }}
               />
               <Table>
                 <TableHead>
@@ -262,11 +342,7 @@ const Navbar = () => {
         </Modal>
       )}
       {open && selectedList === "secciones" && (
-        <Modal
-          open={open}
-          onClose={handleClose}
-          className="modal"
-        >
+        <Modal open={open} onClose={handleClose} className="modal">
           <Paper className="modalContent smallModal">
             <TableContainer>
               <IconButton
@@ -276,6 +352,15 @@ const Navbar = () => {
               >
                 <CloseIcon />
               </IconButton>
+              <TextField
+                label="Buscar"
+                variant="outlined"
+                size="small"
+                value={searchValue}
+                onChange={handleSearchChange}
+                margin="normal"
+                style={{ width: "90%" }}
+              />
               <Table>
                 <TableHead>
                   <TableRow>
@@ -286,11 +371,17 @@ const Navbar = () => {
                 </TableHead>
                 <TableBody>
                   {secciones &&
-                    secciones.map((seccion) => (
+                    filteredSecciones.map((seccion) => (
                       <TableRow key={seccion.id}>
-                        <TableCell className="columnaId">{seccion.id}</TableCell>
-                        <TableCell className="columnaTexto">{seccion.descripcion}</TableCell>
-                        <TableCell className="columnaId">{seccion.formularioId}</TableCell>
+                        <TableCell className="columnaId">
+                          {seccion.id}
+                        </TableCell>
+                        <TableCell className="columnaTexto">
+                          {seccion.descripcion}
+                        </TableCell>
+                        <TableCell className="columnaId">
+                          {seccion.formularioId}
+                        </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
@@ -301,11 +392,7 @@ const Navbar = () => {
       )}
 
       {open && selectedList === "formularios" && (
-        <Modal
-          open={open}
-          onClose={handleClose}
-          className="modal"
-        >
+        <Modal open={open} onClose={handleClose} className="modal">
           <Paper className="modalContent smallModal">
             <TableContainer>
               <IconButton
@@ -315,19 +402,45 @@ const Navbar = () => {
               >
                 <CloseIcon />
               </IconButton>
+              <TextField
+                label="Buscar"
+                variant="outlined"
+                size="small"
+                value={searchValue}
+                onChange={handleSearchChange}
+                margin="normal"
+                style={{ width: "90%" }}
+              />
               <Table>
                 <TableHead>
                   <TableRow>
                     <TableCell className="columnaId">Formulario</TableCell>
                     <TableCell className="columnaTexto">Nombre</TableCell>
+                    <TableCell className="columnaTexto">Formulario Activo</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {formularios &&
-                    formularios.map((formulario) => (
+                    filteredFormularios &&
+                    sortedFormularios.map((formulario) => (
                       <TableRow key={formulario.id}>
-                        <TableCell className="columnaId">{formulario.id}</TableCell>
-                        <TableCell className="columnaTexto">{formulario.descripcion}</TableCell>
+                        <TableCell className="columnaId">
+                          {formulario.id}
+                        </TableCell>
+                        <TableCell className="columnaTexto">
+                          {formulario.nombre}
+                        </TableCell>
+                        <TableCell className="columnaTexto">
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() =>
+                              handleToggleFormularioActivo(formulario)
+                            }
+                          >
+                            {formulario.estaActivo ? "Desactivar" : "Activar"}
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
@@ -338,11 +451,7 @@ const Navbar = () => {
       )}
 
       {open && selectedList === "claves" && (
-        <Modal
-          open={open}
-          onClose={handleClose}
-          className="modal"
-        >
+        <Modal open={open} onClose={handleClose} className="modal">
           <Paper className="modalContent smallModal">
             <TableContainer>
               <IconButton
@@ -352,6 +461,15 @@ const Navbar = () => {
               >
                 <CloseIcon />
               </IconButton>
+              <TextField
+                label="Buscar"
+                variant="outlined"
+                size="small"
+                value={searchValue}
+                onChange={handleSearchChange}
+                margin="normal"
+                style={{ width: "90%" }}
+              />
               <Table>
                 <TableHead>
                   <TableRow>
@@ -361,10 +479,14 @@ const Navbar = () => {
                 </TableHead>
                 <TableBody>
                   {claves &&
-                    claves.map((clave) => (
+                    filteredClaves.map((clave) => (
                       <TableRow key={clave.id}>
-                        <TableCell className="columnaTexto">{clave.dependencia}</TableCell>
-                        <TableCell className="columnaTexto">{clave.clave}</TableCell>
+                        <TableCell className="columnaTexto">
+                          {clave.dependencia.nombreDependencia}
+                        </TableCell>
+                        <TableCell className="columnaTexto">
+                          {clave.clave}
+                        </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>

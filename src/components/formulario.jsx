@@ -46,19 +46,21 @@ function Preguntas() {
   const [preguntasSinResponder, setPreguntasSinResponder] = useState({});
   const [preguntaActual, setPreguntaActual] = useState(null);
   const [seccionesCompletas, setSeccionesCompletas] = useState({});
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
   const validarSeccionCompleta = useCallback((seccionId) => {
     const preguntas = preguntasPorSeccion[seccionId];
     if (!preguntas) return false;
   
     for (const pregunta of preguntas) {
-      if (!respuestas[pregunta.id] || !respuestas[pregunta.id].tipoRespuesta) {
+      const respuesta = respuestas[pregunta.id];
+      if (!respuesta || !respuesta.tipoRespuesta || (pregunta.tieneComentario && !userComments[pregunta.id])) {
         return false;
       }
     }
   
     return true;
-  }, [preguntasPorSeccion, respuestas]);
+  }, [preguntasPorSeccion, respuestas, userComments]);
   
   const cargarPreguntasPorSeccion = useCallback(async () => {
     if (!seccionId) return;
@@ -95,6 +97,17 @@ function Preguntas() {
     }
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (formSubmitted) {
+      const timer = setTimeout(() => {
+        // Navigate to /inicio
+        window.location.href = "/inicio";
+      }, 2000); // 3000 milliseconds = 3 seconds
+  
+      return () => clearTimeout(timer);
+    }
+  }, [formSubmitted]);
   
   useEffect(() => {
     async function fetchTipoRespuesta() {
@@ -178,6 +191,7 @@ function Preguntas() {
 
   function handleComentarioChange(event, preguntaId) {
     const value = event.target.value;
+    console.log(`Comentario cambiado para pregunta ${preguntaId}:`, value);
 
     setUserComments((prevUserComments) => ({
       ...prevUserComments,
@@ -202,7 +216,7 @@ function Preguntas() {
       const seccionesIncompletas = Object.values(seccionesCompletas).some(
         (completa) => completa === false
       );
-
+  
       if (!edad || !genero || !dependencia) {
         setSnackbarMessage(
           "Completa todos los campos antes de enviar el formulario."
@@ -211,7 +225,7 @@ function Preguntas() {
         setOpenSnackbar(true);
         return;
       }
-
+  
       if (seccionesIncompletas) {
         setSnackbarMessage(
           "Completa todas las preguntas antes de enviar el formulario"
@@ -220,18 +234,17 @@ function Preguntas() {
         setOpenSnackbar(true);
         return;
       }
-
+  
       const formularioId = await getFormularioActivo();
       if (!formularioId) {
         throw new Error("No hay formulario activo");
       }
-
-      setPreguntasSinResponder({});
-
+  
       const preguntasSinRespuesta = {};
   
       for (const pregunta of preguntas) {
-        if (!respuestas[pregunta.id]?.tipoRespuesta) {
+        const respuesta = respuestas[pregunta.id];
+        if (!respuesta || !respuesta.tipoRespuesta || (pregunta.tieneComentario && !userComments[pregunta.id])) {
           preguntasSinRespuesta[pregunta.id] = true;
         }
       }
@@ -239,12 +252,14 @@ function Preguntas() {
       setPreguntasSinResponder(preguntasSinRespuesta);
   
       if (Object.keys(preguntasSinRespuesta).length > 0) {
-        setSnackbarMessage("Completa todas las preguntas antes de enviar el formulario");
+        setSnackbarMessage(
+          "Completa todas las preguntas antes de enviar el formulario"
+        );
         setSnackbarSeverity("error");
         setOpenSnackbar(true);
         return;
       }
-
+  
       const preguntasRespuestas = Object.entries(respuestas).map(
         ([preguntaId, respuesta]) => ({
           preguntaId: parseInt(preguntaId),
@@ -267,6 +282,7 @@ function Preguntas() {
       });
       setSnackbarMessage("Respuestas enviadas correctamente");
       setSnackbarSeverity("success");
+      setFormSubmitted(true);
     } catch (error) {
       console.error(error);
       setSnackbarMessage("Error al enviar las respuestas");
@@ -274,7 +290,7 @@ function Preguntas() {
     } finally {
       setOpenSnackbar(true);
     }
-  }
+  }  
 
   return (
     <Container className="mb80px">

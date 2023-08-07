@@ -41,8 +41,6 @@ const Creaciones = () => {
   const [alertaDependencia, setAlertaDependencia] = useState(false);
   const [alertaSeccion, setAlertaSeccion] = useState(false);
   const [alertaPregunta, setAlertaPregunta] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [selectedList, setSelectedList] = useState([]);
   const [showAlert, setShowAlert] = useState(true);
   const [alertaSeccionExistente, setAlertaSeccionExistente] = useState(false);
   const [alertaClaveExistente, setAlertaClaveExistente] = useState(false);
@@ -111,7 +109,7 @@ const Creaciones = () => {
       })
       .then((data) => {
         console.log("Secciones obtenidas:", data);
-        setSecciones(data); // Actualizar el estado secciones con los datos obtenidos
+        setSecciones(data);
       })
       .catch((error) => {
         console.error(error);
@@ -122,7 +120,7 @@ const Creaciones = () => {
     fetch("http://localhost:4000/tipoPregunta")
       .then((response) => response.json())
       .then((data) => {
-        setTipoPreguntas(data); // Guardar los tipos de pregunta en el estado
+        setTipoPreguntas(data);
       })
       .catch((error) => {
         console.error("Error al obtener los tipos de pregunta:", error);
@@ -184,13 +182,13 @@ const Creaciones = () => {
 
   const crearFormulario = (formularioData) => {
     const dependencias = formularioData.dependencias.map(
-      (dependencia) => ({ id: dependencia.id }) // Crear objetos con campo "id"
+      (dependencia) => ({ id: dependencia.id })
     );
   
     const formularioCreateData = {
       nombre: formularioData.nombre,
       dependencias: {
-        connect: dependencias, // Pasar el arreglo de objetos
+        connect: dependencias,
       },
     };
   
@@ -290,7 +288,7 @@ const Creaciones = () => {
       .then((response) => {
         if (response.ok) {
           console.log("Tipo Pregunta creada:", descripcion);
-          setTipoPreguntaDescripcion(""); // Establecer un valor vacío después de crear el tipo de pregunta
+          setTipoPreguntaDescripcion("");
         } else {
           throw new Error("Error al crear el Tipo de Pregunta.");
         }
@@ -350,8 +348,8 @@ const Creaciones = () => {
       seccionId: seccionId,
       tieneComentario: tieneComentario,
       descripcionComentario: descripcionComentario,
-      tipoPreguntaId: tipoPreguntaId, // Utiliza tipoPreguntaId en lugar de tipoPregunta
-      tipoRespuestaId: tipoRespuestaId, // Asegúrate de tener el tipo de respuesta seleccionado
+      tipoPreguntaId: tipoPreguntaId,
+      tipoRespuestaId: tipoRespuestaId, 
     });
     setPregunta("");
     setSeccionId("");

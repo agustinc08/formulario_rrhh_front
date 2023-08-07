@@ -78,7 +78,7 @@ const Estadisticas = () => {
   const obtenerTiposRespuesta = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/formularios/${selectedFormulario}/tiposRespuesta`
+        `http://localhost:4000/formulario/${selectedFormulario}/tiposRespuesta`
       );
       const data = await response.json();
       // Aquí obtienes los tipos de respuesta específicos para el formulario seleccionado
@@ -106,50 +106,38 @@ const Estadisticas = () => {
         setRespuestas(respuestasFiltradas); // Almacena las respuestas filtradas en el estado
       }
 
-      const tipoRespuestaCount = respuestas.reduce((count, respuesta) => {
-        const tipoRespuesta = respuesta.tipoRespuesta;
-        count[tipoRespuesta] = (count[tipoRespuesta] || 0) + 1;
-        return count;
-      }, {});
+       // Agrupar las respuestas por formulario
+    const respuestasAgrupadasPorFormulario = respuestas.reduce((grouped, respuesta) => {
+      const formularioId = respuesta.formularioId;
+      if (!grouped[formularioId]) {
+        grouped[formularioId] = [];
+      }
+      grouped[formularioId].push(respuesta);
+      return grouped;
+    }, {});
 
-      const edadCount = respuestas.reduce((count, respuesta) => {
+    // Contar las edades dentro de cada formulario
+    const edadCountPorFormulario = {};
+    Object.values(respuestasAgrupadasPorFormulario).forEach((respuestasPorFormulario) => {
+      const edadCount = respuestasPorFormulario.reduce((count, respuesta) => {
         const edad = respuesta.edad;
         count[edad] = (count[edad] || 0) + 1;
         return count;
       }, {});
+      edadCountPorFormulario[respuestasPorFormulario[0].formularioId] = edadCount;
+    });
 
-      setEdadData({
-        labels: Object.keys(edadCount),
-        datasets: [
-          {
-            label: 'Edad',
-            data: Object.values(edadCount),
-            backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
-          },
-        ],
-      });
-
-      const generoCount = respuestas.reduce((count, respuesta) => {
-        const genero = respuesta.genero || 'OTRO';
-        count[genero] = (count[genero] || 0) + 1;
-        return count;
-      }, {});
-
-      setGeneroData({
-        labels: Object.keys(generoCount),
-        datasets: [
-          {
-            label: 'Género',
-            data: Object.values(generoCount),
-            backgroundColor: [
-              'rgba(75, 192, 192, 0.6)',
-              'rgba(255, 99, 132, 0.6)',
-              'rgba(54, 162, 235, 0.6)',
-            ],
-          },
-        ],
-      });
-      setTipoRespuestaStats(tipoRespuestaCount); // Almacena las estadísticas de tipos de respuesta en el estado
+    // Actualizar el estado edadData con las estadísticas de edad por formulario
+    setEdadData({
+      labels: Object.keys(edadCountPorFormulario),
+      datasets: [
+        {
+          label: "Edad",
+          data: Object.values(edadCountPorFormulario),
+          backgroundColor: ["rgba(75, 192, 192, 0.6)", "rgba(255, 99, 132, 0.6)"],
+        },
+      ],
+    });
     } catch (error) {
       console.error("Error al obtener las respuestas:", error);
     }
