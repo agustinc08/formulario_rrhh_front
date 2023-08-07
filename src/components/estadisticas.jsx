@@ -20,16 +20,12 @@ const Estadisticas = () => {
   const [selectedDependencia, setSelectedDependencia] = useState("");
   const [selectedPregunta, setSelectedPregunta] = useState("");
   const [selectedFormulario, setSelectedFormulario] = useState("");
-
-  const [respuestas, setRespuestas] = useState([]); // Agregado
+  const [respuestas, setRespuestas] = useState([]);
   const [formularios, setFormularios] = useState([]);
-
-  const [expresionData, setExpresionData] = useState("");
   const [edadData, setEdadData] = useState("");
   const [generoData, setGeneroData] = useState("");
-  const [clasificacionData, setClasificacionData] = useState("");
-  const [calificacionData, setCalificacionData] = useState("");
-  const [gradoData, setGradoData] = useState("");
+  const [tipoRespuestaStats, setTipoRespuestaStats] = useState({});
+
 
   useEffect(() => {
     const obtenerPreguntas = async () => {
@@ -59,7 +55,7 @@ const Estadisticas = () => {
       try {
         const response = await fetch("http://localhost:4000/formulario");
         const data = await response.json();
-        setDependencias(data);
+        setFormularios(data); // <-- Aquí debe ser setFormularios en lugar de setDependencias
         console.log("Formularios obtenidos:", data);
       } catch (error) {
         console.error("Error al obtener los formularios:", error);
@@ -71,145 +67,105 @@ const Estadisticas = () => {
     obtenerFormularios();
   }, []);
 
+  useEffect(() => {
+    fetchRespuestas();
+    if (selectedFormulario !== "") {
+      obtenerTiposRespuesta();
+    }
+    fetchRespuestas();
+  }, [selectedDependencia, selectedPregunta, selectedFormulario]);
+
+  const obtenerTiposRespuesta = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:4000/formularios/${selectedFormulario}/tiposRespuesta`
+      );
+      const data = await response.json();
+      // Aquí obtienes los tipos de respuesta específicos para el formulario seleccionado
+      console.log("Tipos de Respuesta obtenidos:", data);
+    } catch (error) {
+      console.error("Error al obtener los tipos de respuesta:", error);
+    }
+  };
+
   const fetchRespuestas = async () => {
     try {
       if (selectedDependencia !== "" && selectedPregunta !== "") {
-        const response = await fetch(`http://localhost:4000/respuestas?dependenciaId=${selectedDependencia}&preguntaId=${selectedPregunta}`);
+        const response = await fetch(
+          `http://localhost:4000/respuestas?dependenciaId=${selectedDependencia}&preguntaId=${selectedPregunta}`
+        );
         const data = await response.json();
-        setRespuestas(data); // Almacena las respuestas obtenidas en el estado
 
-        const expresionCount = respuestas.reduce((count, respuesta) => { // Actualizado a 'respuestas' en lugar de 'data'
-          const respuestaExpresion = respuesta.expresion || 'NO_SE';
-          count[respuestaExpresion] = (count[respuestaExpresion] || 0) + 1;
-          return count;
-        }, {});
+        // Filtrar las respuestas según las selecciones actuales
+        const respuestasFiltradas = data.filter(
+          (respuesta) =>
+            respuesta.dependenciaId === selectedDependencia &&
+            respuesta.preguntaId === selectedPregunta
+        );
 
-        setExpresionData({
-          labels: Object.keys(expresionCount),
-          datasets: [
-            {
-              label: 'expresion',
-              data: Object.values(expresionCount),
-              backgroundColor: [
-                'rgba(75, 192, 192, 0.6)',
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(54, 162, 235, 0.6)',
-                'rgba(255, 206, 86, 0.6)',
-              ],
-            },
-          ],
-        });
-
-        const edadCount = respuestas.reduce((count, respuesta) => { // Actualizado a 'respuestas' en lugar de 'data'
-          const edad = respuesta.edad;
-          count[edad] = (count[edad] || 0) + 1;
-          return count;
-        }, {});
-
-        setEdadData({
-          labels: Object.keys(edadCount),
-          datasets: [
-            {
-              label: 'Edad',
-              data: Object.values(edadCount),
-              backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
-            },
-          ],
-        });
-
-        const generoCount = respuestas.reduce((count, respuesta) => { // Actualizado a 'respuestas' en lugar de 'data'
-          const genero = respuesta.genero || 'OTRO';
-          count[genero] = (count[genero] || 0) + 1;
-          return count;
-        }, {});
-
-        setGeneroData({
-          labels: Object.keys(generoCount),
-          datasets: [
-            {
-              label: 'Género',
-              data: Object.values(generoCount),
-              backgroundColor: [
-                'rgba(75, 192, 192, 0.6)',
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(54, 162, 235, 0.6)',
-              ],
-            },
-          ],
-        });
-
-        const clasificacionCount = respuestas.reduce((count, respuesta) => { // Actualizado a 'respuestas' en lugar de 'data'
-          const clasificacion = respuesta.clasificaciones || 'NUNCA';
-          count[clasificacion] = (count[clasificacion] || 0) + 1;
-          return count;
-        }, {});
-
-        setClasificacionData({
-          labels: Object.keys(clasificacionCount),
-          datasets: [
-            {
-              label: 'Clasificación',
-              data: Object.values(clasificacionCount),
-              backgroundColor: [
-                'rgba(75, 192, 192, 0.6)',
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(54, 162, 235, 0.6)',
-                'rgba(255, 206, 86, 0.6)',
-                'rgba(153, 102, 255, 0.6)',
-              ],
-            },
-          ],
-        });
-
-        const gradoCount = respuestas.reduce((count, respuesta) => { // Actualizado a 'respuestas' en lugar de 'data'
-          const calificacion = respuesta.calificacion || 'MALO';
-          count[calificacion] = (count[calificacion] || 0) + 1;
-          return count;
-        }, {});
-
-        setCalificacionData({
-          labels: Object.keys(gradoCount),
-          datasets: [
-            {
-              label: 'Calificación',
-              data: Object.values(gradoCount),
-              backgroundColor: [
-                'rgba(75, 192, 192, 0.6)',
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(54, 162, 235, 0.6)',
-                'rgba(255, 206, 86, 0.6)',
-                'rgba(153, 102, 255, 0.6)',
-              ],
-            },
-          ],
-        });
-      } else {
-        setExpresionData(null);
-        setEdadData(null);
-        setGeneroData(null);
-        setClasificacionData(null);
-        setCalificacionData(null);
+        setRespuestas(respuestasFiltradas); // Almacena las respuestas filtradas en el estado
       }
+
+      const tipoRespuestaCount = respuestas.reduce((count, respuesta) => {
+        const tipoRespuesta = respuesta.tipoRespuesta;
+        count[tipoRespuesta] = (count[tipoRespuesta] || 0) + 1;
+        return count;
+      }, {});
+
+      const edadCount = respuestas.reduce((count, respuesta) => {
+        const edad = respuesta.edad;
+        count[edad] = (count[edad] || 0) + 1;
+        return count;
+      }, {});
+
+      setEdadData({
+        labels: Object.keys(edadCount),
+        datasets: [
+          {
+            label: 'Edad',
+            data: Object.values(edadCount),
+            backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+          },
+        ],
+      });
+
+      const generoCount = respuestas.reduce((count, respuesta) => {
+        const genero = respuesta.genero || 'OTRO';
+        count[genero] = (count[genero] || 0) + 1;
+        return count;
+      }, {});
+
+      setGeneroData({
+        labels: Object.keys(generoCount),
+        datasets: [
+          {
+            label: 'Género',
+            data: Object.values(generoCount),
+            backgroundColor: [
+              'rgba(75, 192, 192, 0.6)',
+              'rgba(255, 99, 132, 0.6)',
+              'rgba(54, 162, 235, 0.6)',
+            ],
+          },
+        ],
+      });
+      setTipoRespuestaStats(tipoRespuestaCount); // Almacena las estadísticas de tipos de respuesta en el estado
     } catch (error) {
-      console.error('Error fetching respuestas:', error);
+      console.error("Error al obtener las respuestas:", error);
     }
   };
 
   const handlePreguntaChange = (event) => {
     setSelectedPregunta(event.target.value);
-    fetchRespuestas(); // Fetch responses when pregunta changes
   };
 
   const handleDependenciaChange = (event) => {
     setSelectedDependencia(event.target.value);
-    fetchRespuestas(); // Fetch responses when dependencia changes
   };
 
   const handleFormularioChange = (event) => {
     setSelectedFormulario(event.target.value);
-    fetchRespuestas(); // Fetch responses when dependencia changes
   };
-
 
   return (
     <Grid container justifyContent="center" alignItems="center" className="divMain mb80px">
@@ -229,7 +185,6 @@ const Estadisticas = () => {
               variant="standard"
               className={classes.select}
               fullWidth
-              //disabled={!selectedDependencia} // Agregar esta línea
             >
               <MenuItem value="">Todas las preguntas</MenuItem>
               {preguntas.length > 0 &&
@@ -274,7 +229,6 @@ const Estadisticas = () => {
               variant="standard"
               className={classes.select}
               fullWidth
-               // Agregar esta línea
             >
               <MenuItem value="">Todos los Formularios</MenuItem>
               {formularios.length > 0 &&
@@ -312,58 +266,40 @@ const Estadisticas = () => {
           )}
         </Box>
       </Grid>
-
       <Grid item xs={12} md={5}>
-        <Box mx={3} my={5}>
-          {expresionData && (
-            <div>
-              <Typography variant="h6" align="center">
-                Expresiones
-              </Typography>
-              <Bar data={expresionData} />
-            </div>
-          )}
-        </Box>
-      </Grid>
-
-      <Grid item xs={12} md={5}>
-        <Box mx={3} my={5}>
-          {clasificacionData && (
-            <div>
-              <Typography variant="h6" align="center">
-                Clasificación
-              </Typography>
-              <PolarArea data={clasificacionData} />
-            </div>
-          )}
-        </Box>
-      </Grid>
-
-      <Grid item xs={12} md={5}>
-        <Box mx={3} my={5}>
-          {calificacionData && (
-            <div>
-              <Typography variant="h6" align="center">
-                Calificación
-              </Typography>
-              <Pie data={calificacionData} />
-            </div>
-          )}
-        </Box>
-      </Grid>
-
-      <Grid item xs={12} md={5}>
-        <Box mx={3} my={5}>
-          {gradoData && (
-            <div>
-              <Typography variant="h6" align="center">
-                Grado
-              </Typography>
-              <Pie data={gradoData} />
-            </div>
-          )}
-        </Box>
-      </Grid>
+      <Box mx={3} my={5}>
+        {Object.keys(tipoRespuestaStats).length > 0 && (
+          <div>
+            <Typography variant="h6" align="center">
+              Estadísticas por tipo de respuesta
+            </Typography>
+            <Bar
+              data={{
+                labels: Object.keys(tipoRespuestaStats),
+                datasets: [
+                  {
+                    label: 'Cantidad',
+                    data: Object.values(tipoRespuestaStats),
+                    backgroundColor: [
+                      'rgba(75, 192, 192, 0.6)',
+                      'rgba(255, 99, 132, 0.6)',
+                      'rgba(54, 162, 235, 0.6)',
+                    ],
+                  },
+                ],
+              }}
+              options={{
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                  },
+                },
+              }}
+            />
+          </div>
+        )}
+      </Box>
+    </Grid>
     </Grid>
   );
 };
