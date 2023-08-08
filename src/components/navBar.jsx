@@ -31,6 +31,7 @@ const Navbar = () => {
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
   const [selectedList, setSelectedList] = useState("");
+  const [isFormularioActivo, setIsFormularioActivo] = useState(false);
 
   useEffect(() => {
     if (dependencias.length > 0 && dependenciaId) {
@@ -77,6 +78,10 @@ const Navbar = () => {
       })
       .then((data) => {
         setFormularios(data);
+        const hasActiveFormulario = data.some(
+          (formulario) => formulario.estaActivo
+        );
+        setIsFormularioActivo(hasActiveFormulario);
       })
       .catch((error) => {
         console.log("Error fetching formularios:", error);
@@ -165,12 +170,17 @@ const Navbar = () => {
       formulario.nombre.toLowerCase().includes(searchValue.toLowerCase())
   );
 
+  const countFormulariosActivos = () => {
+    return formularios.filter((formulario) => formulario.estaActivo).length;
+  };
+
   const handleToggleFormularioActivo = async (formularioToToggle) => {
     try {
       const updatedFormulario = {
         ...formularioToToggle,
         estaActivo: !formularioToToggle.estaActivo,
       };
+
       await fetch(`http://localhost:4000/formulario/${formularioToToggle.id}`, {
         method: "PUT",
         headers: {
@@ -416,7 +426,9 @@ const Navbar = () => {
                   <TableRow>
                     <TableCell className="columnaId">Formulario</TableCell>
                     <TableCell className="columnaTexto">Nombre</TableCell>
-                    <TableCell className="columnaTexto">Formulario Activo</TableCell>
+                    <TableCell className="columnaTexto">
+                      Formulario Activo
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -436,6 +448,9 @@ const Navbar = () => {
                             color="primary"
                             onClick={() =>
                               handleToggleFormularioActivo(formulario)
+                            }
+                            disabled={
+                              isFormularioActivo && !formulario.estaActivo
                             }
                           >
                             {formulario.estaActivo ? "Desactivar" : "Activar"}

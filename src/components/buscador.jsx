@@ -9,6 +9,7 @@ import {
   FormControl,
   InputLabel,
   Box,
+  TablePagination,
   Divider,
   Input,
   Chip,
@@ -43,7 +44,13 @@ const Buscador = () => {
     direction: "asc",
   });
   const classes = useStyles();
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 50;
 
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+  
   useEffect(() => {
     const obtenerPreguntas = async () => {
       try {
@@ -171,18 +178,22 @@ const Buscador = () => {
   };
 
   const sortedRespuestas =
-    Array.isArray(respuestas) && respuestas.length > 0
-      ? respuestas.sort((a, b) => {
-          const aValue = a[sortConfig.field] || "";
-          const bValue = b[sortConfig.field] || "";
+  Array.isArray(respuestas) && respuestas.length > 0
+    ? respuestas.sort((a, b) => {
+        const aValue = a[sortConfig.field] || "";
+        const bValue = b[sortConfig.field] || "";
 
-          if (sortConfig.direction === "asc") {
-            return aValue.toString().localeCompare(bValue.toString());
-          } else {
-            return bValue.toString().localeCompare(aValue.toString());
-          }
-        })
-      : [];
+        if (sortConfig.direction === "asc") {
+          return aValue.toString().localeCompare(bValue.toString());
+        } else {
+          return bValue.toString().localeCompare(aValue.toString());
+        }
+      })
+    : [];
+
+const startIndex = currentPage * itemsPerPage;
+const endIndex = startIndex + itemsPerPage;
+const currentItems = sortedRespuestas.slice(startIndex, endIndex);
 
   return (
     <div className="divMain mb80px">
@@ -412,7 +423,7 @@ const Buscador = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {sortedRespuestas.map((respuesta) => (
+        {currentItems.map((respuesta) => (
             <TableRow key={respuesta.id}>
               <TableCell>{respuesta.id}</TableCell>
               <TableCell>
@@ -437,6 +448,13 @@ const Buscador = () => {
           ))}
         </TableBody>
       </Table>
+      <TablePagination
+        component="div"
+        count={sortedRespuestas.length}
+        rowsPerPage={itemsPerPage}
+        page={currentPage}
+        onChangePage={handlePageChange}
+      />
     </div>
   );
 };
