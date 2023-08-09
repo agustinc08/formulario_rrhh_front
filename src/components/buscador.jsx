@@ -9,7 +9,6 @@ import {
   FormControl,
   InputLabel,
   Box,
-  TablePagination,
   Divider,
   Input,
   Chip,
@@ -44,13 +43,7 @@ const Buscador = () => {
     direction: "asc",
   });
   const classes = useStyles();
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 50;
 
-  const handlePageChange = (event, newPage) => {
-    setCurrentPage(newPage);
-  };
-  
   useEffect(() => {
     const obtenerPreguntas = async () => {
       try {
@@ -92,11 +85,17 @@ const Buscador = () => {
         const data = await response.json();
         setFormularios(data);
         console.log("Formularios obtenidos:", data);
+    
+        // Find the first active formulario
+        const firstActiveFormulario = data.find((formulario) => formulario.estaActivo);
+        if (firstActiveFormulario) {
+          setSelectedFormulario(firstActiveFormulario.nombre);
+        }
       } catch (error) {
         console.error("Error al obtener los Formularios:", error);
       }
     };
-
+    
     const obtenerTipoRespuesta = async () => {
       try {
         const response = await fetch("http://localhost:4000/tipoRespuesta");
@@ -127,26 +126,33 @@ const Buscador = () => {
           dependencias.find((d) => d.nombreDependencia === dependencia)?.id
       );
   
-      let formularioId = null;
-      if (selectedFormulario !== "") {
-        const formulario = formularios.find(
-          (form) => form.nombre === selectedFormulario
-        );
-        formularioId = formulario ? formulario.id : null;
-      }
+      let queryParams = [];
   
       if (preguntaIds.length > 0) {
-        url += `/pregunta?ids=${preguntaIds.join(",")}`;
+        queryParams.push(`preguntaIds=${preguntaIds.join(",")}`);
       }
-      
+  
       if (dependenciaIds.length > 0) {
-        url += `/dependencia?ids=${dependenciaIds.join(",")}`;
+        queryParams.push(`dependenciaIds=${dependenciaIds.join(",")}`);
       }
-      
-      if (formularioId) {
-        url += `/formulario?ids=${formularioId}`;
+  
+      if (selectedFormulario !== "") {
+        // Find the selected formulario by its name to get the associated ID
+        const selectedFormularioId = formularios.find((f) => f.nombre === selectedFormulario)?.id;
+        if (selectedFormularioId) {
+          queryParams.push(`formularioId=${selectedFormularioId}`);
+        }
       }
-
+  
+      if (queryParams.length > 0) {
+        url += "?" + queryParams.join("&");
+      }
+  
+      console.log("URL de búsqueda:", url);
+      console.log("Preguntas seleccionadas:", selectedPregunta);
+      console.log("Dependencias seleccionadas:", selectedDependencias);
+      console.log("Formulario seleccionado:", selectedFormulario);
+  
       const response = await fetch(url);
       const data = await response.json();
       setRespuestas(data);
@@ -161,6 +167,7 @@ const Buscador = () => {
 
   const handleDependenciaChange = (event) => {
     const selectedDependencies = event.target.value;
+    console.log("Selected Dependencies:", selectedDependencies); // Add this line
     setSelectedDependencias(selectedDependencies);
   };
 
@@ -178,22 +185,18 @@ const Buscador = () => {
   };
 
   const sortedRespuestas =
-  Array.isArray(respuestas) && respuestas.length > 0
-    ? respuestas.sort((a, b) => {
-        const aValue = a[sortConfig.field] || "";
-        const bValue = b[sortConfig.field] || "";
+    Array.isArray(respuestas) && respuestas.length > 0
+      ? respuestas.sort((a, b) => {
+          const aValue = a[sortConfig.field] || "";
+          const bValue = b[sortConfig.field] || "";
 
-        if (sortConfig.direction === "asc") {
-          return aValue.toString().localeCompare(bValue.toString());
-        } else {
-          return bValue.toString().localeCompare(aValue.toString());
-        }
-      })
-    : [];
-
-const startIndex = currentPage * itemsPerPage;
-const endIndex = startIndex + itemsPerPage;
-const currentItems = sortedRespuestas.slice(startIndex, endIndex);
+          if (sortConfig.direction === "asc") {
+            return aValue.toString().localeCompare(bValue.toString());
+          } else {
+            return bValue.toString().localeCompare(aValue.toString());
+          }
+        })
+      : [];
 
   return (
     <div className="divMain mb80px">
@@ -423,7 +426,7 @@ const currentItems = sortedRespuestas.slice(startIndex, endIndex);
           </TableRow>
         </TableHead>
         <TableBody>
-        {currentItems.map((respuesta) => (
+          {sortedRespuestas.map((respuesta) => (
             <TableRow key={respuesta.id}>
               <TableCell>{respuesta.id}</TableCell>
               <TableCell>
@@ -448,13 +451,6 @@ const currentItems = sortedRespuestas.slice(startIndex, endIndex);
           ))}
         </TableBody>
       </Table>
-      <TablePagination
-        component="div"
-        count={sortedRespuestas.length}
-        rowsPerPage={itemsPerPage}
-        page={currentPage}
-        onChangePage={handlePageChange}
-      />
     </div>
   );
 };
