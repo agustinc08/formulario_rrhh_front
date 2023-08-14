@@ -124,9 +124,38 @@ const Buscador = () => {
       const preguntaIds = selectedPregunta.join(",");
       const dependenciaIds = selectedDependenciaIds.join(",");
       const formularioId = formularios.find(f => f.nombre === selectedFormulario)?.id || "";
-        
-      if (selectedPregunta.length > 0) {
-        // Buscar por pregunta
+      
+      if (selectedPregunta.length > 0 && selectedDependencias.length > 0 && selectedFormulario) {
+        // Buscar por pregunta, dependencia y formulario
+        const url = `http://localhost:4000/respuestas/${preguntaIds}/${dependenciaIds}/${formularioId}`;
+        console.log("URL de búsqueda:", url);
+        const response = await fetch(url);
+        const data = await response.json();
+        setRespuestas(data);
+        }
+       else if (selectedPregunta.length > 0 && selectedDependencias.length > 0) {
+          // Buscar por pregunta y dependencia
+          const url = `http://localhost:4000/respuestas/${preguntaIds}/${dependenciaIds}`;
+          console.log("URL de búsqueda:", url);
+          const response = await fetch(url);
+          const data = await response.json();
+          setRespuestas(data);
+        } else if (selectedPregunta.length > 0 && selectedFormulario !== "") {
+          // Buscar por pregunta y formulario
+          const url = `http://localhost:4000/respuestas/${preguntaIds}/${formularioId}`;
+          console.log("URL de búsqueda:", url);
+          const response = await fetch(url);
+          const data = await response.json();
+          setRespuestas(data);
+        } else if (selectedDependencias.length > 0 && selectedFormulario !== "") {
+          // Buscar por dependencia y formulario
+          const url = `http://localhost:4000/respuestas/${dependenciaIds}/${formularioId}`;
+          console.log("URL de búsqueda:", url);
+          const response = await fetch(url);
+          const data = await response.json();
+          setRespuestas(data);
+      } else if (selectedPregunta.length > 0) {
+         // Buscar por pregunta
         const url = `http://localhost:4000/respuestas/pregunta?ids=${preguntaIds}`;
         console.log("URL de búsqueda:", url);
         const response = await fetch(url);
@@ -145,38 +174,12 @@ const Buscador = () => {
         console.log("URL de búsqueda:", url);
         const response = await fetch(url);
         const data = await response.json();
-        setRespuestas(data);
-      } else if (selectedPregunta.length > 0 && selectedDependencias.length > 0) {
-        // Buscar por pregunta y dependencia
-        const url = `http://localhost:4000/respuestas/${preguntaIds}/${dependenciaIds}`;
-        console.log("URL de búsqueda:", url);
-        const response = await fetch(url);
-        const data = await response.json();
-        setRespuestas(data);
-      } else if (selectedPregunta.length > 0 && selectedFormulario !== "") {
-        // Buscar por pregunta y formulario
-        const url = `http://localhost:4000/respuestas/${preguntaIds}/${formularioId}`;
-        console.log("URL de búsqueda:", url);
-        const response = await fetch(url);
-        const data = await response.json();
-        setRespuestas(data);
-      } else if (selectedDependencias.length > 0 && selectedFormulario !== "") {
-        // Buscar por dependencia y formulario
-        const url = `http://localhost:4000/respuestas/${dependenciaIds}/${formularioId}`;
-        console.log("URL de búsqueda:", url);
-        const response = await fetch(url);
-        const data = await response.json();
-        setRespuestas(data);
+        setRespuestas(data); 
       } else if (selectedPregunta.length === 0 && selectedDependencias.length === 0 && selectedFormulario === "") {
         // Si ninguno de los selects está seleccionado, obtener todas las respuestas
         const response = await fetch("http://localhost:4000/respuestas");
       const data = await response.json();
       setRespuestas(data);
-      } else if (selectedFormulario && selectedDependencias && selectedPregunta){
-        const url = `http://localhost:4000/respuestas/${preguntaIds}/${dependenciaIds}/${formularioId}`;
-        console.log("URL de búsqueda:", url);
-        const response = await fetch(url);
-        const data = await response.json();
       }
     } catch (error) {
       console.error("Error al buscar respuestas: ", error);
