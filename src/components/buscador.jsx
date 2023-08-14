@@ -127,7 +127,7 @@ const Buscador = () => {
       
       if (selectedPregunta.length > 0 && selectedDependencias.length > 0 && selectedFormulario) {
         // Buscar por pregunta, dependencia y formulario
-        const url = `http://localhost:4000/respuestas/${preguntaIds}/${dependenciaIds}/${formularioId}`;
+        const url = `http://localhost:4000/respuestas/buscar/${preguntaIds}/${dependenciaIds}/${formularioId}`;
         console.log("URL de búsqueda:", url);
         const response = await fetch(url);
         const data = await response.json();
@@ -135,21 +135,21 @@ const Buscador = () => {
         }
        else if (selectedPregunta.length > 0 && selectedDependencias.length > 0) {
           // Buscar por pregunta y dependencia
-          const url = `http://localhost:4000/respuestas/${preguntaIds}/${dependenciaIds}`;
+          const url = `http://localhost:4000/respuestas/buscarpd/${preguntaIds}/${dependenciaIds}`;
           console.log("URL de búsqueda:", url);
           const response = await fetch(url);
           const data = await response.json();
           setRespuestas(data);
         } else if (selectedPregunta.length > 0 && selectedFormulario !== "") {
           // Buscar por pregunta y formulario
-          const url = `http://localhost:4000/respuestas/${preguntaIds}/${formularioId}`;
+          const url = `http://localhost:4000/respuestas/buscarpf/${preguntaIds}/${formularioId}`;
           console.log("URL de búsqueda:", url);
           const response = await fetch(url);
           const data = await response.json();
           setRespuestas(data);
         } else if (selectedDependencias.length > 0 && selectedFormulario !== "") {
           // Buscar por dependencia y formulario
-          const url = `http://localhost:4000/respuestas/${dependenciaIds}/${formularioId}`;
+          const url = `http://localhost:4000/respuestas/buscardf/${dependenciaIds}/${formularioId}`;
           console.log("URL de búsqueda:", url);
           const response = await fetch(url);
           const data = await response.json();
