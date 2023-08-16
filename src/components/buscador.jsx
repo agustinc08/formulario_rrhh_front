@@ -37,7 +37,7 @@ const Buscador = () => {
   const [dependenciaNombres, setDependenciaNombres] = useState({});
   const [selectedPregunta, setSelectedPregunta] = useState([]);
   const [selectedDependencias, setSelectedDependencias] = useState([]);
-  const [selectedFormulario, setSelectedFormulario] = useState("todos");
+  const [selectedFormulario, setSelectedFormulario] = useState("");
   const [sortConfig, setSortConfig] = useState({
     field: null,
     direction: "asc",
@@ -51,8 +51,6 @@ const Buscador = () => {
         const response = await fetch("http://localhost:4000/formulario");
         const data = await response.json();
         setFormularios(data);
-        console.log("Formularios obtenidos:", data);
-  
         const firstActiveFormulario = data.find(
           (formulario) => formulario.estaActivo
         );
@@ -73,8 +71,6 @@ const Buscador = () => {
         const response = await fetch("http://localhost:4000/dependencias");
         const data = await response.json();
         setDependencias(data);
-        console.log("Dependencias obtenidas:", data);
-  
         const nombres = {};
         data.forEach((dependencia) => {
           nombres[dependencia.id] = dependencia.nombreDependencia;
@@ -90,7 +86,6 @@ const Buscador = () => {
         const response = await fetch("http://localhost:4000/preguntas");
         const data = await response.json();
         setPreguntas(data);
-        console.log("Preguntas obtenidas:", data);
   
         const descripciones = {};
         data.forEach((pregunta) => {
@@ -148,7 +143,6 @@ const Buscador = () => {
   };
   const handleDependenciaChange = (event) => {
     const selectedDependencies = event.target.value;
-    console.log("Selected Dependencies:", selectedDependencies); // Add this line
     setSelectedDependencias(selectedDependencies);
   };
 
@@ -174,7 +168,6 @@ const Buscador = () => {
       ) {
         // Buscar por pregunta, dependencia y formulario
         const url = `http://localhost:4000/respuestas/buscar/${preguntaIds}/${dependenciaIds}/${formularioId}`;
-        console.log("URL de búsqueda:", url);
         const response = await fetch(url);
         const data = await response.json();
         setRespuestas(data);
@@ -184,42 +177,36 @@ const Buscador = () => {
       ) {
         // Buscar por pregunta y dependencia
         const url = `http://localhost:4000/respuestas/buscarpd/${preguntaIds}/${dependenciaIds}`;
-        console.log("URL de búsqueda:", url);
         const response = await fetch(url);
         const data = await response.json();
         setRespuestas(data);
       } else if (selectedPregunta.length > 0 && selectedFormulario !== "") {
         // Buscar por pregunta y formulario
         const url = `http://localhost:4000/respuestas/buscarpf/${preguntaIds}/${formularioId}`;
-        console.log("URL de búsqueda:", url);
         const response = await fetch(url);
         const data = await response.json();
         setRespuestas(data);
       } else if (selectedDependencias.length > 0 && selectedFormulario !== "") {
         // Buscar por dependencia y formulario
         const url = `http://localhost:4000/respuestas/buscardf/${dependenciaIds}/${formularioId}`;
-        console.log("URL de búsqueda:", url);
         const response = await fetch(url);
         const data = await response.json();
         setRespuestas(data);
       } else if (selectedPregunta.length > 0) {
         // Buscar por pregunta
         const url = `http://localhost:4000/respuestas/pregunta?ids=${preguntaIds}`;
-        console.log("URL de búsqueda:", url);
         const response = await fetch(url);
         const data = await response.json();
         setRespuestas(data);
       } else if (selectedDependencias.length > 0) {
         // Buscar por dependencia
         const url = `http://localhost:4000/respuestas/dependencia?ids=${dependenciaIds}`;
-        console.log("URL de búsqueda:", url);
         const response = await fetch(url);
         const data = await response.json();
         setRespuestas(data);
       } else if (selectedFormulario !== "") {
         // Buscar por formulario
         const url = `http://localhost:4000/respuestas/formulario?ids=${formularioId}`;
-        console.log("URL de búsqueda:", url);
         const response = await fetch(url);
         const data = await response.json();
         setRespuestas(data);

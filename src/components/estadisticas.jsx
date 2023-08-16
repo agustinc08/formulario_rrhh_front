@@ -7,213 +7,286 @@ import {
   MenuItem,
   Grid,
   Box,
+  Button,
+  Chip,
+  Input,
+  Container,
   Divider,
 } from "@material-ui/core";
-import "../css/global.css";
-import { Bar, Pie, Doughnut } from "react-chartjs-2";
+import CheckIcon from "@material-ui/icons/Check";
+import { Doughnut, Pie, Bar } from "react-chartjs-2";
 import useStyles from "../styles/estadisticasStyle";
 
 const Estadisticas = () => {
   const classes = useStyles();
-  const [dependencias, setDependencias] = useState([]);
   const [preguntas, setPreguntas] = useState([]);
-  const [selectedDependencia, setSelectedDependencia] = useState("");
-  const [selectedPregunta, setSelectedPregunta] = useState("");
-  const [selectedFormulario, setSelectedFormulario] = useState("");
+  const [dependencias, setDependencias] = useState([]);
   const [respuestas, setRespuestas] = useState([]);
   const [formularios, setFormularios] = useState([]);
-  const [edadData, setEdadData] = useState("");
-  const [generoData, setGeneroData] = useState("");
-  const [tipoRespuestaStats, setTipoRespuestaStats] = useState({});
+  const [tipoRespuestaDescripciones, setTipoRespuestaDescripciones] = useState(
+    {}
+  );
+  const [preguntaDescripciones, setPreguntaDescripciones] = useState({});
+  const [dependenciaNombres, setDependenciaNombres] = useState({});
+  const [selectedPregunta, setSelectedPregunta] = useState([]);
+  const [selectedDependencias, setSelectedDependencias] = useState([]);
+  const [selectedFormulario, setSelectedFormulario] = useState("");
+  const [preguntasDelFormulario, setPreguntasDelFormulario] = useState([]);
+  const [estadisticasDelFormulario, setEstadisticasDelFormulario] = useState(
+    []
+  );
+  const [respuestasPorTipo, setRespuestasPorTipo] = useState({});
+  const [estadisticasEdad, setEstadisticasEdad] = useState([]);
+  const [estadisticasGenero, setEstadisticasGenero] = useState([]);
+  const [estadisticasTipoRespuesta, setEstadisticasTipoRespuesta] = useState(
+    []
+  );
+  const [respuestasData, setRespuestasData] = useState([]);
 
   useEffect(() => {
-    const obtenerPreguntas = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/preguntas");
-        const data = await response.json();
-        setPreguntas(data);
-        console.log("Preguntas obtenidas:", data);
-      } catch (error) {
-        console.error("Error al obtener las preguntas:", error);
-      }
-      fetchRespuestas();
-    };
-
-    const obtenerDependencias = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/dependencias");
-        const data = await response.json();
-        setDependencias(data);
-        console.log("Dependencias obtenidas:", data);
-      } catch (error) {
-        console.error("Error al obtener las dependencias:", error);
-      }
-    };
-
     const obtenerFormularios = async () => {
       try {
         const response = await fetch("http://localhost:4000/formulario");
         const data = await response.json();
         setFormularios(data);
-        console.log("Formularios obtenidos:", data);
+        const firstActiveFormulario = data.find(
+          (formulario) => formulario.estaActivo
+        );
+        if (firstActiveFormulario) {
+          setSelectedFormulario(firstActiveFormulario.nombre);
+        }
       } catch (error) {
-        console.error("Error al obtener los formularios:", error);
+        console.error("Error al obtener los Formularios:", error);
       }
     };
 
-    obtenerPreguntas();
-    obtenerDependencias();
     obtenerFormularios();
   }, []);
 
   useEffect(() => {
-    fetchRespuestas();
-    if (selectedFormulario !== "") {
-      obtenerTiposRespuesta().catch((error) => {
-        console.error("Error al obtener los tipos de respuesta:", error);
-      });
-    }
-  }, [selectedDependencia, selectedPregunta, selectedFormulario]);
-
-  const obtenerTiposRespuesta = async () => {
-    const response = await fetch(
-      `http://localhost:4000/formulario/${selectedFormulario}/tiposRespuesta`
-    );
-    const data = await response.json();
-    // Aquí obtienes los tipos de respuesta específicos para el formulario seleccionado
-    console.log("Tipos de Respuesta obtenidos:", data);
-    // Actualizar el estado tipoRespuestaStats con los datos obtenidos
-    setTipoRespuestaStats(data);
-  };
-
-  const fetchRespuestas = async () => {
-    try {
-      let url = "http://localhost:4000/respuestas";
-
-      if (selectedDependencia !== "" && selectedPregunta !== "") {
-        // Si se ha seleccionado una dependencia y una pregunta, agregar los parámetros a la URL
-        url += `?dependenciaId=${selectedDependencia}&preguntaId=${selectedPregunta}`;
+    const obtenerDependencias = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/dependencias");
+        const data = await response.json();
+        setDependencias(data);
+        const nombres = {};
+        data.forEach((dependencia) => {
+          nombres[dependencia.id] = dependencia.nombreDependencia;
+        });
+        setDependenciaNombres(nombres);
+      } catch (error) {
+        console.error("Error al obtener las dependencias:", error);
       }
+    };
 
-      const response = await fetch(url);
-      const data = await response.json();
+    const obtenerPreguntas = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/preguntas");
+        const data = await response.json();
+        setPreguntas(data);
 
-      if (selectedDependencia !== "" && selectedPregunta !== "") {
-        // Si se ha seleccionado una dependencia y una pregunta, filtrar las respuestas
-        const respuestasFiltradas = data.filter(
-          (respuesta) =>
-            respuesta.dependenciaId === selectedDependencia &&
-            respuesta.preguntaId === selectedPregunta
-        );
-        setRespuestas(respuestasFiltradas);
-      } else {
-        // Si no se ha seleccionado una dependencia y una pregunta, mostrar todas las respuestas
-        setRespuestas(data);
-      }
+        const descripciones = {};
+        data.forEach((pregunta) => {
+          descripciones[pregunta.id] = pregunta.descripcion;
+        });
+        setPreguntaDescripciones(descripciones);
 
-      // Agrupar las respuestas por formulario
-      const respuestasAgrupadasPorFormulario = respuestas.reduce((grouped, respuesta) => {
-        const formularioId = respuesta.formularioId;
-        if (!grouped[formularioId]) {
-          grouped[formularioId] = [];
+        const firstActiveFormulario = formularios.find((f) => f.estaActivo);
+        if (firstActiveFormulario) {
+          const preguntasDelFormulario = data.filter(
+            (pregunta) => pregunta.formularioId === firstActiveFormulario.id
+          );
+          setPreguntasDelFormulario(preguntasDelFormulario);
         }
-        grouped[formularioId].push(respuesta);
-        return grouped;
-      }, {});
+      } catch (error) {
+        console.error("Error al obtener las preguntas:", error);
+      }
+    };
 
-      // Contar las edades dentro de cada formulario
-      const edadCountPorFormulario = {};
-      Object.values(respuestasAgrupadasPorFormulario).forEach((respuestasPorFormulario) => {
-        const edadCount = respuestasPorFormulario.reduce((count, respuesta) => {
-          const edad = respuesta.edad;
-          count[edad] = (count[edad] || 0) + 1;
-          return count;
-        }, {});
-        edadCountPorFormulario[respuestasPorFormulario[0].formularioId] = edadCount;
-      });
+    const obtenerTipoRespuesta = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/tipoRespuesta");
+        const data = await response.json();
+        const descripciones = {};
+        data.forEach((tipoRespuesta) => {
+          descripciones[tipoRespuesta.id] = tipoRespuesta.descripcion;
+        });
+        setTipoRespuestaDescripciones(descripciones);
+      } catch (error) {
+        console.error("Error al obtener los tipos de respuesta:", error);
+      }
+    };
 
-      // Actualizar el estado edadData con las estadísticas de edad por formulario
-      setEdadData({
-        labels: Object.keys(edadCountPorFormulario),
-        datasets: [
-          {
-            label: "Edad",
-            data: Object.values(edadCountPorFormulario),
-            backgroundColor: ["rgba(75, 192, 192, 0.6)", "rgba(255, 99, 132, 0.6)"],
-          },
-        ],
-      });
-    } catch (error) {
-      console.error("Error al obtener las respuestas:", error);
+    obtenerDependencias();
+    obtenerTipoRespuesta();
+    obtenerPreguntas();
+  }, [formularios]);
+
+  const handleFormularioChange = (event) => {
+    const selectedFormularioId = formularios.find(
+      (f) => f.nombre === event.target.value
+    )?.id;
+
+    if (selectedFormularioId) {
+      const preguntasDelFormulario = preguntas.filter(
+        (pregunta) => pregunta.formularioId === selectedFormularioId
+      );
+      setPreguntasDelFormulario(preguntasDelFormulario);
+      setSelectedFormulario(event.target.value);
+    } else {
+      // Si no hay formulario seleccionado, mostrar todas las preguntas
+      setPreguntasDelFormulario(preguntas);
+      setSelectedFormulario("");
     }
+  };
+  const handleDependenciaChange = (event) => {
+    const selectedDependencies = event.target.value;
+    setSelectedDependencias(selectedDependencies);
   };
 
   const handlePreguntaChange = (event) => {
     setSelectedPregunta(event.target.value);
   };
 
-  const handleDependenciaChange = (event) => {
-    setSelectedDependencia(event.target.value);
-  };
+  const handleBuscarRespuestas = async () => {
+    try {
+      const selectedDependenciaIds = selectedDependencias.map(
+        (depName) =>
+          dependencias.find((dep) => dep.nombreDependencia === depName)?.id
+      );
+      const preguntaIds = selectedPregunta.join(",");
+      const dependenciaIds = selectedDependenciaIds.join(",");
+      const formularioId =
+        formularios.find((f) => f.nombre === selectedFormulario)?.id || "";
 
-  const handleFormularioChange = (event) => {
-    setSelectedFormulario(event.target.value);
+      if (
+        selectedPregunta.length > 0 &&
+        selectedDependencias.length > 0 &&
+        selectedFormulario
+      ) {
+        // Buscar por pregunta, dependencia y formulario
+        const url = `http://localhost:4000/respuestas/buscar/${preguntaIds}/${dependenciaIds}/${formularioId}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
+        setRespuestas(data);
+      } else if (
+        selectedPregunta.length > 0 &&
+        selectedDependencias.length > 0
+      ) {
+        // Buscar por pregunta y dependencia
+        const url = `http://localhost:4000/respuestas/buscarpd/${preguntaIds}/${dependenciaIds}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
+        setRespuestas(data);
+      } else if (selectedPregunta.length > 0 && selectedFormulario !== "") {
+        // Buscar por pregunta y formulario
+        const url = `http://localhost:4000/respuestas/buscarpf/${preguntaIds}/${formularioId}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        setRespuestas(data);
+        setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
+      } else if (selectedDependencias.length > 0 && selectedFormulario !== "") {
+        // Buscar por dependencia y formulario
+        const url = `http://localhost:4000/respuestas/buscardf/${dependenciaIds}/${formularioId}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        setRespuestas(data);
+        setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
+      } else if (selectedPregunta.length > 0) {
+        // Buscar por pregunta
+        const url = `http://localhost:4000/respuestas/pregunta?ids=${preguntaIds}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        setRespuestas(data);
+        setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
+      } else if (selectedDependencias.length > 0) {
+        // Buscar por dependencia
+        const url = `http://localhost:4000/respuestas/dependencia?ids=${dependenciaIds}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        setRespuestas(data);
+        setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
+      } else if (selectedFormulario !== "") {
+        // Buscar por formulario
+        const url = `http://localhost:4000/respuestas/formulario?ids=${formularioId}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        setRespuestas(data);
+        setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
+      } else if (
+        selectedPregunta.length === 0 &&
+        selectedDependencias.length === 0 &&
+        selectedFormulario === ""
+      ) {
+        // Si ninguno de los selects está seleccionado, obtener todas las respuestas
+        const response = await fetch("http://localhost:4000/respuestas");
+        const data = await response.json();
+        setRespuestas(data);
+        setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
+      }
+
+      const estadisticasEdad = {};
+      const estadisticasGenero = {};
+      const estadisticasTipoRespuesta = {};
+
+      respuestasData.forEach((respuesta) => {
+        // Procesa la edad de la respuesta y actualiza las estadísticas de edad
+        const edad = respuesta.edad;
+        if (edad) {
+          estadisticasEdad[edad] = (estadisticasEdad[edad] || 0) + 1;
+        }
+
+        // Procesa el género de la respuesta y actualiza las estadísticas de género
+        const genero = respuesta.genero;
+        if (genero) {
+          estadisticasGenero[genero] = (estadisticasGenero[genero] || 0) + 1;
+        }
+
+        // Procesa el tipo de respuesta de la respuesta y actualiza las estadísticas de tipo de respuesta
+        const tipoRespuesta = respuesta.tipoRespuesta;
+        if (tipoRespuesta) {
+          estadisticasTipoRespuesta[tipoRespuesta] =
+            (estadisticasTipoRespuesta[tipoRespuesta] || 0) + 1;
+        }
+      });
+
+      // Aquí puedes guardar las estadísticas generadas en los estados correspondientes
+      setEstadisticasEdad(estadisticasEdad);
+      setEstadisticasGenero(estadisticasGenero);
+      setEstadisticasTipoRespuesta(estadisticasTipoRespuesta);
+
+      // Aquí calcula las estadísticas por tipo de respuesta y actualiza respuestasPorTipo
+      const respuestasPorTipoNuevo = {};
+      respuestasData.forEach((respuesta) => {
+        const tipoRespuesta = respuesta.tipoRespuesta;
+        if (tipoRespuesta) {
+          if (!respuestasPorTipoNuevo[tipoRespuesta]) {
+            respuestasPorTipoNuevo[tipoRespuesta] = [];
+          }
+          respuestasPorTipoNuevo[tipoRespuesta].push(respuesta);
+        }
+      });
+      setRespuestasPorTipo(respuestasPorTipoNuevo);
+
+      // Aquí puedes realizar otras acciones con las estadísticas, como actualizar los gráficos
+      // o realizar cálculos adicionales si es necesario
+    } catch (error) {
+      console.error("Error al buscar respuestas: ", error);
+    }
   };
 
   return (
-    <Grid container justifyContent="center" alignItems="center" className="divMain mb80px">
-      <Grid item xs={12}>
-        <Typography variant="h4" align="center" className={classes.titulo}>
-          Estadísticas
+    <Container>
+      <Box sx={{ paddingTop: 20 }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          Estadisticas
         </Typography>
-        <Divider />
-      </Grid>
-      <Grid item xs={12} md={4}>
-        <Box mx={4}>
-          <FormControl variant="standard" fullWidth size="small">
-            <InputLabel>Pregunta</InputLabel>
-            <Select
-              value={selectedPregunta}
-              onChange={handlePreguntaChange}
-              variant="standard"
-              className={classes.select}
-              fullWidth
-            >
-              <MenuItem value="">Todas las preguntas</MenuItem>
-              {preguntas.length > 0 &&
-                preguntas.map((pregunta) => (
-                  <MenuItem key={pregunta.id} value={pregunta.id}>
-                    {pregunta.descripcion}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-        </Box>
-      </Grid>
-      <Grid item xs={12} md={4}>
-        <Box mx={4}>
-          <FormControl variant="standard" fullWidth size="small">
-            <InputLabel>Dependencia</InputLabel>
-            <Select
-              value={selectedDependencia}
-              onChange={handleDependenciaChange}
-              variant="standard"
-              className={classes.select}
-              fullWidth
-            >
-              <MenuItem value="">Todas las dependencias</MenuItem>
-              {dependencias.length > 0 &&
-                dependencias.map((dependencia) => (
-                  <MenuItem key={dependencia.id} value={dependencia.id}>
-                    {dependencia.nombreDependencia}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-        </Box>
-      </Grid>
-      <Grid item xs={12} md={4}>
-        <Box mx={4}>
+      </Box>
+      <Divider></Divider>
+      <Grid container spacing={4} className={classes.centrar}>
+        <Grid item xs={12} sm={4} lg={3}>
           <FormControl variant="standard" fullWidth size="small">
             <InputLabel>Formulario</InputLabel>
             <Select
@@ -223,77 +296,185 @@ const Estadisticas = () => {
               className={classes.select}
               fullWidth
             >
-              <MenuItem value="">Todos los Formularios</MenuItem>
-              {formularios.length > 0 &&
-                formularios.map((formulario) => (
-                  <MenuItem key={formulario.id} value={formulario.id}>
-                    {formulario.nombre}
-                  </MenuItem>
-                ))}
+              <MenuItem value="">Todos los formularios</MenuItem>
+              {formularios.map((formulario) => (
+                <MenuItem key={formulario.id} value={formulario.nombre}>
+                  {formulario.nombre}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
-        </Box>
-      </Grid>
-      <Grid item xs={12} md={5}>
-        <Box mx={3} my={5}>
-          {generoData && (
-            <div>
-              <Typography variant="h6" align="center">
-                Género
-              </Typography>
-              <Doughnut data={generoData} />
-            </div>
-          )}
-        </Box>
-      </Grid>
-
-      <Grid item xs={12} md={5}>
-        <Box mx={3} my={5}>
-          {edadData && (
-            <div>
-              <Typography variant="h6" align="center">
-                Edad
-              </Typography>
-              <Pie data={edadData} />
-            </div>
-          )}
-        </Box>
-      </Grid>
-      <Grid item xs={12} md={5}>
-        <Box mx={3} my={5}>
-          {Object.keys(tipoRespuestaStats).length > 0 && (
-            <div>
-              <Typography variant="h6" align="center">
-                Estadísticas por tipo de respuesta
-              </Typography>
-              <Bar
+        </Grid>
+        <Grid item xs={12} sm={4} lg={3}>
+          <FormControl variant="standard" fullWidth size="small">
+            <InputLabel id="dependencias-label">Dependencias</InputLabel>
+            <Select
+              variant="standard"
+              className={classes.select}
+              fullWidth
+              labelId="dependencias-label"
+              multiple
+              value={selectedDependencias || []}
+              onChange={handleDependenciaChange}
+              input={<Input />}
+              renderValue={(selected) => (
+                <div>
+                  {selected.map((value) => (
+                    <Chip key={value} label={value} />
+                  ))}
+                </div>
+              )}
+            >
+              {dependencias.map((dependencia) => (
+                <MenuItem
+                  key={dependencia.id}
+                  value={dependencia.nombreDependencia}
+                >
+                  <Chip
+                    icon={
+                      selectedDependencias.includes(
+                        dependencia.nombreDependencia
+                      ) ? (
+                        <CheckIcon />
+                      ) : null
+                    }
+                    label={dependencia.nombreDependencia}
+                    className={classes.chip}
+                    clickable
+                  />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={4} lg={3}>
+          <FormControl variant="standard" fullWidth size="small">
+            <InputLabel>Preguntas</InputLabel>
+            <Select
+              value={selectedPregunta || []}
+              onChange={handlePreguntaChange}
+              variant="standard"
+              className={classes.select}
+              fullWidth
+              multiple
+              renderValue={(selected) => (
+                <div className={classes.chips}>
+                  {selected.map((value) => (
+                    <Chip
+                      key={value}
+                      label={preguntaDescripciones[value]}
+                      className={classes.chip}
+                    />
+                  ))}
+                </div>
+              )}
+            >
+              {selectedFormulario === "" && (
+                <MenuItem key="todas" value="">
+                  Todas las preguntas
+                </MenuItem>
+              )}
+              {preguntasDelFormulario.map((pregunta) => (
+                <MenuItem key={pregunta.id} value={pregunta.id}>
+                  <Chip
+                    icon={
+                      selectedPregunta.includes(pregunta.id) ? (
+                        <CheckIcon />
+                      ) : null
+                    }
+                    label={pregunta.descripcion}
+                    className={classes.chip}
+                    clickable
+                  />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={3} lg={2} className={classes.centrar}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleBuscarRespuestas}
+            fullWidth
+            size="small"
+          >
+            Buscar
+          </Button>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Box mx={4} className={classes.chartContainer}>
+            <Doughnut
+              data={{
+                labels: Object.keys(estadisticasEdad),
+                datasets: [
+                  {
+                    label: "Edad",
+                    data: Object.values(estadisticasEdad),
+                    backgroundColor: "rgba(54, 162, 235, 0.6)",
+                  },
+                ],
+              }}
+              options={{ maintainAspectRatio: false }}
+            />
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Box mx={4} className={classes.chartContainer}>
+            <Bar
+              data={{
+                labels: Object.keys(estadisticasGenero),
+                datasets: [
+                  {
+                    label: "Género",
+                    data: Object.values(estadisticasGenero),
+                    backgroundColor: "rgba(255, 99, 132, 0.6)",
+                  },
+                ],
+              }}
+              options={{ maintainAspectRatio: false }}
+            />
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Box mx={4} className={classes.chartContainer}>
+            <Bar
+              data={{
+                labels: Object.keys(estadisticasTipoRespuesta),
+                datasets: [
+                  {
+                    label: "Tipo de Respuesta",
+                    data: Object.values(estadisticasTipoRespuesta),
+                    backgroundColor: "rgba(75, 192, 192, 0.6)",
+                  },
+                ],
+              }}
+              options={{ maintainAspectRatio: false }}
+            />
+          </Box>
+        </Grid>
+        {Object.keys(respuestasPorTipo).map((tipoRespuesta) => (
+          <Grid item xs={12} md={6}>
+            <Box mx={4} className={classes.chartContainer}>
+              <Pie
+                key={tipoRespuesta}
                 data={{
-                  labels: Object.keys(tipoRespuestaStats),
+                  labels: [tipoRespuesta],
                   datasets: [
                     {
-                      label: "Cantidad",
-                      data: Object.values(tipoRespuestaStats),
-                      backgroundColor: [
-                        "rgba(75, 192, 192, 0.6)",
-                        "rgba(255, 99, 132, 0.6)",
-                        "rgba(54, 162, 235, 0.6)",
-                      ],
+                      label: "Tipo de Respuesta",
+                      data: [respuestasPorTipo[tipoRespuesta].length],
+                      backgroundColor: "rgba(75, 192, 192, 0.6)",
                     },
                   ],
                 }}
-                options={{
-                  scales: {
-                    y: {
-                      beginAtZero: true,
-                    },
-                  },
-                }}
+                options={{ maintainAspectRatio: false }}
               />
-            </div>
-          )}
-        </Box>
+            </Box>
+          </Grid>
+        ))}
       </Grid>
-    </Grid>
+    </Container>
   );
 };
 
