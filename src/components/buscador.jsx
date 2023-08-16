@@ -46,48 +46,13 @@ const Buscador = () => {
   const [preguntasDelFormulario, setPreguntasDelFormulario] = useState([]);
 
   useEffect(() => {
-    const obtenerPreguntas = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/preguntas");
-        const data = await response.json();
-        setPreguntas(data);
-        console.log("Preguntas obtenidas:", data);
-
-        const descripciones = {};
-        data.forEach((pregunta) => {
-          descripciones[pregunta.id] = pregunta.descripcion;
-        });
-        setPreguntaDescripciones(descripciones);
-      } catch (error) {
-        console.error("Error al obtener las preguntas:", error);
-      }
-    };
-
-    const obtenerDependencias = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/dependencias");
-        const data = await response.json();
-        setDependencias(data);
-        console.log("Dependencias obtenidas:", data);
-
-        const nombres = {};
-        data.forEach((dependencia) => {
-          nombres[dependencia.id] = dependencia.nombreDependencia;
-        });
-        setDependenciaNombres(nombres);
-      } catch (error) {
-        console.error("Error al obtener las dependencias:", error);
-      }
-    };
-
     const obtenerFormularios = async () => {
       try {
         const response = await fetch("http://localhost:4000/formulario");
         const data = await response.json();
         setFormularios(data);
         console.log("Formularios obtenidos:", data);
-
-        // Find the first active formulario
+  
         const firstActiveFormulario = data.find(
           (formulario) => formulario.estaActivo
         );
@@ -98,7 +63,53 @@ const Buscador = () => {
         console.error("Error al obtener los Formularios:", error);
       }
     };
-
+  
+    obtenerFormularios();
+  }, []);
+  
+  useEffect(() => {
+    const obtenerDependencias = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/dependencias");
+        const data = await response.json();
+        setDependencias(data);
+        console.log("Dependencias obtenidas:", data);
+  
+        const nombres = {};
+        data.forEach((dependencia) => {
+          nombres[dependencia.id] = dependencia.nombreDependencia;
+        });
+        setDependenciaNombres(nombres);
+      } catch (error) {
+        console.error("Error al obtener las dependencias:", error);
+      }
+    };
+  
+    const obtenerPreguntas = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/preguntas");
+        const data = await response.json();
+        setPreguntas(data);
+        console.log("Preguntas obtenidas:", data);
+  
+        const descripciones = {};
+        data.forEach((pregunta) => {
+          descripciones[pregunta.id] = pregunta.descripcion;
+        });
+        setPreguntaDescripciones(descripciones);
+  
+        const firstActiveFormulario = formularios.find((f) => f.estaActivo);
+        if (firstActiveFormulario) {
+          const preguntasDelFormulario = data.filter(
+            (pregunta) => pregunta.formularioId === firstActiveFormulario.id
+          );
+          setPreguntasDelFormulario(preguntasDelFormulario);
+        }
+      } catch (error) {
+        console.error("Error al obtener las preguntas:", error);
+      }
+    };
+  
     const obtenerTipoRespuesta = async () => {
       try {
         const response = await fetch("http://localhost:4000/tipoRespuesta");
@@ -112,12 +123,38 @@ const Buscador = () => {
         console.error("Error al obtener los tipos de respuesta:", error);
       }
     };
-
-    obtenerTipoRespuesta();
+  
     obtenerDependencias();
-    obtenerFormularios();
+    obtenerTipoRespuesta();
     obtenerPreguntas();
-  }, []);
+  }, [formularios]);
+
+  const handleFormularioChange = (event) => {
+    const selectedFormularioId = formularios.find(
+      (f) => f.nombre === event.target.value
+    )?.id;
+  
+    if (selectedFormularioId) {
+      const preguntasDelFormulario = preguntas.filter(
+        (pregunta) => pregunta.formularioId === selectedFormularioId
+      );
+      setPreguntasDelFormulario(preguntasDelFormulario);
+      setSelectedFormulario(event.target.value);
+    } else {
+      // Si no hay formulario seleccionado, mostrar todas las preguntas
+      setPreguntasDelFormulario(preguntas);
+      setSelectedFormulario("");
+    }
+  };
+  const handleDependenciaChange = (event) => {
+    const selectedDependencies = event.target.value;
+    console.log("Selected Dependencies:", selectedDependencies); // Add this line
+    setSelectedDependencias(selectedDependencies);
+  };
+
+  const handlePreguntaChange = (event) => {
+    setSelectedPregunta(event.target.value);
+  };
 
   const handleBuscarRespuestas = async () => {
     try {
@@ -201,32 +238,6 @@ const Buscador = () => {
     }
   };
 
-  const handlePreguntaChange = (event) => {
-    setSelectedPregunta(event.target.value);
-  };
-
-  const handleDependenciaChange = (event) => {
-    const selectedDependencies = event.target.value;
-    console.log("Selected Dependencies:", selectedDependencies); // Add this line
-    setSelectedDependencias(selectedDependencies);
-  };
-
-  const handleFormularioChange = (event) => {
-    setSelectedFormulario(event.target.value);
-    const selectedFormularioId = formularios.find(
-      (f) => f.nombre === event.target.value
-    )?.id;
-    if (selectedFormularioId) {
-      const preguntasDelFormulario = preguntas.filter(
-        (pregunta) => pregunta.formularioId === selectedFormularioId
-      );
-      setPreguntasDelFormulario(preguntasDelFormulario);
-    } else {
-      // Si no hay formulario seleccionado, mostrar todas las preguntas
-      setPreguntasDelFormulario(preguntas);
-    }
-  };
-
   const handleSort = (field) => {
     let direction = "asc";
     if (sortConfig.field === field && sortConfig.direction === "asc") {
@@ -261,43 +272,18 @@ const Buscador = () => {
         <Grid container spacing={4} className={classes.centrar}>
           <Grid item xs={12} sm={4} lg={3}>
             <FormControl variant="standard" fullWidth size="small">
-              <InputLabel>Preguntas</InputLabel>
+              <InputLabel>Formulario</InputLabel>
               <Select
-                value={selectedPregunta || []}
-                onChange={handlePreguntaChange}
+                value={selectedFormulario}
+                onChange={handleFormularioChange}
                 variant="standard"
                 className={classes.select}
                 fullWidth
-                multiple
-                renderValue={(selected) => (
-                  <div className={classes.chips}>
-                    {selected.map((value) => (
-                      <Chip
-                        key={value}
-                        label={preguntaDescripciones[value]}
-                        className={classes.chip}
-                      />
-                    ))}
-                  </div>
-                )}
               >
-                {selectedFormulario === "" && (
-                  <MenuItem key="todas" value="">
-                    Todas las preguntas
-                  </MenuItem>
-                )}
-                {preguntasDelFormulario.map((pregunta) => (
-                  <MenuItem key={pregunta.id} value={pregunta.id}>
-                    <Chip
-                      icon={
-                        selectedPregunta.includes(pregunta.id) ? (
-                          <CheckIcon />
-                        ) : null
-                      }
-                      label={pregunta.descripcion}
-                      className={classes.chip}
-                      clickable
-                    />
+                <MenuItem value="">Todos los formularios</MenuItem>
+                {formularios.map((formulario) => (
+                  <MenuItem key={formulario.id} value={formulario.nombre}>
+                    {formulario.nombre}
                   </MenuItem>
                 ))}
               </Select>
@@ -347,18 +333,43 @@ const Buscador = () => {
           </Grid>
           <Grid item xs={12} sm={4} lg={3}>
             <FormControl variant="standard" fullWidth size="small">
-              <InputLabel>Formulario</InputLabel>
+              <InputLabel>Preguntas</InputLabel>
               <Select
-                value={selectedFormulario}
-                onChange={handleFormularioChange}
+                value={selectedPregunta || []}
+                onChange={handlePreguntaChange}
                 variant="standard"
                 className={classes.select}
                 fullWidth
+                multiple
+                renderValue={(selected) => (
+                  <div className={classes.chips}>
+                    {selected.map((value) => (
+                      <Chip
+                        key={value}
+                        label={preguntaDescripciones[value]}
+                        className={classes.chip}
+                      />
+                    ))}
+                  </div>
+                )}
               >
-                <MenuItem value="">Todos los formularios</MenuItem>
-                {formularios.map((formulario) => (
-                  <MenuItem key={formulario.id} value={formulario.nombre}>
-                    {formulario.nombre}
+                {selectedFormulario === "" && (
+                  <MenuItem key="todas" value="">
+                    Todas las preguntas
+                  </MenuItem>
+                )}
+                {preguntasDelFormulario.map((pregunta) => (
+                  <MenuItem key={pregunta.id} value={pregunta.id}>
+                    <Chip
+                      icon={
+                        selectedPregunta.includes(pregunta.id) ? (
+                          <CheckIcon />
+                        ) : null
+                      }
+                      label={pregunta.descripcion}
+                      className={classes.chip}
+                      clickable
+                    />
                   </MenuItem>
                 ))}
               </Select>
