@@ -232,30 +232,36 @@ const Estadisticas = () => {
       const estadisticasTipoRespuesta = {};
 
       respuestasData.forEach((respuesta) => {
-        // Procesa la edad de la respuesta y actualiza las estadísticas de edad
+        const tipoRespuestaId = respuesta.tipoRespuestaId;
+        const tipoRespuestaDescripcion =
+          tipoRespuestaDescripciones[tipoRespuestaId];
+
+        if (tipoRespuestaDescripcion) {
+          estadisticasTipoRespuesta[tipoRespuestaDescripcion] =
+            (estadisticasTipoRespuesta[tipoRespuestaDescripcion] || 0) + 1;
+        }
+
         const edad = respuesta.edad;
         if (edad) {
           estadisticasEdad[edad] = (estadisticasEdad[edad] || 0) + 1;
         }
 
-        // Procesa el género de la respuesta y actualiza las estadísticas de género
         const genero = respuesta.genero;
         if (genero) {
           estadisticasGenero[genero] = (estadisticasGenero[genero] || 0) + 1;
         }
-
-        // Procesa el tipo de respuesta de la respuesta y actualiza las estadísticas de tipo de respuesta
-        const tipoRespuesta = respuesta.tipoRespuesta;
-        if (tipoRespuesta) {
-          estadisticasTipoRespuesta[tipoRespuesta] =
-            (estadisticasTipoRespuesta[tipoRespuesta] || 0) + 1;
-        }
       });
 
-      // Aquí puedes guardar las estadísticas generadas en los estados correspondientes
+      // Actualizar los estados después de procesar todas las respuestas
       setEstadisticasEdad(estadisticasEdad);
       setEstadisticasGenero(estadisticasGenero);
-      setEstadisticasTipoRespuesta(estadisticasTipoRespuesta);
+      setEstadisticasTipoRespuesta(estadisticasTipoRespuesta); // Mover esta línea aquí
+
+      console.log("Respuestas Data:", respuestasData);
+      console.log("Estadisticas Edad:", estadisticasEdad);
+      console.log("Estadisticas Genero:", estadisticasGenero);
+      console.log("Estadisticas Tipo Respuesta:", estadisticasTipoRespuesta);
+      console.log("Respuestas por Tipo:", respuestasPorTipo);
 
       // Aquí calcula las estadísticas por tipo de respuesta y actualiza respuestasPorTipo
       const respuestasPorTipoNuevo = {};
@@ -268,10 +274,8 @@ const Estadisticas = () => {
           respuestasPorTipoNuevo[tipoRespuesta].push(respuesta);
         }
       });
-      setRespuestasPorTipo(respuestasPorTipoNuevo);
 
-      // Aquí puedes realizar otras acciones con las estadísticas, como actualizar los gráficos
-      // o realizar cálculos adicionales si es necesario
+      setRespuestasPorTipo(respuestasPorTipoNuevo);
     } catch (error) {
       console.error("Error al buscar respuestas: ", error);
     }
@@ -438,13 +442,13 @@ const Estadisticas = () => {
         </Grid>
         <Grid item xs={12} md={6}>
           <Box mx={4} className={classes.chartContainer}>
-            <Bar
+            <Pie
               data={{
-                labels: Object.keys(estadisticasTipoRespuesta),
+                labels: Object.keys(estadisticasTipoRespuesta), // Cambio aquí
                 datasets: [
                   {
                     label: "Tipo de Respuesta",
-                    data: Object.values(estadisticasTipoRespuesta),
+                    data: Object.values(estadisticasTipoRespuesta), // Cambio aquí
                     backgroundColor: "rgba(75, 192, 192, 0.6)",
                   },
                 ],
@@ -454,24 +458,10 @@ const Estadisticas = () => {
           </Box>
         </Grid>
         {Object.keys(respuestasPorTipo).map((tipoRespuesta) => (
-          <Grid item xs={12} md={6}>
-            <Box mx={4} className={classes.chartContainer}>
-              <Pie
-                key={tipoRespuesta}
-                data={{
-                  labels: [tipoRespuesta],
-                  datasets: [
-                    {
-                      label: "Tipo de Respuesta",
-                      data: [respuestasPorTipo[tipoRespuesta].length],
-                      backgroundColor: "rgba(75, 192, 192, 0.6)",
-                    },
-                  ],
-                }}
-                options={{ maintainAspectRatio: false }}
-              />
-            </Box>
-          </Grid>
+          <div key={tipoRespuesta}>
+            Descripción de Tipo de Respuesta {tipoRespuesta}:{" "}
+            {tipoRespuestaDescripciones[tipoRespuesta]}
+          </div>
         ))}
       </Grid>
     </Container>
