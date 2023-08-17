@@ -43,6 +43,17 @@ const Estadisticas = () => {
   );
   const [respuestasData, setRespuestasData] = useState([]);
 
+  const getRandomColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
+//Agregar porcentajes a los graficos.
+
   useEffect(() => {
     const obtenerFormularios = async () => {
       try {
@@ -415,7 +426,9 @@ const Estadisticas = () => {
                   {
                     label: "Edad",
                     data: Object.values(estadisticasEdad),
-                    backgroundColor: "rgba(54, 162, 235, 0.6)",
+                    backgroundColor: Object.keys(estadisticasEdad).map(() =>
+                      getRandomColor()
+                    ),
                   },
                 ],
               }}
@@ -425,14 +438,16 @@ const Estadisticas = () => {
         </Grid>
         <Grid item xs={12} md={6}>
           <Box mx={4} className={classes.chartContainer}>
-            <Bar
+            <Doughnut
               data={{
                 labels: Object.keys(estadisticasGenero),
                 datasets: [
                   {
                     label: "Género",
                     data: Object.values(estadisticasGenero),
-                    backgroundColor: "rgba(255, 99, 132, 0.6)",
+                    backgroundColor: Object.keys(estadisticasGenero).map(() =>
+                      getRandomColor()
+                    ),
                   },
                 ],
               }}
@@ -444,12 +459,14 @@ const Estadisticas = () => {
           <Box mx={4} className={classes.chartContainer}>
             <Pie
               data={{
-                labels: Object.keys(estadisticasTipoRespuesta), // Cambio aquí
+                labels: Object.keys(estadisticasTipoRespuesta),
                 datasets: [
                   {
                     label: "Tipo de Respuesta",
-                    data: Object.values(estadisticasTipoRespuesta), // Cambio aquí
-                    backgroundColor: "rgba(75, 192, 192, 0.6)",
+                    data: Object.values(estadisticasTipoRespuesta),
+                    backgroundColor: Object.keys(estadisticasTipoRespuesta).map(
+                      () => getRandomColor()
+                    ),
                   },
                 ],
               }}
