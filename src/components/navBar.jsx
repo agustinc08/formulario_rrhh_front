@@ -174,6 +174,11 @@ const Navbar = () => {
     return formularios.filter((formulario) => formulario.estaActivo).length;
   };
 
+  const getFormularioNombre = (formularioId) => {
+    const formulario = formularios.find((formulario) => formulario.id === formularioId);
+    return formulario ? formulario.nombre : "";
+  };
+
   const handleToggleFormularioActivo = async (formularioToToggle) => {
     try {
       const updatedFormulario = {
@@ -340,9 +345,9 @@ const Navbar = () => {
                       <TableCell className="columnaTexto">
                         {pregunta.descripcion}
                       </TableCell>
-                      <TableCell className="columnaId">
-                        {pregunta.formularioId}
-                      </TableCell>
+                      <TableCell className="columnaTexto">
+                    {getFormularioNombre(pregunta.formularioId)}
+                  </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -389,9 +394,9 @@ const Navbar = () => {
                         <TableCell className="columnaTexto">
                           {seccion.descripcion}
                         </TableCell>
-                        <TableCell className="columnaId">
-                          {seccion.formularioId}
-                        </TableCell>
+                        <TableCell className="columnaTexto">
+                    {getFormularioNombre(seccion.formularioId)}
+                  </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
