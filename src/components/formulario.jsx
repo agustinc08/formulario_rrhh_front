@@ -101,9 +101,8 @@ function Preguntas() {
   useEffect(() => {
     if (formSubmitted) {
       const timer = setTimeout(() => {
-        // Navigate to /inicio
         window.location.href = "/inicio";
-      }, 2000); // 3000 milliseconds = 3 seconds
+      }, 2000); 
   
       return () => clearTimeout(timer);
     }
