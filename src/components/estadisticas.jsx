@@ -455,8 +455,8 @@ const Estadisticas = () => {
             />
           </Box>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Box mx={4} className={classes.chartContainer}>
+        <Grid item xs={12}>
+          <Box mx={4} className={classes.chartContainerIndividual}>
             <Pie
               data={{
                 labels: Object.keys(estadisticasTipoRespuesta),
