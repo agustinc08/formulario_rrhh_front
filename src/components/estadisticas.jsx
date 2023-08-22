@@ -32,9 +32,6 @@ const Estadisticas = () => {
   const [selectedDependencias, setSelectedDependencias] = useState([]);
   const [selectedFormulario, setSelectedFormulario] = useState("");
   const [preguntasDelFormulario, setPreguntasDelFormulario] = useState([]);
-  const [estadisticasDelFormulario, setEstadisticasDelFormulario] = useState(
-    []
-  );
   const [respuestasPorTipo, setRespuestasPorTipo] = useState({});
   const [estadisticasEdad, setEstadisticasEdad] = useState([]);
   const [estadisticasGenero, setEstadisticasGenero] = useState([]);
@@ -42,6 +39,7 @@ const Estadisticas = () => {
     []
   );
   const [respuestasData, setRespuestasData] = useState([]);
+  const [shouldUpdateCharts, setShouldUpdateCharts] = useState(false);
 
   const getRandomColor = () => {
     const letters = "0123456789ABCDEF";
@@ -52,7 +50,7 @@ const Estadisticas = () => {
     return color;
   };
 
-//Agregar porcentajes a los graficos.
+  //Agregar porcentajes a los graficos.
 
   useEffect(() => {
     const obtenerFormularios = async () => {
@@ -143,6 +141,7 @@ const Estadisticas = () => {
         (pregunta) => pregunta.formularioId === selectedFormularioId
       );
       setPreguntasDelFormulario(preguntasDelFormulario);
+      setShouldUpdateCharts(true);
       setSelectedFormulario(event.target.value);
     } else {
       // Si no hay formulario seleccionado, mostrar todas las preguntas
@@ -153,10 +152,12 @@ const Estadisticas = () => {
   const handleDependenciaChange = (event) => {
     const selectedDependencies = event.target.value;
     setSelectedDependencias(selectedDependencies);
+    setShouldUpdateCharts(true);
   };
 
   const handlePreguntaChange = (event) => {
     setSelectedPregunta(event.target.value);
+    setShouldUpdateCharts(true);
   };
 
   const handleBuscarRespuestas = async () => {
@@ -237,56 +238,58 @@ const Estadisticas = () => {
         setRespuestas(data);
         setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
       }
+      if (shouldUpdateCharts) {
+        const estadisticasEdad = {};
+        const estadisticasGenero = {};
+        const estadisticasTipoRespuesta = {};
 
-      const estadisticasEdad = {};
-      const estadisticasGenero = {};
-      const estadisticasTipoRespuesta = {};
+        respuestasData.forEach((respuesta) => {
+          const tipoRespuestaId = respuesta.tipoRespuestaId;
+          const tipoRespuestaDescripcion =
+            tipoRespuestaDescripciones[tipoRespuestaId];
 
-      respuestasData.forEach((respuesta) => {
-        const tipoRespuestaId = respuesta.tipoRespuestaId;
-        const tipoRespuestaDescripcion =
-          tipoRespuestaDescripciones[tipoRespuestaId];
-
-        if (tipoRespuestaDescripcion) {
-          estadisticasTipoRespuesta[tipoRespuestaDescripcion] =
-            (estadisticasTipoRespuesta[tipoRespuestaDescripcion] || 0) + 1;
-        }
-
-        const edad = respuesta.edad;
-        if (edad) {
-          estadisticasEdad[edad] = (estadisticasEdad[edad] || 0) + 1;
-        }
-
-        const genero = respuesta.genero;
-        if (genero) {
-          estadisticasGenero[genero] = (estadisticasGenero[genero] || 0) + 1;
-        }
-      });
-
-      // Actualizar los estados después de procesar todas las respuestas
-      setEstadisticasEdad(estadisticasEdad);
-      setEstadisticasGenero(estadisticasGenero);
-      setEstadisticasTipoRespuesta(estadisticasTipoRespuesta); // Mover esta línea aquí
-
-      console.log("Respuestas Data:", respuestasData);
-      console.log("Estadisticas Edad:", estadisticasEdad);
-      console.log("Estadisticas Genero:", estadisticasGenero);
-      console.log("Estadisticas Tipo Respuesta:", estadisticasTipoRespuesta);
-      console.log("Respuestas por Tipo:", respuestasPorTipo);
-
-      // Aquí calcula las estadísticas por tipo de respuesta y actualiza respuestasPorTipo
-      const respuestasPorTipoNuevo = {};
-      respuestasData.forEach((respuesta) => {
-        const tipoRespuesta = respuesta.tipoRespuesta;
-        if (tipoRespuesta) {
-          if (!respuestasPorTipoNuevo[tipoRespuesta]) {
-            respuestasPorTipoNuevo[tipoRespuesta] = [];
+          if (tipoRespuestaDescripcion) {
+            estadisticasTipoRespuesta[tipoRespuestaDescripcion] =
+              (estadisticasTipoRespuesta[tipoRespuestaDescripcion] || 0) + 1;
           }
-          respuestasPorTipoNuevo[tipoRespuesta].push(respuesta);
-        }
-      });
 
-      setRespuestasPorTipo(respuestasPorTipoNuevo);
+          const edad = respuesta.edad;
+          if (edad) {
+            estadisticasEdad[edad] = (estadisticasEdad[edad] || 0) + 1;
+          }
+
+          const genero = respuesta.genero;
+          if (genero) {
+            estadisticasGenero[genero] = (estadisticasGenero[genero] || 0) + 1;
+          }
+        });
+
+        // Actualizar los estados después de procesar todas las respuestas
+        setEstadisticasEdad(estadisticasEdad);
+        setEstadisticasGenero(estadisticasGenero);
+        setEstadisticasTipoRespuesta(estadisticasTipoRespuesta); // Mover esta línea aquí
+        setShouldUpdateCharts(false);
+        console.log("Respuestas Data:", respuestasData);
+        console.log("Estadisticas Edad:", estadisticasEdad);
+        console.log("Estadisticas Genero:", estadisticasGenero);
+        console.log("Estadisticas Tipo Respuesta:", estadisticasTipoRespuesta);
+        console.log("Respuestas por Tipo:", respuestasPorTipo);
+      }
+      if (shouldUpdateCharts) {
+        // Aquí calcula las estadísticas por tipo de respuesta y actualiza respuestasPorTipo
+        const respuestasPorTipoNuevo = {};
+        respuestasData.forEach((respuesta) => {
+          const tipoRespuesta = respuesta.tipoRespuesta;
+          if (tipoRespuesta) {
+            if (!respuestasPorTipoNuevo[tipoRespuesta]) {
+              respuestasPorTipoNuevo[tipoRespuesta] = [];
+            }
+            respuestasPorTipoNuevo[tipoRespuesta].push(respuesta);
+          }
+        });
+
+        setRespuestasPorTipo(respuestasPorTipoNuevo);
+      }
     } catch (error) {
       console.error("Error al buscar respuestas: ", error);
     }
