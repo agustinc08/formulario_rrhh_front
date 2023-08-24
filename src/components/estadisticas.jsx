@@ -39,7 +39,7 @@ const Estadisticas = () => {
     []
   );
   const [respuestasData, setRespuestasData] = useState([]);
-  const [shouldUpdateCharts, setShouldUpdateCharts] = useState(false);
+  const [reloadCharts, setReloadCharts] = useState(false);
 
   const getRandomColor = () => {
     const letters = "0123456789ABCDEF";
@@ -78,6 +78,7 @@ const Estadisticas = () => {
         const response = await fetch("http://localhost:4000/dependencias");
         const data = await response.json();
         setDependencias(data);
+
         const nombres = {};
         data.forEach((dependencia) => {
           nombres[dependencia.id] = dependencia.nombreDependencia;
@@ -93,7 +94,6 @@ const Estadisticas = () => {
         const response = await fetch("http://localhost:4000/preguntas");
         const data = await response.json();
         setPreguntas(data);
-
         const descripciones = {};
         data.forEach((pregunta) => {
           descripciones[pregunta.id] = pregunta.descripcion;
@@ -117,6 +117,7 @@ const Estadisticas = () => {
         const response = await fetch("http://localhost:4000/tipoRespuesta");
         const data = await response.json();
         const descripciones = {};
+        
         data.forEach((tipoRespuesta) => {
           descripciones[tipoRespuesta.id] = tipoRespuesta.descripcion;
         });
@@ -141,23 +142,24 @@ const Estadisticas = () => {
         (pregunta) => pregunta.formularioId === selectedFormularioId
       );
       setPreguntasDelFormulario(preguntasDelFormulario);
-      setShouldUpdateCharts(true);
       setSelectedFormulario(event.target.value);
     } else {
       // Si no hay formulario seleccionado, mostrar todas las preguntas
       setPreguntasDelFormulario(preguntas);
       setSelectedFormulario("");
+      setReloadCharts(false);
     }
   };
+
   const handleDependenciaChange = (event) => {
     const selectedDependencies = event.target.value;
     setSelectedDependencias(selectedDependencies);
-    setShouldUpdateCharts(true);
+    setReloadCharts(false);
   };
 
   const handlePreguntaChange = (event) => {
     setSelectedPregunta(event.target.value);
-    setShouldUpdateCharts(true);
+    setReloadCharts(false);
   };
 
   const handleBuscarRespuestas = async () => {
@@ -236,64 +238,63 @@ const Estadisticas = () => {
         const response = await fetch("http://localhost:4000/respuestas");
         const data = await response.json();
         setRespuestas(data);
-        setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
+        setRespuestasData(data); 
+        console.log(setRespuestasData)// Agregar esta línea para actualizar respuestasData
       }
-      if (shouldUpdateCharts) {
-        const estadisticasEdad = {};
-        const estadisticasGenero = {};
-        const estadisticasTipoRespuesta = {};
-
-        respuestasData.forEach((respuesta) => {
-          const tipoRespuestaId = respuesta.tipoRespuestaId;
-          const tipoRespuestaDescripcion =
-            tipoRespuestaDescripciones[tipoRespuestaId];
-
-          if (tipoRespuestaDescripcion) {
-            estadisticasTipoRespuesta[tipoRespuestaDescripcion] =
-              (estadisticasTipoRespuesta[tipoRespuestaDescripcion] || 0) + 1;
-          }
-
-          const edad = respuesta.edad;
-          if (edad) {
-            estadisticasEdad[edad] = (estadisticasEdad[edad] || 0) + 1;
-          }
-
-          const genero = respuesta.genero;
-          if (genero) {
-            estadisticasGenero[genero] = (estadisticasGenero[genero] || 0) + 1;
-          }
-        });
-
-        // Actualizar los estados después de procesar todas las respuestas
-        setEstadisticasEdad(estadisticasEdad);
-        setEstadisticasGenero(estadisticasGenero);
-        setEstadisticasTipoRespuesta(estadisticasTipoRespuesta); // Mover esta línea aquí
-        setShouldUpdateCharts(false);
-        console.log("Respuestas Data:", respuestasData);
-        console.log("Estadisticas Edad:", estadisticasEdad);
-        console.log("Estadisticas Genero:", estadisticasGenero);
-        console.log("Estadisticas Tipo Respuesta:", estadisticasTipoRespuesta);
-        console.log("Respuestas por Tipo:", respuestasPorTipo);
-      }
-      if (shouldUpdateCharts) {
-        // Aquí calcula las estadísticas por tipo de respuesta y actualiza respuestasPorTipo
-        const respuestasPorTipoNuevo = {};
-        respuestasData.forEach((respuesta) => {
-          const tipoRespuesta = respuesta.tipoRespuesta;
-          if (tipoRespuesta) {
-            if (!respuestasPorTipoNuevo[tipoRespuesta]) {
-              respuestasPorTipoNuevo[tipoRespuesta] = [];
+        // Aquí usamos el callback en el setRespuestasData para asegurarnos de tener el valor actualizado
+        setRespuestasData((prevRespuestasData) => {
+          const estadisticasEdad = {};
+          const estadisticasGenero = {};
+          const estadisticasTipoRespuesta = {};
+          
+          prevRespuestasData.forEach((respuesta) => {
+            const tipoRespuestaId = respuesta.tipoRespuestaId;
+            const tipoRespuestaDescripcion =
+              tipoRespuestaDescripciones[tipoRespuestaId];
+    
+            if (tipoRespuestaDescripcion) {
+              estadisticasTipoRespuesta[tipoRespuestaDescripcion] =
+                (estadisticasTipoRespuesta[tipoRespuestaDescripcion] || 0) + 1;
             }
-            respuestasPorTipoNuevo[tipoRespuesta].push(respuesta);
-          }
+    
+            const edad = respuesta.edad;
+            if (edad) {
+              estadisticasEdad[edad] = (estadisticasEdad[edad] || 0) + 1;
+            }
+    
+            const genero = respuesta.genero;
+            if (genero) {
+              estadisticasGenero[genero] = (estadisticasGenero[genero] || 0) + 1;
+            }
+          });
+    
+          // Actualizar los estados después de procesar todas las respuestas
+          setEstadisticasEdad(estadisticasEdad);
+          setEstadisticasGenero(estadisticasGenero);
+          setEstadisticasTipoRespuesta(estadisticasTipoRespuesta);
+    
+          // Aquí calcula las estadísticas por tipo de respuesta y actualiza respuestasPorTipo
+          const respuestasPorTipoNuevo = {};
+          prevRespuestasData.forEach((respuesta) => {
+            const tipoRespuesta = respuesta.tipoRespuesta;
+            if (tipoRespuesta) {
+              if (!respuestasPorTipoNuevo[tipoRespuesta]) {
+                respuestasPorTipoNuevo[tipoRespuesta] = [];
+              }
+              respuestasPorTipoNuevo[tipoRespuesta].push(respuesta);
+            }
+          });
+          
+          setRespuestasPorTipo(respuestasPorTipoNuevo);
+          setReloadCharts(true);
+    
+          // Devolver el valor actualizado de respuestasData
+          return prevRespuestasData;
         });
-
-        setRespuestasPorTipo(respuestasPorTipoNuevo);
+      } catch (error) {
+        console.error("Error al buscar respuestas: ", error);
       }
-    } catch (error) {
-      console.error("Error al buscar respuestas: ", error);
-    }
-  };
+    };
 
   return (
     <Container>
@@ -314,7 +315,6 @@ const Estadisticas = () => {
               className={classes.select}
               fullWidth
             >
-              <MenuItem value="">Todos los formularios</MenuItem>
               {formularios.map((formulario) => (
                 <MenuItem key={formulario.id} value={formulario.nombre}>
                   {formulario.nombre}
@@ -421,6 +421,7 @@ const Estadisticas = () => {
           </Button>
         </Grid>
         <Grid item xs={12} md={6}>
+        {reloadCharts && (
           <Box mx={4} className={classes.chartContainer}>
             <Doughnut
               data={{
@@ -438,8 +439,10 @@ const Estadisticas = () => {
               options={{ maintainAspectRatio: false }}
             />
           </Box>
+          )}
         </Grid>
         <Grid item xs={12} md={6}>
+        {reloadCharts && (
           <Box mx={4} className={classes.chartContainer}>
             <Doughnut
               data={{
@@ -457,8 +460,10 @@ const Estadisticas = () => {
               options={{ maintainAspectRatio: false }}
             />
           </Box>
+           )}
         </Grid>
         <Grid item xs={12}>
+        {reloadCharts && (
           <Box mx={4} className={classes.chartContainerIndividual}>
             <Pie
               data={{
@@ -476,6 +481,7 @@ const Estadisticas = () => {
               options={{ maintainAspectRatio: false }}
             />
           </Box>
+           )}
         </Grid>
         {Object.keys(respuestasPorTipo).map((tipoRespuesta) => (
           <div key={tipoRespuesta}>

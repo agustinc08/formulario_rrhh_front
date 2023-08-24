@@ -181,17 +181,17 @@ const Creaciones = () => {
   };
 
   const crearFormulario = (formularioData) => {
-    const dependencias = formularioData.dependencias.map(
-      (dependencia) => ({ id: dependencia.id })
-    );
-  
+    const dependencias = formularioData.dependencias.map((dependencia) => ({
+      id: dependencia.id,
+    }));
+
     const formularioCreateData = {
       nombre: formularioData.nombre,
       dependencias: {
         connect: dependencias,
       },
     };
-  
+
     fetch("http://localhost:4000/formulario", {
       method: "POST",
       headers: {
@@ -349,7 +349,7 @@ const Creaciones = () => {
       tieneComentario: tieneComentario,
       descripcionComentario: descripcionComentario,
       tipoPreguntaId: tipoPreguntaId,
-      tipoRespuestaId: tipoRespuestaId, 
+      tipoRespuestaId: tipoRespuestaId,
     });
     setPregunta("");
     setSeccionId("");
@@ -519,39 +519,6 @@ const Creaciones = () => {
                 value={formularioNombre}
                 onChange={(event) => setFormularioNombre(event.target.value)}
               />
-              <FormControl className={classes.textField}>
-                <InputLabel id="dependencias-label">Dependencias</InputLabel>
-                <Select
-                  labelId="dependencias-label"
-                  multiple
-                  value={dependenciasSeleccionadas}
-                  onChange={(event) =>
-                    setDependenciasSeleccionadas(event.target.value)
-                  }
-                  input={<Input />}
-                  renderValue={(selected) => (
-                    <div>
-                      {selected.map((value) => (
-                        <Chip key={value} label={value} />
-                      ))}
-                    </div>
-                  )}
-                >
-                  {dependencias.map((dependencia) => (
-                    <MenuItem
-                      key={dependencia.id}
-                      value={dependencia.nombreDependencia}
-                    >
-                      <Checkbox
-                        checked={dependenciasSeleccionadas.includes(
-                          dependencia.nombreDependencia
-                        )}
-                      />
-                      <ListItemText primary={dependencia.nombreDependencia} />
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
 
               <Button
                 className={classes.button}
@@ -599,16 +566,6 @@ const Creaciones = () => {
                 error={errorTipoPregunta && !tipoPreguntaDescripcion.trim()}
               />
 
-              <FormControl className={classes.textField}>
-                <InputLabel id="formulario-select-label">Formulario</InputLabel>
-                <Select value={formularioId} onChange={handleFormularioChange}>
-                  {Object.values(formularios).map((formulario) => (
-                    <MenuItem key={formulario.id} value={formulario.id}>
-                      {formulario.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
               <Button
                 className={classes.button}
                 variant="contained"
@@ -800,17 +757,6 @@ const Creaciones = () => {
               />
 
               <FormControl className={classes.textField}>
-                <InputLabel id="formulario-select-label">Formulario</InputLabel>
-                <Select value={formularioId} onChange={handleFormularioChange}>
-                  {Object.values(formularios).map((formulario) => (
-                    <MenuItem key={formulario.id} value={formulario.id}>
-                      {formulario.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl className={classes.textField}>
                 <InputLabel id="tipo-pregunta-select-label">
                   Tipo de Pregunta
                 </InputLabel>
@@ -853,28 +799,27 @@ const Creaciones = () => {
                 error={errorPregunta}
               />
 
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={tieneComentario}
-                        onChange={handleComentarioCheckboxChange}
-                        style ={{color: "#00e676",}}
-                      />
-                    }
-                    label="Tiene Comentario"
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={tieneComentario}
+                    onChange={handleComentarioCheckboxChange}
+                    style={{ color: "#00e676" }}
                   />
-                  {tieneComentario && (
-                    <TextField
-                      className={classes.textField}
-                      label="Descripción del Comentario"
-                      value={descripcionComentario}
-                      onChange={(event) =>
-                        setDescripcionComentario(event.target.value)
-                      }
-                    />
-                  )}
+                }
+                label="Tiene Comentario"
+              />
+              {tieneComentario && (
+                <TextField
+                  className={classes.textField}
+                  label="Descripción del Comentario"
+                  value={descripcionComentario}
+                  onChange={(event) =>
+                    setDescripcionComentario(event.target.value)
+                  }
+                />
+              )}
 
-                  
               <FormControl className={classes.textField}>
                 <InputLabel id="formulario-label">Formulario</InputLabel>
                 <Select value={formularioId} onChange={handleFormularioChange}>
@@ -892,40 +837,43 @@ const Creaciones = () => {
                   <MenuItem value="">
                     <em>Seleccionar</em>
                   </MenuItem>
-                  {secciones.map((seccion) => (
-                    <MenuItem key={seccion.id} value={seccion.id}>
-                      {seccion.descripcion}
-                    </MenuItem>
-                  ))}
+                  {secciones
+                    .filter((seccion) => seccion.formularioId === formularioId)
+                    .map((seccion) => (
+                      <MenuItem key={seccion.id} value={seccion.id}>
+                        {seccion.descripcion}
+                      </MenuItem>
+                    ))}
                 </Select>
               </FormControl>
 
               <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={tieneTipoPregunta}
-                        onChange={handleComentarioCheckboxChange}
-                        style ={{color: "#00e676",}}
-                      />
-                    }
-                    label="Tiene Tipo de Pregunta ?"
+                control={
+                  <Checkbox
+                    checked={tieneTipoPregunta}
+                    onChange={handleTipoPreguntaChange}
+                    style={{ color: "#00e676" }}
                   />
-
-              <FormControl className={classes.textField}>
-                <InputLabel id="tipo-pregunta-select-label">
-                  Tipo de Pregunta
-                </InputLabel>
-                <Select
-                  value={tipoPreguntaId}
-                  onChange={handleTipoPreguntaChange}
-                >
-                  {tipoPreguntas.map((tipoPregunta) => (
-                    <MenuItem key={tipoPregunta.id} value={tipoPregunta.id}>
-                      {tipoPregunta.descripcion}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                }
+                label="Tiene Tipo de Pregunta ?"
+              />
+              {tieneTipoPregunta && (
+                <FormControl className={classes.textField}>
+                  <InputLabel id="tipo-pregunta-select-label">
+                    Tipo de Pregunta
+                  </InputLabel>
+                  <Select
+                    value={tipoPreguntaId}
+                    onChange={handleTipoPreguntaChange}
+                  >
+                    {tipoPreguntas.map((tipoPregunta) => (
+                      <MenuItem key={tipoPregunta.id} value={tipoPregunta.id}>
+                        {tipoPregunta.descripcion}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
 
               <Button
                 className={classes.button}
