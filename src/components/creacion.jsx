@@ -816,7 +816,7 @@ const Creaciones = () => {
                 control={
                   <Checkbox
                     checked={tieneTipoPregunta}
-                    onChange={handleTipoPreguntaChange}
+                    onChange={handleTipoPreguntaCheckboxChange}
                     style={{ color: "#00e676" }}
                   />
                 }
@@ -829,7 +829,7 @@ const Creaciones = () => {
                   </InputLabel>
                   <Select
                     value={tipoPreguntaId}
-                    onChange={handleTipoPreguntaCheckboxChange}
+                    onChange={handleTipoPreguntaChange}
                   >
                     {tipoPreguntas.map((tipoPregunta) => (
                       <MenuItem key={tipoPregunta.id} value={tipoPregunta.id}>

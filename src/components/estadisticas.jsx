@@ -423,6 +423,11 @@ const Estadisticas = () => {
         <Grid item xs={12} md={6}>
         {reloadCharts && (
           <Box mx={4} className={classes.chartContainer}>
+             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+              <Typography variant="body1">
+                Edad
+              </Typography>
+            </Box>
             <Doughnut
               data={{
                 labels: Object.keys(estadisticasEdad),
@@ -442,6 +447,11 @@ const Estadisticas = () => {
           )}
         </Grid>
         <Grid item xs={12} md={6}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+              <Typography variant="body1">
+                Genero
+              </Typography>
+            </Box>
         {reloadCharts && (
           <Box mx={4} className={classes.chartContainer}>
             <Doughnut
@@ -463,6 +473,11 @@ const Estadisticas = () => {
            )}
         </Grid>
         <Grid item xs={12}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+              <Typography variant="body1">
+               Tipo de Respuesta
+              </Typography>
+            </Box>
         {reloadCharts && (
           <Box mx={4} className={classes.chartContainerIndividual}>
             <Pie

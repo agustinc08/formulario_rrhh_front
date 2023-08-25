@@ -23,8 +23,10 @@ import CloseIcon from "@material-ui/icons/Close";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import "../css/navbar.css";
 import "../css/global.css";
+import useStyles from "../styles/navBarStyle";
 
 const Navbar = () => {
+  const classes = useStyles();
   const [dependencias, setDependencias] = useState([]);
   const [preguntas, setPreguntas] = useState([]);
   const [secciones, setSecciones] = useState([]);
@@ -343,13 +345,13 @@ const Navbar = () => {
                     filteredFormularios &&
                     sortedFormularios.map((formulario) => (
                       <TableRow key={formulario.id}>
-                        <TableCell className="columnaId">
+                        <TableCell className={classes.cellWithBorder}>
                           {formulario.id}
                         </TableCell>
-                        <TableCell className="columnaTexto">
+                        <TableCell className={classes.cellWithBorder}>
                           {formulario.nombre}
                         </TableCell>
-                        <TableCell className="columnaTexto">
+                        <TableCell className={classes.cellWithBorder}>
                           <Button
                             variant="contained"
                             color="primary"
@@ -395,30 +397,30 @@ const Navbar = () => {
               <Table>
                 <TableHead>
                   <TableRow >
-                    <TableCell className="columnaTexto">Dependencia</TableCell>
-                    <TableCell className="columnaTexto">Clave</TableCell>
-                    <TableCell className="columnaTexto">Polo</TableCell>
-                    <TableCell className="columnaTexto">Edificio</TableCell>
+                    <TableCell className={classes.cellWithBorder}>Dependencia</TableCell>
+                    <TableCell className={classes.cellWithBorder}>Clave</TableCell>
+                    <TableCell className={classes.cellWithBorder}>Polo</TableCell>
+                    <TableCell className={classes.cellWithBorder}>Edificio</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {claves &&
                     filteredClaves.map((clave) => (
                       <TableRow key={clave.id}>
-                        <TableCell className="columnaTexto">
+                        <TableCell className={classes.cellWithBorder}>
                           {clave.dependencia.nombreDependencia}
                         </TableCell>
-                        <TableCell className="columnaTexto">
+                        <TableCell className={classes.cellWithBorder}>
                           {clave.clave}
                           <VpnKeyIcon
                             className="icon"
                             onClick={() => setOpenChangePasswordDialog(true)}
                           />
                         </TableCell>
-                        <TableCell className="columnaTexto">
+                        <TableCell className={classes.cellWithBorder}>
                           {clave.dependencia.polo}
                         </TableCell>
-                        <TableCell className="columnaTexto">
+                        <TableCell className={classes.cellWithBorder}>
                           {clave.dependencia.edificio}
                         </TableCell>
                       </TableRow>
@@ -473,19 +475,19 @@ const Navbar = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell className="columnaId">Número</TableCell>
-                    <TableCell className="columnaTexto">Descripción</TableCell>
-                    <TableCell className="columnaId">Formulario</TableCell>
+                    <TableCell className={classes.cellWithBorder}>Número</TableCell>
+                    <TableCell className={classes.cellWithBorder}>Descripción</TableCell>
+                    <TableCell className={classes.cellWithBorder}>Formulario</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {filteredPreguntas.map((pregunta) => (
                     <TableRow key={pregunta.id}>
-                      <TableCell className="columnaId">{pregunta.id}</TableCell>
-                      <TableCell className="columnaTexto">
+                      <TableCell className={classes.cellWithBorder}>{pregunta.id}</TableCell>
+                      <TableCell className={classes.cellWithBorder}>
                         {pregunta.descripcion}
                       </TableCell>
-                      <TableCell className="columnaTexto">
+                      <TableCell className={classes.cellWithBorder}>
                         {getFormularioNombre(pregunta.formularioId)}
                       </TableCell>
                     </TableRow>
@@ -519,22 +521,22 @@ const Navbar = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell className="columnaId">Número</TableCell>
-                    <TableCell className="columnaTexto">Sección</TableCell>
-                    <TableCell className="columnaId">Formulario</TableCell>
+                    <TableCell className={classes.cellWithBorder}>Número</TableCell>
+                    <TableCell className={classes.cellWithBorder}>Sección</TableCell>
+                    <TableCell className={classes.cellWithBorder}>Formulario</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {secciones &&
                     filteredSecciones.map((seccion) => (
                       <TableRow key={seccion.id}>
-                        <TableCell className="columnaId">
+                        <TableCell className={classes.cellWithBorder}>
                           {seccion.id}
                         </TableCell>
-                        <TableCell className="columnaTexto">
+                        <TableCell className={classes.cellWithBorder}>
                           {seccion.descripcion}
                         </TableCell>
-                        <TableCell className="columnaTexto">
+                        <TableCell className={classes.cellWithBorder}>
                           {getFormularioNombre(seccion.formularioId)}
                         </TableCell>
                       </TableRow>
