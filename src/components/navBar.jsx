@@ -53,7 +53,7 @@ const Navbar = () => {
   
   // titulos a cada circulo de estadisticas.(Listo)
 
-  //agregar lineas en el buscador para dividir mejor el buscador.
+  //agregar lineas en el buscador para dividir mejor el buscador(listo , quedo visualmente muy bonito).
 
   //agrupacion de secciones - ademas de graficos por seccion (), agrupado o separado.
 
