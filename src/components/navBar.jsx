@@ -23,6 +23,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import "../css/navbar.css";
 import "../css/global.css";
+import { makeStyles } from "@material-ui/core/styles";
 
 const Navbar = () => {
   const [dependencias, setDependencias] = useState([]);
@@ -41,6 +42,12 @@ const Navbar = () => {
     useState(false);
   const [newPassword, setNewPassword] = useState("");
 
+  const classes = makeStyles((theme) => ({
+    cellWithBorder: {
+      borderRight: `1px solid ${theme.palette.divider}`,
+    },
+  }));
+
   useEffect(() => {
     if (dependencias.length > 0 && dependenciaId) {
       const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
@@ -48,20 +55,14 @@ const Navbar = () => {
   }, [dependencias, dependenciaId]);
 
   //agregar usuarios internos.(listo(falta igual hacer pruebas y ver que se le permite hacer a cada uno.))
-  
   //agrupar por edificios(direccion y polo.) y o polo.(Listo , falta testear.) 
-  
   // titulos a cada circulo de estadisticas.(Listo)
-
+  //tipo pregunta y tipo respuesta dentro del creador abajo de todo(listo).
   //agregar lineas en el buscador para dividir mejor el buscador(listo , quedo visualmente muy bonito).
-
   //agrupacion de secciones - ademas de graficos por seccion (), agrupado o separado.
 
  //si el formulario no esta activo o no tiene nada adentro que no se pueda eliminar , sino , dejar eliminar.
 
- 
- //tipo preunta y tipo respesta dentro del creador abajo de todo.
- 
  
  //dividir tipo de tareas.(se ve)
  
@@ -400,9 +401,11 @@ const Navbar = () => {
               />
               <Table>
                 <TableHead>
-                  <TableRow>
+                  <TableRow className={classes.cellWithBorder}>
                     <TableCell className="columnaTexto">Dependencia</TableCell>
                     <TableCell className="columnaTexto">Clave</TableCell>
+                    <TableCell className="columnaTexto">Polo</TableCell>
+                    <TableCell className="columnaTexto">Edificio</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -418,6 +421,12 @@ const Navbar = () => {
                             className="icon"
                             onClick={() => setOpenChangePasswordDialog(true)}
                           />
+                        </TableCell>
+                        <TableCell className="columnaTexto">
+                          {clave.dependencia.polo}
+                        </TableCell>
+                        <TableCell className="columnaTexto">
+                          {clave.dependencia.edificio}
                         </TableCell>
                       </TableRow>
                     ))}
