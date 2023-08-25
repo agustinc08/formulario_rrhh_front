@@ -14,9 +14,9 @@ import {
   TableBody,
   Paper,
   TextField,
-  Dialog, // Agrega esta línea
-  DialogTitle, // Agrega esta línea
-  DialogContent, // Agrega esta línea
+  Dialog,
+  DialogTitle, 
+  DialogContent, 
   DialogActions,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
@@ -47,26 +47,26 @@ const Navbar = () => {
     }
   }, [dependencias, dependenciaId]);
 
+  //agregar usuarios internos.(listo(falta igual hacer pruebas y ver que se le permite hacer a cada uno.))
+  
+  //agrupar por edificios(direccion y polo.) y o polo.(Listo , falta testear.) 
+  
+  // titulos a cada circulo de estadisticas.(Listo)
+
+  //agregar lineas en el buscador para dividir mejor el buscador.
 
   //agrupacion de secciones - ademas de graficos por seccion (), agrupado o separado.
 
- //agrupar por edificios(direccion y polo.) y o polo. 
-
- //agregar lindas en el buscador para dividir mejor el
-
  //si el formulario no esta activo o no tiene nada adentro que no se pueda eliminar , sino , dejar eliminar.
 
-  //si hay preguntas asociadas no dejar eliminar las preguntas.
-
-  //tipo preunta y tipo respesta dentro del creador abajo de todo.
-
- // titulos a cada circulo de estadisticas.
-
- //agregar usuarios internos.
-
- //dividir tipo de tareas.
-
- //solamente crear pregunta para formulario.estaActivo.
+ 
+ //tipo preunta y tipo respesta dentro del creador abajo de todo.
+ 
+ 
+ //dividir tipo de tareas.(se ve)
+ 
+ //si hay respuestas asociadas no dejar eliminar las preguntas.
+ //solamente crear pregunta para formulario.estaActivo.(se ve)
 
 
   const fetchClaves = () => {
