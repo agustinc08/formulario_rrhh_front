@@ -318,7 +318,7 @@ const Creaciones = () => {
       body: JSON.stringify({
         descripcion: descripcion,
         tipoPreguntaId: tipoPreguntaId,
-        formularioId: 1,
+        formularioId: formularioId,
       }),
     })
       .then((response) => {
@@ -553,58 +553,11 @@ const Creaciones = () => {
             </form>
           </Box>
 
-          <Box
-            className={`${classes.boxForm} ${classes.boxIzquierdo}`}
-            boxShadow={8}
-            borderRadius={7}
-          >
-            <form onSubmit={handleTipoPreguntaSubmit} className={classes.form}>
-              <p className={classes.tituloForm}>CREAR TIPO PREGUNTA</p>
-              <TextField
-                className={classes.textField}
-                label="Descripción"
-                value={tipoPreguntaDescripcion}
-                onChange={(event) =>
-                  setTipoPreguntaDescripcion(event.target.value)
-                }
-                error={errorTipoPregunta && !tipoPreguntaDescripcion.trim()}
-              />
-
-              <Button
-                className={classes.button}
-                variant="contained"
-                color="primary"
-                type="submit"
-              >
-                {" "}
-                Crear Tipo de Pregunta{" "}
-              </Button>
-              {alertaSeccion && (
-                <Alert severity="success">
-                  ¡El tipo de Pregunta se creó correctamente!
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    size="small"
-                    onClick={handleCloseAlert}
-                    className={classes.closeButton}
-                  >
-                    <CloseIcon fontSize="inherit" />
-                  </IconButton>
-                </Alert>
-              )}
-              {alertaSeccionExistente && (
-                <Alert severity="error">
-                  Ya existe una Seccion con el mismo nombre, intentelo denuevo.
-                </Alert>
-              )}
-            </form>
-          </Box>
 
           <Box
             className={`${classes.boxForm} ${
               classes.boxIzquierdo
-            } ${"boxCrearSeccion"}`}
+            } `}
             boxShadow={8}
             borderRadius={7}
           >
@@ -659,7 +612,58 @@ const Creaciones = () => {
               )}
             </form>
           </Box>
+
+
+          <Box
+            className={`${classes.boxForm} ${classes.boxIzquierdo} ${"boxCrearTipoPregunta"}`}
+            boxShadow={8}
+            borderRadius={7}
+          >
+            <form onSubmit={handleTipoPreguntaSubmit} className={classes.form}>
+              <p className={classes.tituloForm}>CREAR TIPO PREGUNTA</p>
+              <TextField
+                className={classes.textField}
+                label="Descripción"
+                value={tipoPreguntaDescripcion}
+                onChange={(event) =>
+                  setTipoPreguntaDescripcion(event.target.value)
+                }
+                error={errorTipoPregunta && !tipoPreguntaDescripcion.trim()}
+              />
+
+              <Button
+                className={classes.button}
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                {" "}
+                Crear Tipo de Pregunta{" "}
+              </Button>
+              {alertaSeccion && (
+                <Alert severity="success">
+                  ¡El tipo de Pregunta se creó correctamente!
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={handleCloseAlert}
+                    className={classes.closeButton}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                </Alert>
+              )}
+              {alertaSeccionExistente && (
+                <Alert severity="error">
+                  Ya existe una Seccion con el mismo nombre, intentelo denuevo.
+                </Alert>
+              )}
+            </form>
+          </Box>
         </Grid>{" "}
+
+
         <Grid
           item
           xs={12}
@@ -744,54 +748,11 @@ const Creaciones = () => {
             </form>
           </Box>
 
-          <Box
-            className={`${classes.boxForm} ${classes.boxDerecho}`}
-            boxShadow={8}
-            borderRadius={7}
-          >
-            <form onSubmit={handleTipoRespuestaSubmit} className={classes.form}>
-              <p className={classes.tituloForm}>CREAR TIPO RESPUESTA</p>
-              <TextField
-                className={classes.textField}
-                label="Descripción"
-                value={tipoRespuestaDescripcion}
-                onChange={(event) =>
-                  setTipoRespuestaDescripcion(event.target.value)
-                }
-              />
-
-              <FormControl className={classes.textField}>
-                <InputLabel id="tipo-pregunta-select-label">
-                  Tipo de Pregunta
-                </InputLabel>
-                <Select
-                  value={tipoPreguntaId}
-                  onChange={handleTipoPreguntaChange}
-                >
-                  {tipoPreguntas.map((tipoPregunta) => (
-                    <MenuItem key={tipoPregunta.id} value={tipoPregunta.id}>
-                      {tipoPregunta.descripcion}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <Button
-                className={classes.button}
-                variant="contained"
-                color="primary"
-                type="submit"
-              >
-                Crear TIPO RESPUESTA
-              </Button>
-            </form>
-          </Box>
 
           <Box
             className={`${classes.boxForm} ${classes.boxDerecho}`}
             boxShadow={8}
             borderRadius={7}
-            mb={7}
           >
             <form onSubmit={handlePreguntaSubmit} className={classes.form}>
               <p className={classes.tituloForm}>CREAR PREGUNTA</p>
@@ -855,7 +816,7 @@ const Creaciones = () => {
                 control={
                   <Checkbox
                     checked={tieneTipoPregunta}
-                    onChange={handleTipoPreguntaCheckboxChange}
+                    onChange={handleTipoPreguntaChange}
                     style={{ color: "#00e676" }}
                   />
                 }
@@ -868,7 +829,7 @@ const Creaciones = () => {
                   </InputLabel>
                   <Select
                     value={tipoPreguntaId}
-                    onChange={handleTipoPreguntaChange}
+                    onChange={handleTipoPreguntaCheckboxChange}
                   >
                     {tipoPreguntas.map((tipoPregunta) => (
                       <MenuItem key={tipoPregunta.id} value={tipoPregunta.id}>
@@ -902,6 +863,51 @@ const Creaciones = () => {
                   </IconButton>
                 </Alert>
               )}
+            </form>
+          </Box>
+
+
+          <Box
+            className={`${classes.boxForm} ${classes.boxDerecho}`}
+            boxShadow={8}
+            borderRadius={7}
+            mb={7}
+          >
+            <form onSubmit={handleTipoRespuestaSubmit} className={classes.form}>
+              <p className={classes.tituloForm}>CREAR TIPO RESPUESTA</p>
+              <TextField
+                className={classes.textField}
+                label="Descripción"
+                value={tipoRespuestaDescripcion}
+                onChange={(event) =>
+                  setTipoRespuestaDescripcion(event.target.value)
+                }
+              />
+
+              <FormControl className={classes.textField}>
+                <InputLabel id="tipo-pregunta-select-label">
+                  Tipo de Pregunta
+                </InputLabel>
+                <Select
+                  value={tipoPreguntaId}
+                  onChange={handleTipoPreguntaChange}
+                >
+                  {tipoPreguntas.map((tipoPregunta) => (
+                    <MenuItem key={tipoPregunta.id} value={tipoPregunta.id}>
+                      {tipoPregunta.descripcion}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <Button
+                className={classes.button}
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Crear TIPO RESPUESTA
+              </Button>
             </form>
           </Box>
         </Grid>

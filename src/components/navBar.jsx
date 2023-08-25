@@ -23,7 +23,6 @@ import CloseIcon from "@material-ui/icons/Close";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import "../css/navbar.css";
 import "../css/global.css";
-import { makeStyles } from "@material-ui/core/styles";
 
 const Navbar = () => {
   const [dependencias, setDependencias] = useState([]);
@@ -41,12 +40,6 @@ const Navbar = () => {
   const [openChangePasswordDialog, setOpenChangePasswordDialog] =
     useState(false);
   const [newPassword, setNewPassword] = useState("");
-
-  const classes = makeStyles((theme) => ({
-    cellWithBorder: {
-      borderRight: `1px solid ${theme.palette.divider}`,
-    },
-  }));
 
   useEffect(() => {
     if (dependencias.length > 0 && dependenciaId) {
@@ -401,7 +394,7 @@ const Navbar = () => {
               />
               <Table>
                 <TableHead>
-                  <TableRow className={classes.cellWithBorder}>
+                  <TableRow >
                     <TableCell className="columnaTexto">Dependencia</TableCell>
                     <TableCell className="columnaTexto">Clave</TableCell>
                     <TableCell className="columnaTexto">Polo</TableCell>
