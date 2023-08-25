@@ -151,6 +151,10 @@ const Creaciones = () => {
     setTieneComentario(event.target.checked);
   };
 
+  const handleTipoPreguntaCheckboxChange = (event) => {
+    setTieneTipoPregunta(event.target.checked);
+  };
+
   const handleFormularioChange = (event) => {
     const selectedFormularioId = event.target.value;
     setFormularioId(selectedFormularioId);
@@ -314,7 +318,7 @@ const Creaciones = () => {
       body: JSON.stringify({
         descripcion: descripcion,
         tipoPreguntaId: tipoPreguntaId,
-        formularioId: formularioId,
+        formularioId: 1,
       }),
     })
       .then((response) => {
@@ -851,7 +855,7 @@ const Creaciones = () => {
                 control={
                   <Checkbox
                     checked={tieneTipoPregunta}
-                    onChange={handleTipoPreguntaChange}
+                    onChange={handleTipoPreguntaCheckboxChange}
                     style={{ color: "#00e676" }}
                   />
                 }

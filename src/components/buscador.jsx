@@ -24,6 +24,7 @@ import {
 } from "@material-ui/core";
 import "../css/global.css";
 import useStyles from "../styles/buscadorStyle";
+//import { makeStyles } from "@material-ui/core/styles";
 
 const Buscador = () => {
   const [preguntas, setPreguntas] = useState([]);
@@ -44,6 +45,7 @@ const Buscador = () => {
   });
   const classes = useStyles();
   const [preguntasDelFormulario, setPreguntasDelFormulario] = useState([]);
+
 
   useEffect(() => {
     const obtenerFormularios = async () => {
@@ -379,7 +381,7 @@ const Buscador = () => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>
+            <TableCell className={classes.cellWithBorder}>
               <TableSortLabel
                 active={sortConfig.field === "id"}
                 direction={
@@ -390,7 +392,7 @@ const Buscador = () => {
                 ID
               </TableSortLabel>
             </TableCell>
-            <TableCell>
+            <TableCell  className={classes.cellWithBorder}>
               <TableSortLabel
                 active={sortConfig.field === "createdAt"}
                 direction={
@@ -403,7 +405,7 @@ const Buscador = () => {
                 Fecha
               </TableSortLabel>
             </TableCell>
-            <TableCell>
+            <TableCell className={classes.cellWithBorder}>
               <TableSortLabel
                 active={sortConfig.field === "dependenciaId"}
                 direction={
@@ -416,7 +418,7 @@ const Buscador = () => {
                 Dependencia
               </TableSortLabel>
             </TableCell>
-            <TableCell>
+            <TableCell  className={classes.cellWithBorder}>
               <TableSortLabel
                 active={sortConfig.field === "edad"}
                 direction={
@@ -427,7 +429,7 @@ const Buscador = () => {
                 Edad
               </TableSortLabel>
             </TableCell>
-            <TableCell>
+            <TableCell  className={classes.cellWithBorder}>
               <TableSortLabel
                 active={sortConfig.field === "genero"}
                 direction={
@@ -438,7 +440,7 @@ const Buscador = () => {
                 Género
               </TableSortLabel>
             </TableCell>
-            <TableCell>
+            <TableCell  className={classes.cellWithBorder}>
               <TableSortLabel
                 active={sortConfig.field === "tipoRespuesta"}
                 direction={
@@ -451,7 +453,7 @@ const Buscador = () => {
                 Respuestas
               </TableSortLabel>
             </TableCell>
-            <TableCell>
+            <TableCell  className={classes.cellWithBorder}>
               <TableSortLabel
                 active={sortConfig.field === "preguntaId"}
                 direction={
@@ -464,7 +466,7 @@ const Buscador = () => {
                 Pregunta
               </TableSortLabel>
             </TableCell>
-            <TableCell>
+            <TableCell  className={classes.cellWithBorder}>
               <TableSortLabel
                 active={sortConfig.field === "comentarios"}
                 direction={
@@ -482,22 +484,22 @@ const Buscador = () => {
         <TableBody>
           {sortedRespuestas.map((respuesta) => (
             <TableRow key={respuesta.id}>
-              <TableCell>{respuesta.id}</TableCell>
-              <TableCell>
+              <TableCell  className={classes.cellWithBorder}>{respuesta.id}</TableCell>
+              <TableCell  className={classes.cellWithBorder}>
                 {new Date(respuesta.createdAt).toLocaleDateString()}
               </TableCell>
-              <TableCell>
+              <TableCell  className={classes.cellWithBorder}>
                 {dependenciaNombres[respuesta.dependenciaId]}
               </TableCell>
-              <TableCell>{respuesta.edad}</TableCell>
-              <TableCell>{respuesta.genero}</TableCell>
-              <TableCell>
+              <TableCell className={classes.cellWithBorder}>{respuesta.edad}</TableCell>
+              <TableCell  className={classes.cellWithBorder}>{respuesta.genero}</TableCell>
+              <TableCell  className={classes.cellWithBorder}>
                 {tipoRespuestaDescripciones[respuesta.tipoRespuestaId]}
               </TableCell>
-              <TableCell>
+              <TableCell  className={classes.cellWithBorder}>
                 {preguntaDescripciones[respuesta.preguntaId]}
               </TableCell>
-              <TableCell>
+              <TableCell  className={classes.cellWithBorder}>
                 {respuesta.comentario &&
                   respuesta.comentario.respuestaComentario}
               </TableCell>

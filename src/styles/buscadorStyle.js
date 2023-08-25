@@ -9,6 +9,9 @@ const useStyles = makeStyles((theme) => ({
     alignItems:"center",
     justifyContent:"center",
   },
+  cellWithBorder: {
+    borderRight: `1px solid ${theme.palette.divider}`,
+  },
 }));
 
 export default useStyles;
