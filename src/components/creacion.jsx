@@ -352,8 +352,8 @@ const Creaciones = () => {
       seccionId: seccionId,
       tieneComentario: tieneComentario,
       descripcionComentario: descripcionComentario,
-      tipoPreguntaId: tipoPreguntaId,
-      tipoRespuestaId: tipoRespuestaId,
+      tipoPreguntaId: tipoPreguntaId ?? null,
+      tipoRespuestaId: tipoRespuestaId ?? null
     });
     setPregunta("");
     setSeccionId("");
@@ -380,8 +380,8 @@ const Creaciones = () => {
         seccionId: seccionId,
         tieneComentario: tieneComentario,
         descripcionComentario: descripcionComentario,
-        tipoPreguntaId: tipoPreguntaId,
-        tipoRespuestaId: tipoRespuestaId,
+        tipoPreguntaId: tipoPreguntaId ?? null,
+        tipoRespuestaId: tipoRespuestaId ?? null,
       }),
     })
       .then((response) => {
@@ -630,6 +630,13 @@ const Creaciones = () => {
                 }
                 error={errorTipoPregunta && !tipoPreguntaDescripcion.trim()}
               />
+               <Select value={formularioId} onChange={handleFormularioChange}>
+                  {Object.values(formularios).map((formulario) => (
+                    <MenuItem key={formulario.id} value={formulario.id}>
+                      {formulario.nombre}
+                    </MenuItem>
+                  ))}
+                </Select>
 
               <Button
                 className={classes.button}
@@ -895,6 +902,13 @@ const Creaciones = () => {
                   {tipoPreguntas.map((tipoPregunta) => (
                     <MenuItem key={tipoPregunta.id} value={tipoPregunta.id}>
                       {tipoPregunta.descripcion}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <Select value={formularioId} onChange={handleFormularioChange}>
+                  {Object.values(formularios).map((formulario) => (
+                    <MenuItem key={formulario.id} value={formulario.id}>
+                      {formulario.nombre}
                     </MenuItem>
                   ))}
                 </Select>

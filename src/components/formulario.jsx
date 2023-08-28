@@ -365,7 +365,7 @@ function Preguntas() {
         )}
         <Grid container spacing={2}>
           {preguntasPorSeccion[seccionId]?.map((pregunta) => (
-            <Grid item xs={12} md={6} key={pregunta.id}>
+            <Grid item xs={12} md={6}  key={pregunta.id}>
               <ListItem style={{ height: "100%" }}>
                 <Box
                   className={`${classes.pregunta} ${
@@ -378,7 +378,7 @@ function Preguntas() {
                   boxShadow={6}
                   borderRadius={5}
                   p={2}
-                  mb={2}
+                  mt={4}
                   width={"100%"}
                   value={pregunta.id}
                 >
