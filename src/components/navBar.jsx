@@ -37,13 +37,22 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [formularios, setFormularios] = useState([]);
   const [dependenciaId, setDependenciaId] = useState("");
+  const [pregunta, setPregunta] = useState("");
+  const [preguntaDescripcion, setPreguntaDescripcion] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
   const [selectedList, setSelectedList] = useState("");
   const [isFormularioActivo, setIsFormularioActivo] = useState(false);
   const [openChangePasswordDialog, setOpenChangePasswordDialog] =
     useState(false);
+  const [openChangeDescripcionDialog, setOpenChangeDescripcionDialog] =
+    useState(false);
+    const [openChangeDescripcionSeccionDialog, setOpenChangeDescripcionSeccionDialog] =
+    useState(false);
   const [clave, setClave] = useState("");
+  const [nuevaDescripcion, setNuevaDescripcion] = useState("");
+  const [nuevaDescripcionSeccion, setNuevaDescripcionSeccion] = useState("");
+  const [seccionId, setSeccionId] = useState([]);
 
   useEffect(() => {
     if (dependencias.length > 0 && dependenciaId) {
@@ -56,7 +65,7 @@ const Navbar = () => {
   // titulos a cada circulo de estadisticas.(Listo)
   //tipo pregunta y tipo respuesta dentro del creador abajo de todo(listo).
   //agregar lineas en el buscador para dividir mejor el buscador(listo , quedo visualmente muy bonito).
-  
+
   //si el formulario no esta activo o no tiene nada adentro que no se pueda eliminar , sino , dejar eliminar.
   //agrupacion de secciones - ademas de graficos por seccion (), agrupado o separado.
   //dividir tipo de tareas.(se ve)
@@ -289,7 +298,7 @@ const Navbar = () => {
       if (response.ok) {
         fetchClaves();
         setOpenChangePasswordDialog(false);
-		    setClave("");
+        setClave("");
       } else {
         console.error("Error al cambiar la clave");
       }
@@ -297,8 +306,74 @@ const Navbar = () => {
       console.error("Error en la solicitud:", error);
     }
   };
-  
-  
+
+  const handleChangeDescripcionPregunta = async (
+    preguntaId,
+    nuevaDescripcion
+  ) => {
+    try {
+      if (!preguntaId || !nuevaDescripcion) {
+        console.error(
+          "Debe proporcionar un ID de pregunta y una nueva descripción."
+        );
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:4000/preguntas/${preguntaId}`, // Utiliza el ID de la pregunta en la URL
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ descripcion: nuevaDescripcion }),
+        }
+      );
+
+      if (response.ok) {
+        fetchPreguntas(); // Llama a tu función para actualizar la lista de preguntas
+        setOpenChangeDescripcionSeccionDialog(false); // Cierra el diálogo si es necesario
+      } else {
+        console.error("Error al cambiar la descripción de la pregunta");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    }
+  };
+
+  const handleChangeDescripcionSeccion = async (
+    seccionId,
+    nuevaDescripcionSeccion
+  ) => {
+    try {
+      if (!seccionId || !nuevaDescripcionSeccion) {
+        console.error(
+          "Debe proporcionar un ID de Seccion y una nueva descripción."
+        );
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:4000/secciones/${seccionId}`, // Utiliza el ID de la seccion en la URL
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ descripcion: nuevaDescripcionSeccion }),
+        }
+      );
+
+      if (response.ok) {
+        fetchSecciones();
+        setOpenChangeDescripcionSeccionDialog(false);
+      } else {
+        console.error("Error al cambiar la descripción de la seccion");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    }
+  };
 
   const sortedFormularios = formularios.sort((a, b) => a.id - b.id);
 
@@ -561,6 +636,13 @@ const Navbar = () => {
                       </TableCell>
                       <TableCell className={classes.cellWithBorder}>
                         {pregunta.descripcion}
+                        <VpnKeyIcon
+                          className="icon"
+                          onClick={() => {
+                            setOpenChangeDescripcionDialog(true);
+                            setPregunta(pregunta.id);
+                          }}
+                        />
                       </TableCell>
                       <TableCell className={classes.cellWithBorder}>
                         {getFormularioNombre(pregunta.formularioId)}
@@ -573,6 +655,31 @@ const Navbar = () => {
           </Paper>
         </Modal>
       )}
+      <Dialog
+        open={openChangeDescripcionDialog}
+        onClose={() => setOpenChangeDescripcionDialog(false)}
+      >
+        <DialogTitle>Cambiar Descripcion de la Pregunta</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Nueva Descripcion de la Pregunta"
+            variant="outlined"
+            value={nuevaDescripcion}
+            onChange={(e) => setNuevaDescripcion(e.target.value)}
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() =>
+              handleChangeDescripcionPregunta(pregunta, nuevaDescripcion)
+            }
+            color="primary"
+          >
+            Cambiar Descripcion de la pregunta
+          </Button>
+        </DialogActions>
+      </Dialog>
       {open && selectedList === "secciones" && (
         <Modal open={open} onClose={handleClose} className="modal">
           <Paper className="modalContent smallModal">
@@ -616,6 +723,13 @@ const Navbar = () => {
                         </TableCell>
                         <TableCell className={classes.cellWithBorder}>
                           {seccion.descripcion}
+                          <VpnKeyIcon
+                            className="icon"
+                            onClick={() => {
+                              setOpenChangeDescripcionSeccionDialog(true);
+                              setSeccionId(seccion.id);
+                            }}
+                          />
                         </TableCell>
                         <TableCell className={classes.cellWithBorder}>
                           {getFormularioNombre(seccion.formularioId)}
@@ -628,6 +742,31 @@ const Navbar = () => {
           </Paper>
         </Modal>
       )}
+       <Dialog
+        open={openChangeDescripcionSeccionDialog}
+        onClose={() => setOpenChangeDescripcionSeccionDialog(false)}
+      >
+        <DialogTitle>Cambiar Descripcion de la Seccion</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Nueva Descripcion de la Seccion"
+            variant="outlined"
+            value={nuevaDescripcionSeccion}
+            onChange={(e) => setNuevaDescripcionSeccion(e.target.value)}
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() =>
+              handleChangeDescripcionSeccion(secciones, nuevaDescripcion)
+            }
+            color="primary"
+          >
+            Cambiar Descripcion de la Seccion
+          </Button>
+        </DialogActions>
+      </Dialog>
       {open && selectedList === "tipoRespuesta" && (
         <Modal open={open} onClose={handleClose} className="modal">
           <Paper className="modalContent smallModal">
