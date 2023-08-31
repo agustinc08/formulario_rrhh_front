@@ -12,44 +12,13 @@ import useStyles from "../../styles/creacionStyle";
 const CrearTipoPregunta = () => {
   const classes = useStyles();
   const [tipoPreguntaDescripcion, setTipoPreguntaDescripcion] = useState("");
-  const [formularios, setFormularios] = useState([]);
   const [errorTipoPregunta, setErrorTipoPregunta] = useState(false);
   const [alertaTipoPregunta, setAlertaPregunta] = useState(false);
-  const [showAlert, setShowAlert] = useState(true);
   const [formularioId, setFormularioId] = useState("");
-
-  useEffect(() => {
-    fetchFormulario();
-  }, []);
-
-  const fetchFormulario = () => {
-    fetch("http://localhost:4000/formulario")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Error fetching formularios");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        const formulariosObj = {};
-        data.forEach((formulario) => {
-          formulariosObj[formulario.id] = formulario;
-        });
-        setFormularios(formulariosObj);
-      })
-      .catch((error) => {
-        console.log("Error fetching formularios:", error);
-      });
-  };
-
-  const handleFormularioChange = (event) => {
-    const selectedFormularioId = event.target.value;
-    setFormularioId(selectedFormularioId);
-  };
 
   const handleCloseAlert = () => {
     setAlertaPregunta(false);
-    setShowAlert(false);
+    setErrorTipoPregunta(false);
   };
 
   const handleTipoPreguntaSubmit = (event) => {
@@ -72,6 +41,7 @@ const CrearTipoPregunta = () => {
       .then((response) => {
         if (response.ok) {
           console.log("Tipo Pregunta creada:", descripcion);
+          setAlertaPregunta(true)
           setTipoPreguntaDescripcion("");
         } else {
           throw new Error("Error al crear el Tipo de Pregunta.");
@@ -82,7 +52,6 @@ const CrearTipoPregunta = () => {
         setErrorTipoPregunta(true);
       });
   };
-
 
   return (
     <Box
@@ -101,14 +70,6 @@ const CrearTipoPregunta = () => {
             }
             error={errorTipoPregunta && !tipoPreguntaDescripcion.trim()}
           />
-            <Select value={formularioId} onChange={handleFormularioChange}>
-               {Object.values(formularios).map((formulario) => (
-                 <MenuItem key={formulario.id} value={formulario.id}>
-                   {formulario.nombre}
-                 </MenuItem>
-               ))}
-            </Select>
-
                <Button
                  className={classes.button}
                  variant="contained"
@@ -132,6 +93,13 @@ const CrearTipoPregunta = () => {
                    </IconButton>
                  </Alert>
                )}
+                {errorTipoPregunta && (
+            <Alert severity="error">
+              Ya existe una Tipo de respuesta con el mismo nombre dentro de el mismo Tipo de pregunta ! intentelo
+              nuevamente.
+              <CloseIcon fontSize="inherit" onClick={handleCloseAlert} />
+            </Alert>
+          )}
         </form>
     </Box>
 

@@ -20,7 +20,7 @@ const CrearSeccion = () => {
   const [alertaSeccion, setAlertaSeccion] = useState(false);
   const [alertaSeccionExistente, setAlertaSeccionExistente] = useState(false);
   const [formularioId, setFormularioId] = useState("");
-  
+
   useEffect(() => {
     fetchFormulario();
   }, []);
@@ -45,6 +45,11 @@ const CrearSeccion = () => {
       });
   };
 
+  const handleCloseAlert = () => {
+    setAlertaSeccion(false);
+    setAlertaSeccionExistente(false);
+  };
+
   const handleFormularioChange = (event) => {
     const selectedFormularioId = event.target.value;
     setFormularioId(selectedFormularioId);
@@ -56,27 +61,26 @@ const CrearSeccion = () => {
       setErrorSeccion(true);
       return;
     }
-    const existeSeccion = secciones.some(
+
+    const existeSeccionEnFormulario = secciones.some(
       (seccion) =>
         seccion.descripcion.toLowerCase() ===
-        seccionDescripcion.trim().toLowerCase()
+          seccionDescripcion.trim().toLowerCase() &&
+        seccion.formularioId === formularioId
     );
 
-    if (existeSeccion) {
+    if (existeSeccionEnFormulario) {
       setErrorSeccion(true);
-      setAlertaSeccion(false);
+      setAlertaSeccion(true);
       setAlertaSeccionExistente(true);
       return;
     }
+
     crearSeccion(seccionDescripcion, formularioId);
     setSeccionDescripcion("");
   };
 
-  const handleCloseAlert = () => {
-    setAlertaSeccion(false);
-  };
-
-  const crearSeccion = (descripcion, formularioId) => {
+   const crearSeccion = (descripcion, formularioId) => {
     fetch("http://localhost:4000/secciones", {
       method: "POST",
       headers: {
@@ -95,6 +99,9 @@ const CrearSeccion = () => {
           setErrorSeccion(false);
           setAlertaSeccionExistente(false);
         } else {
+          setErrorSeccion(true);
+          setAlertaSeccion(false);
+          setAlertaSeccionExistente(true);
           throw new Error("Error al crear la sección.");
         }
       })
@@ -105,65 +112,65 @@ const CrearSeccion = () => {
   };
 
   return (
-          <Box
-            className={`${classes.boxForm} ${
-              classes.boxIzquierdo
-            } `}
-            boxShadow={8}
-            borderRadius={7}
-          >
-            <form onSubmit={handleSeccionSubmit} className={classes.form}>
-              <p className={classes.tituloForm}>CREAR SECCIÓN</p>
-              <TextField
-                className={classes.textField}
-                label="Descripción"
-                value={seccionDescripcion}
-                onChange={(event) => setSeccionDescripcion(event.target.value)}
-                error={errorSeccion && !seccionDescripcion.trim()}
-              />
+    <Box
+      className={`${classes.boxForm} ${classes.boxIzquierdo} `}
+      boxShadow={8}
+      borderRadius={7}
+    >
+      <form onSubmit={handleSeccionSubmit} className={classes.form}>
+        <p className={classes.tituloForm}>CREAR SECCIÓN</p>
+        <TextField
+          className={classes.textField}
+          label="Descripción"
+          value={seccionDescripcion}
+          onChange={(event) => setSeccionDescripcion(event.target.value)}
+          error={errorSeccion && !seccionDescripcion.trim()}
+        />
 
-              <FormControl className={classes.textField}>
-                <InputLabel id="formulario-select-label">Formulario</InputLabel>
-                <Select value={formularioId} onChange={handleFormularioChange}>
-                  {Object.values(formularios).map((formulario) => (
-                    <MenuItem key={formulario.id} value={formulario.id}>
-                      {formulario.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <Button
-                className={classes.button}
-                variant="contained"
-                color="primary"
-                type="submit"
-                disabled={!seccionDescripcion.trim() || !formularioId}
-              >
-                {" "}
-                Crear Sección{" "}
-              </Button>
-              {alertaSeccion && (
-                <Alert severity="success">
-                  ¡La sección se creó correctamente!
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    size="small"
-                    onClick={handleCloseAlert}
-                    className={classes.closeButton}
-                  >
-                    <CloseIcon fontSize="inherit" />
-                  </IconButton>
-                </Alert>
-              )}
-              {alertaSeccionExistente && (
-                <Alert severity="error">
-                  Ya existe una Seccion con el mismo nombre en este formulario, intentelo denuevo.
-                </Alert>
-              )}
-            </form>
-          </Box>
-    );
+        <FormControl className={classes.textField}>
+          <InputLabel id="formulario-select-label">Formulario</InputLabel>
+          <Select value={formularioId} onChange={handleFormularioChange}>
+            {Object.values(formularios).map((formulario) => (
+              <MenuItem key={formulario.id} value={formulario.id}>
+                {formulario.nombre}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Button
+          className={classes.button}
+          variant="contained"
+          color="primary"
+          type="submit"
+          disabled={!seccionDescripcion.trim() || !formularioId}
+        >
+          {" "}
+          Crear Sección{" "}
+        </Button>
+        {alertaSeccion && (
+          <Alert severity="success">
+            ¡La sección se creó correctamente!
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={handleCloseAlert}
+              className={classes.closeButton}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          </Alert>
+        )}
+        {alertaSeccionExistente && (
+          <Alert severity="error">
+            Ya existe una Seccion con el mismo nombre en este formulario,
+            intentelo denuevo.
+            <CloseIcon fontSize="inherit" onClick={handleCloseAlert}/>
+          </Alert>
+        )}
+      </form>
+    </Box>
+  );
 };
 
 export default CrearSeccion;
