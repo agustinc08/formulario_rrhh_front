@@ -1,166 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Menu,
   MenuItem,
-  Modal,
-  TableContainer,
-  IconButton,
-  Table,
-  TableHead,
-  TableRow,
-  Button,
-  TableCell,
-  TableBody,
-  Paper,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
-import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import "../css/navbar.css";
 import "../css/global.css";
-import useStyles from "../styles/navBarStyle";
+import ModalFormularios from "../components/navBar/modalFormularios";
+import ModalPreguntas from "../components/navBar/modalPreguntas";
+import ModalSecciones from "../components/navBar/modalSecciones";
+import ModalClaves from "../components/navBar/modalClaves";
+import ModalTipoRespuestas from "../components/navBar/modalTipoRespuestas";
+import ModalDependencias from "../components/navBar/modalClaves"
 
 const Navbar = () => {
-  const classes = useStyles();
-  const [dependencias, setDependencias] = useState([]);
-  const [preguntas, setPreguntas] = useState([]);
-  const [secciones, setSecciones] = useState([]);
-  const [tipoRespuesta, setTipoRespuesta] = useState([]);
-  const [tiposPregunta, setTiposPregunta] = useState([]);
-  const [claves, setClaves] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [formularios, setFormularios] = useState([]);
-  const [dependenciaId, setDependenciaId] = useState("");
-  const [pregunta, setPregunta] = useState("");
-  const [preguntaDescripcion, setPreguntaDescripcion] = useState("");
-  const [searchValue, setSearchValue] = useState("");
-  const [open, setOpen] = useState(false);
-  const [selectedList, setSelectedList] = useState("");
-  const [isFormularioActivo, setIsFormularioActivo] = useState(false);
-  const [openChangePasswordDialog, setOpenChangePasswordDialog] =
-    useState(false);
-  const [openChangeDescripcionDialog, setOpenChangeDescripcionDialog] =
-    useState(false);
-    const [openChangeDescripcionSeccionDialog, setOpenChangeDescripcionSeccionDialog] =
-    useState(false);
-  const [clave, setClave] = useState("");
-  const [nuevaDescripcion, setNuevaDescripcion] = useState("");
-  const [nuevaDescripcionSeccion, setNuevaDescripcionSeccion] = useState("");
-  const [seccionId, setSeccionId] = useState([]);
-
-  useEffect(() => {
-    if (dependencias.length > 0 && dependenciaId) {
-      const dependencia = dependencias.find((dep) => dep.id === dependenciaId);
-    }
-  }, [dependencias, dependenciaId]);
-
-  //agregar usuarios internos.(listo(falta igual hacer pruebas y ver que se le permite hacer a cada uno.))
-  //agrupar por edificios(direccion y polo.) y o polo.(Listo , falta testear.)
-  // titulos a cada circulo de estadisticas.(Listo)
-  //tipo pregunta y tipo respuesta dentro del creador abajo de todo(listo).
-  //agregar lineas en el buscador para dividir mejor el buscador(listo , quedo visualmente muy bonito).
-
-  //si el formulario no esta activo o no tiene nada adentro que no se pueda eliminar , sino , dejar eliminar.
-  //agrupacion de secciones - ademas de graficos por seccion (), agrupado o separado.
-  //dividir tipo de tareas.(se ve)
-
-  //si hay respuestas asociadas no dejar eliminar las preguntas.
-  //solamente crear pregunta para formulario.estaActivo.(se ve)
-
-  const fetchClaves = () => {
-    fetch("http://localhost:4000/claves")
-      .then((response) => response.json())
-      .then((data) => {
-        setClaves(data);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const fetchPreguntas = () => {
-    fetch("http://localhost:4000/preguntas")
-      .then((response) => response.json())
-      .then((data) => {
-        const preguntasOrdenadas = data.sort((a, b) => a.id - b.id);
-        setPreguntas(preguntasOrdenadas);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const fetchDependencias = () => {
-    fetch("http://localhost:4000/dependencias")
-      .then((response) => response.json())
-      .then((data) => {
-        const dependenciasOrdenadas = data.sort((a, b) => a.id - b.id);
-        setDependencias(dependenciasOrdenadas);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const fetchFormulario = () => {
-    fetch("http://localhost:4000/formulario")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Error fetching formularios");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setFormularios(data);
-        const hasActiveFormulario = data.some(
-          (formulario) => formulario.estaActivo
-        );
-        setIsFormularioActivo(hasActiveFormulario);
-      })
-      .catch((error) => {
-        console.log("Error fetching formularios:", error);
-      });
-  };
-
-  const fetchSecciones = () => {
-    fetch("http://localhost:4000/secciones")
-      .then((response) => response.json())
-      .then((data) => {
-        const seccionesOrdenadas = data.sort((a, b) => a.id - b.id);
-        setSecciones(seccionesOrdenadas);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const fetchTipoRespuesta = () => {
-    fetch("http://localhost:4000/tipoRespuesta")
-      .then((response) => response.json())
-      .then((data) => {
-        const tipoRespuestaOrdenadas = data.sort((a, b) => a.id - b.id);
-        setTipoRespuesta(tipoRespuestaOrdenadas);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const fetchTipoPregunta = () => {
-    fetch("http://localhost:4000/tipoPregunta")
-      .then((response) => response.json())
-      .then((data) => {
-        const tipoPreguntaOrdenadas = data.sort((a, b) => a.id - b.id);
-        setTiposPregunta(tipoPreguntaOrdenadas);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  useEffect(() => {
-    fetchDependencias();
-    fetchFormulario();
-    fetchSecciones();
-    fetchClaves();
-    fetchPreguntas();
-    fetchTipoRespuesta();
-    fetchTipoPregunta();
-  }, []);
+  const [openFormularios, setOpenFormularios] = useState(false);
+  const [openTipoRespuesta, setOpenTipoRespuesta] = useState(false);
+  const [openClaves, setOpenClaves] = useState(false);
+  const [openPreguntas, setOpenPreguntas] = useState(false);
+  const [openSecciones, setOpenSecciones] = useState(false);
+  const [selectedList, setSelectedList] = useState(false);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -172,210 +33,30 @@ const Navbar = () => {
     setMenuOpen(false);
   };
 
-  const handleOpen = (list) => {
-    setSelectedList(list);
-    setOpen(true);
+  const modalStates = {
+    formularios: openFormularios,
+    claves: openClaves,
+    preguntas: openPreguntas,
+    secciones: openSecciones,
+    tipoRespuesta: openTipoRespuesta,
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  // Función para manejar el cambio en el buscador
-  const handleSearchChange = (event) => {
-    setSearchValue(event.target.value);
-  };
-
-  // Filtra las preguntas por la descripción en base al valor del buscador
-  const filteredPreguntas = preguntas.filter(
-    (pregunta) =>
-      pregunta.descripcion &&
-      pregunta.descripcion.toLowerCase().includes(searchValue.toLowerCase())
-  );
-
-  const filteredTipoRespuesta = tipoRespuesta.filter(
-    (tipoRespuesta) =>
-      tipoRespuesta.descripcion &&
-      tipoRespuesta.descripcion
-        .toLowerCase()
-        .includes(searchValue.toLowerCase())
-  );
-
-  // Filtra los elementos por el nombreDependencia en base al valor del buscador
-  const filteredDependencias = dependencias.filter(
-    (dependencia) =>
-      dependencia.nombreDependencia &&
-      dependencia.nombreDependencia
-        .toLowerCase()
-        .includes(searchValue.toLowerCase())
-  );
-
-  const filteredSecciones = secciones.filter(
-    (seccion) =>
-      seccion.descripcion &&
-      seccion.descripcion.toLowerCase().includes(searchValue.toLowerCase())
-  );
-
-  // Filtra las claves por la dependencia y clave en base al valor del buscador
-  const filteredClaves = claves.filter(
-    (clave) =>
-      (clave.dependencia &&
-        clave.dependencia.nombreDependencia &&
-        clave.dependencia.nombreDependencia
-          .toLowerCase()
-          .includes(searchValue.toLowerCase())) ||
-      (clave.clave &&
-        clave.clave.toLowerCase().includes(searchValue.toLowerCase()))
-  );
-
-  const filteredFormularios = formularios.filter(
-    (formulario) =>
-      formulario.nombre &&
-      formulario.nombre.toLowerCase().includes(searchValue.toLowerCase())
-  );
-
-  const getFormularioNombre = (formularioId) => {
-    const formulario = formularios.find(
-      (formulario) => formulario.id === formularioId
-    );
-    return formulario ? formulario.nombre : "";
-  };
-
-  const getTipoPreguntaDescripcion = (tipoPreguntaId) => {
-    const tipoPregunta = tiposPregunta.find(
-      (tipoPregunta) => tipoPregunta.id === tipoPreguntaId
-    );
-    return tipoPregunta ? tipoPregunta.descripcion : "";
-  };
-
-  const handleToggleFormularioActivo = async (formularioToToggle) => {
-    try {
-      const updatedFormulario = {
-        ...formularioToToggle,
-        estaActivo: !formularioToToggle.estaActivo,
-      };
-
-      await fetch(`http://localhost:4000/formulario/${formularioToToggle.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedFormulario),
-      });
-
-      // Fetch the updated formularios from the server
-      fetchFormulario();
-    } catch (error) {
-      console.error("Error updating formulario:", error);
+  const handleOpenModal = (modalName) => {
+    // Verifica si el modalName existe en el objeto modalStates
+    if (modalName in modalStates) {
+      console.log(`Abriendo modal: ${modalName}`);
+      setSelectedList(modalName); // Establece el modal que se está abriendo
+      // Actualiza el estado correspondiente al modal
+      const updatedStates = { ...modalStates };
+      updatedStates[modalName] = true;
+  
+      // Actualiza los estados de los modales
+      setOpenFormularios(updatedStates.formularios);
+      setOpenClaves(updatedStates.claves);
+      setOpenPreguntas(updatedStates.preguntas);
+      setOpenTipoRespuesta(updatedStates.tipoRespuesta);
     }
   };
-
-  const handleChangePassword = async () => {
-    try {
-      console.log("dependenciaId:", dependenciaId);
-
-      // Verifica si dependenciaId está vacía antes de enviar la solicitud
-      if (!dependenciaId) {
-        console.error(
-          "Debe seleccionar una dependencia para cambiar la clave."
-        );
-        return;
-      }
-
-      const response = await fetch(
-        `http://localhost:4000/claves/${dependenciaId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ clave: clave }),
-        }
-      );
-
-      console.log("Response:", response);
-
-      if (response.ok) {
-        fetchClaves();
-        setOpenChangePasswordDialog(false);
-        setClave("");
-      } else {
-        console.error("Error al cambiar la clave");
-      }
-    } catch (error) {
-      console.error("Error en la solicitud:", error);
-    }
-  };
-
-  const handleChangeDescripcionPregunta = async (
-    preguntaId,
-    nuevaDescripcion
-  ) => {
-    try {
-      if (!preguntaId || !nuevaDescripcion) {
-        console.error(
-          "Debe proporcionar un ID de pregunta y una nueva descripción."
-        );
-        return;
-      }
-
-      const response = await fetch(
-        `http://localhost:4000/preguntas/${preguntaId}`, // Utiliza el ID de la pregunta en la URL
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ descripcion: nuevaDescripcion }),
-        }
-      );
-
-      if (response.ok) {
-        fetchPreguntas(); // Llama a tu función para actualizar la lista de preguntas
-        setOpenChangeDescripcionSeccionDialog(false); // Cierra el diálogo si es necesario
-      } else {
-        console.error("Error al cambiar la descripción de la pregunta");
-      }
-    } catch (error) {
-      console.error("Error en la solicitud:", error);
-    }
-  };
-
-  const handleChangeDescripcionSeccion = async (
-    seccionId,
-    nuevaDescripcionSeccion
-  ) => {
-    try {
-      if (!seccionId || !nuevaDescripcionSeccion) {
-        console.error(
-          "Debe proporcionar un ID de Seccion y una nueva descripción."
-        );
-        return;
-      }
-
-      const response = await fetch(
-        `http://localhost:4000/secciones/${seccionId}`, // Utiliza el ID de la seccion en la URL
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ descripcion: nuevaDescripcionSeccion }),
-        }
-      );
-
-      if (response.ok) {
-        fetchSecciones();
-        setOpenChangeDescripcionSeccionDialog(false);
-      } else {
-        console.error("Error al cambiar la descripción de la seccion");
-      }
-    } catch (error) {
-      console.error("Error en la solicitud:", error);
-    }
-  };
-
-  const sortedFormularios = formularios.sort((a, b) => a.id - b.id);
 
   return (
     <>
@@ -421,409 +102,30 @@ const Navbar = () => {
                 "aria-labelledby": "menu",
               }}
             >
-              <MenuItem onClick={() => handleOpen("formularios")}>
+              <MenuItem onClick={() => handleOpenModal("formularios")}>
                 Formularios
               </MenuItem>
-              <MenuItem onClick={() => handleOpen("claves")}>
+              <MenuItem onClick={() => handleOpenModal("claves")}>
                 Dependencias
               </MenuItem>
-              <MenuItem onClick={() => handleOpen("preguntas")}>
+              <MenuItem onClick={() => handleOpenModal("preguntas")}>
                 Preguntas
               </MenuItem>
-              <MenuItem onClick={() => handleOpen("secciones")}>
+              <MenuItem onClick={() => handleOpenModal("secciones")}>
                 Secciones
               </MenuItem>
-              <MenuItem onClick={() => handleOpen("tipoRespuesta")}>
+              <MenuItem onClick={() => handleOpenModal("tipoRespuesta")}>
                 Tipo de Respuesta
               </MenuItem>
             </Menu>
           </li>
         </ul>
       </nav>
-
-      {open && selectedList === "formularios" && (
-        <Modal open={open} onClose={handleClose} className="modal">
-          <Paper className="modalContent smallModal">
-            <TableContainer>
-              <IconButton
-                aria-label="close"
-                className="closeButton"
-                onClick={handleClose}
-              >
-                <CloseIcon />
-              </IconButton>
-              <TextField
-                label="Buscar"
-                variant="outlined"
-                size="small"
-                value={searchValue}
-                onChange={handleSearchChange}
-                margin="normal"
-                style={{ width: "90%" }}
-              />
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell className="columnaId">Formulario</TableCell>
-                    <TableCell className="columnaTexto">Nombre</TableCell>
-                    <TableCell className="columnaTexto">
-                      Formulario Activo
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {formularios &&
-                    filteredFormularios &&
-                    sortedFormularios.map((formulario) => (
-                      <TableRow key={formulario.id}>
-                        <TableCell className={classes.cellWithBorder}>
-                          {formulario.id}
-                        </TableCell>
-                        <TableCell className={classes.cellWithBorder}>
-                          {formulario.nombre}
-                        </TableCell>
-                        <TableCell className={classes.cellWithBorder}>
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() =>
-                              handleToggleFormularioActivo(formulario)
-                            }
-                            disabled={
-                              isFormularioActivo && !formulario.estaActivo
-                            }
-                          >
-                            {formulario.estaActivo ? "Desactivar" : "Activar"}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Modal>
-      )}
-
-      {open && selectedList === "claves" && (
-        <Modal open={open} onClose={handleClose} className="modal">
-          <Paper className="modalContent smallModal">
-            <TableContainer>
-              <IconButton
-                aria-label="close"
-                className="closeButton"
-                onClick={handleClose}
-              >
-                <CloseIcon />
-              </IconButton>
-              <TextField
-                label="Buscar"
-                variant="outlined"
-                size="small"
-                value={searchValue}
-                onChange={handleSearchChange}
-                margin="normal"
-                style={{ width: "90%" }}
-              />
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classes.cellWithBorder}>
-                      Dependencia
-                    </TableCell>
-                    <TableCell className={classes.cellWithBorder}>
-                      Clave
-                    </TableCell>
-                    <TableCell className={classes.cellWithBorder}>
-                      Polo
-                    </TableCell>
-                    <TableCell className={classes.cellWithBorder}>
-                      Edificio
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {claves &&
-                    filteredClaves.map((clave) => (
-                      <TableRow key={clave.id}>
-                        <TableCell className={classes.cellWithBorder}>
-                          {clave.dependencia.nombreDependencia}
-                        </TableCell>
-                        <TableCell className={classes.cellWithBorder}>
-                          {clave.clave}
-                          <VpnKeyIcon
-                            className="icon"
-                            onClick={() => {
-                              setOpenChangePasswordDialog(true);
-                              setDependenciaId(clave.dependencia.id); // Establecer la dependenciaId al hacer clic
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell className={classes.cellWithBorder}>
-                          {clave.dependencia.polo}
-                        </TableCell>
-                        <TableCell className={classes.cellWithBorder}>
-                          {clave.dependencia.edificio}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Modal>
-      )}
-      <Dialog
-        open={openChangePasswordDialog}
-        onClose={() => setOpenChangePasswordDialog(false)}
-      >
-        <DialogTitle>Cambiar Clave</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Nueva Clave"
-            variant="outlined"
-            value={clave}
-            onChange={(e) => setClave(e.target.value)}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleChangePassword} color="primary">
-            Cambiar Clave
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {open && selectedList === "preguntas" && (
-        <Modal open={open} onClose={handleClose} className="modal">
-          <Paper className="modalContent smallModal">
-            <TableContainer>
-              <IconButton
-                aria-label="close"
-                className="closeButton"
-                onClick={handleClose}
-              >
-                <CloseIcon />
-              </IconButton>
-              <TextField
-                label="Buscar"
-                variant="outlined"
-                size="small"
-                value={searchValue}
-                onChange={handleSearchChange}
-                margin="normal"
-                style={{ width: "90%" }}
-              />
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classes.cellWithBorder}>
-                      Número
-                    </TableCell>
-                    <TableCell className={classes.cellWithBorder}>
-                      Descripción
-                    </TableCell>
-                    <TableCell className={classes.cellWithBorder}>
-                      Formulario
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredPreguntas.map((pregunta) => (
-                    <TableRow key={pregunta.id}>
-                      <TableCell className={classes.cellWithBorder}>
-                        {pregunta.id}
-                      </TableCell>
-                      <TableCell className={classes.cellWithBorder}>
-                        {pregunta.descripcion}
-                        <VpnKeyIcon
-                          className="icon"
-                          onClick={() => {
-                            setOpenChangeDescripcionDialog(true);
-                            setPregunta(pregunta.id);
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell className={classes.cellWithBorder}>
-                        {getFormularioNombre(pregunta.formularioId)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Modal>
-      )}
-      <Dialog
-        open={openChangeDescripcionDialog}
-        onClose={() => setOpenChangeDescripcionDialog(false)}
-      >
-        <DialogTitle>Cambiar Descripcion de la Pregunta</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Nueva Descripcion de la Pregunta"
-            variant="outlined"
-            value={nuevaDescripcion}
-            onChange={(e) => setNuevaDescripcion(e.target.value)}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() =>
-              handleChangeDescripcionPregunta(pregunta, nuevaDescripcion)
-            }
-            color="primary"
-          >
-            Cambiar Descripcion de la pregunta
-          </Button>
-        </DialogActions>
-      </Dialog>
-      {open && selectedList === "secciones" && (
-        <Modal open={open} onClose={handleClose} className="modal">
-          <Paper className="modalContent smallModal">
-            <TableContainer>
-              <IconButton
-                aria-label="close"
-                className="closeButton"
-                onClick={handleClose}
-              >
-                <CloseIcon />
-              </IconButton>
-              <TextField
-                label="Buscar"
-                variant="outlined"
-                size="small"
-                value={searchValue}
-                onChange={handleSearchChange}
-                margin="normal"
-                style={{ width: "90%" }}
-              />
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classes.cellWithBorder}>
-                      Número
-                    </TableCell>
-                    <TableCell className={classes.cellWithBorder}>
-                      Sección
-                    </TableCell>
-                    <TableCell className={classes.cellWithBorder}>
-                      Formulario
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {secciones &&
-                    filteredSecciones.map((seccion) => (
-                      <TableRow key={seccion.id}>
-                        <TableCell className={classes.cellWithBorder}>
-                          {seccion.id}
-                        </TableCell>
-                        <TableCell className={classes.cellWithBorder}>
-                          {seccion.descripcion}
-                          <VpnKeyIcon
-                            className="icon"
-                            onClick={() => {
-                              setOpenChangeDescripcionSeccionDialog(true);
-                              setSeccionId(seccion.id);
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell className={classes.cellWithBorder}>
-                          {getFormularioNombre(seccion.formularioId)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Modal>
-      )}
-       <Dialog
-        open={openChangeDescripcionSeccionDialog}
-        onClose={() => setOpenChangeDescripcionSeccionDialog(false)}
-      >
-        <DialogTitle>Cambiar Descripcion de la Seccion</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Nueva Descripcion de la Seccion"
-            variant="outlined"
-            value={nuevaDescripcionSeccion}
-            onChange={(e) => setNuevaDescripcionSeccion(e.target.value)}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() =>
-              handleChangeDescripcionSeccion(secciones, nuevaDescripcion)
-            }
-            color="primary"
-          >
-            Cambiar Descripcion de la Seccion
-          </Button>
-        </DialogActions>
-      </Dialog>
-      {open && selectedList === "tipoRespuesta" && (
-        <Modal open={open} onClose={handleClose} className="modal">
-          <Paper className="modalContent smallModal">
-            <TableContainer>
-              <IconButton
-                aria-label="close"
-                className="closeButton"
-                onClick={handleClose}
-              >
-                <CloseIcon />
-              </IconButton>
-              <TextField
-                label="Buscar"
-                variant="outlined"
-                size="small"
-                value={searchValue}
-                onChange={handleSearchChange}
-                margin="normal"
-                style={{ width: "90%" }}
-              />
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classes.cellWithBorder}>
-                      Número
-                    </TableCell>
-                    <TableCell className={classes.cellWithBorder}>
-                      Tipo de Pregunta
-                    </TableCell>
-                    <TableCell className={classes.cellWithBorder}>
-                      Tipo de Respuesta
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {tipoRespuesta &&
-                    filteredTipoRespuesta.map((tipoRespuesta) => (
-                      <TableRow key={tipoRespuesta.id}>
-                        <TableCell className={classes.cellWithBorder}>
-                          {tipoRespuesta.id}
-                        </TableCell>
-                        <TableCell className={classes.cellWithBorder}>
-                          {getTipoPreguntaDescripcion(
-                            tipoRespuesta.tipoPreguntaId
-                          )}
-                        </TableCell>
-                        <TableCell className={classes.cellWithBorder}>
-                          {tipoRespuesta.descripcion}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Modal>
-      )}
+      <ModalFormularios open={openFormularios} handleClose={() => setOpenFormularios(false)} />
+      <ModalClaves open={openClaves} handleClose={() => setOpenClaves(false)} />
+      <ModalPreguntas open={openPreguntas} handleClose={() => setOpenPreguntas(false)} />
+      <ModalSecciones open={openSecciones} handleClose={() => setOpenSecciones(false)} />
+      <ModalTipoRespuestas open={openTipoRespuesta} handleClose={() => setOpenTipoRespuesta(false)} />
     </>
   );
 };

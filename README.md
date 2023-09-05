@@ -4,6 +4,20 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
+
+  //agregar usuarios internos.(listo(falta igual hacer pruebas y ver que se le permite hacer a cada uno.))
+  //agrupar por edificios(direccion y polo.) y o polo.(Listo , falta testear.)
+  // titulos a cada circulo de estadisticas.(Listo)
+  //tipo pregunta y tipo respuesta dentro del creador abajo de todo(listo).
+  //agregar lineas en el buscador para dividir mejor el buscador(listo , quedo visualmente muy bonito).
+
+  //si el formulario no esta activo o no tiene nada adentro que no se pueda eliminar , sino , dejar eliminar.
+  //agrupacion de secciones - ademas de graficos por seccion (), agrupado o separado.
+  //dividir tipo de tareas.(se ve)
+
+  //si hay respuestas asociadas no dejar eliminar las preguntas.
+  //solamente crear pregunta para formulario.estaActivo.(se ve)
+
 In the project directory, you can run:
 
 ### `npm start`
