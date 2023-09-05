@@ -20,14 +20,13 @@ import CloseIcon from "@material-ui/icons/Close";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import useStyles from "../../styles/navBarStyle";
 
-const ModalSecciones = (props) => {
+const ModalSecciones = ({ open, handleClose }) => {
   const classes = useStyles();
   const [secciones, setSecciones] = useState([]);
   const [seccion, setSeccion] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [open, setOpen] = useState(false);
   const [selectedList, setSelectedList] = useState("");
   const [formularios, setFormularios] = useState([]);
   const [isFormularioActivo, setIsFormularioActivo] = useState(false);
@@ -79,12 +78,6 @@ const ModalSecciones = (props) => {
     fetchFormulario();
     fetchSecciones();
   }, []);
-
-  const handleClose = () => {
-    if (props.handleClose) {
-      props.handleClose(); // Llama a handleClose si existe como prop
-    }
-  };
   
   // Función para manejar el cambio en el buscador
   const handleSearchChange = (event) => {
@@ -139,10 +132,8 @@ const ModalSecciones = (props) => {
     }
   };
 
-
     return (
         <>    
-          {props.open && selectedList === "secciones" && (
             <Modal open={open} onClose={handleClose} className="modal">
               <Paper className="modalContent smallModal">
                 <TableContainer>
@@ -203,7 +194,7 @@ const ModalSecciones = (props) => {
                 </TableContainer>
               </Paper>
             </Modal>
-          )}
+      
           <Dialog
             open={openChangeDescripcionSeccionDialog}
             onClose={() => setOpenChangeDescripcionSeccionDialog(false)}
@@ -229,7 +220,8 @@ const ModalSecciones = (props) => {
               </Button>
             </DialogActions>
           </Dialog>
-        </>)
+        </>
+        )
 };
 
 export default ModalSecciones;

@@ -14,9 +14,10 @@ import {
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import useStyles from "../../styles/navBarStyle";
+import "../../css/navbar.css"
+import "../../css/global.css";
 
 const ModalFormularios = ({ open, handleClose }) => {
-  console.log("Props de ModalFormularios:", open);
   const classes = useStyles();
   const [formularios, setFormularios] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -84,7 +85,7 @@ const ModalFormularios = ({ open, handleClose }) => {
 
     return (
         <>    
-         {open && selectedList === "formularios" && (
+        
              <Modal open={open} onClose={handleClose} className="modal">
               <Paper className="modalContent smallModal">
                 <TableContainer>
@@ -146,7 +147,7 @@ const ModalFormularios = ({ open, handleClose }) => {
                 </TableContainer>
               </Paper>
             </Modal>
-          )}
+        
         </>)
 };
 

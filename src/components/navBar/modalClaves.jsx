@@ -20,7 +20,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import useStyles from "../../styles/navBarStyle";
 
-const ModalClaves = (props) => {
+const ModalClaves = ({ open, handleClose }) => {
   const classes = useStyles();
   const [dependencias, setDependencias] = useState([]);
   const [claves, setClaves] = useState([]);
@@ -28,7 +28,6 @@ const ModalClaves = (props) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dependenciaId, setDependenciaId] = useState("");
   const [searchValue, setSearchValue] = useState("");
-  const [open, setOpen] = useState(false);
   const [selectedList, setSelectedList] = useState("");
   const [openChangePasswordDialog, setOpenChangePasswordDialog] =
     useState(false);
@@ -46,10 +45,6 @@ const ModalClaves = (props) => {
   useEffect(() => {
     fetchClaves();
   }, []);
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const handleSearchChange = (event) => {
     setSearchValue(event.target.value);
@@ -106,7 +101,7 @@ const ModalClaves = (props) => {
 
     return (
         <>    
-          {open && selectedList === "claves" && (
+          
             <Modal open={open} onClose={handleClose} className="modal">
               <Paper className="modalContent smallModal">
                 <TableContainer>
@@ -173,7 +168,7 @@ const ModalClaves = (props) => {
                 </TableContainer>
               </Paper>
             </Modal>
-          )}
+        
           <Dialog
             open={openChangePasswordDialog}
             onClose={() => setOpenChangePasswordDialog(false)}

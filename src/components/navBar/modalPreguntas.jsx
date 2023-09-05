@@ -20,13 +20,12 @@ import CloseIcon from "@material-ui/icons/Close";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import useStyles from "../../styles/navBarStyle";
 
-const ModalPreguntas = (props) => {
+const ModalPreguntas = ({ open, handleClose }) => {
   const classes = useStyles();
   const [preguntas, setPreguntas] = useState([]);
   const [pregunta, setPregunta] = useState("");
   const [formularios, setFormularios] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-  const [open, setOpen] = useState(false);
   const [selectedList, setSelectedList] = useState("");
   const [openChangeDescripcionDialog, setOpenChangeDescripcionDialog] =
     useState(false);
@@ -68,10 +67,6 @@ const ModalPreguntas = (props) => {
     setSearchValue(event.target.value);
   };
 
-  const handleClose = () => {
-    props.handleClose(); // Llama a handleClose sin argumentos
-  };
-
   const handleChangeDescripcionPregunta = async (
     preguntaId,
     nuevaDescripcion
@@ -108,7 +103,6 @@ const ModalPreguntas = (props) => {
 
   return (
     <>
-      {open && selectedList === "preguntas" && (
         <Modal open={open} onClose={handleClose} className="modal">
           <Paper className="modalContent smallModal">
             <TableContainer>
@@ -168,7 +162,7 @@ const ModalPreguntas = (props) => {
             </TableContainer>
           </Paper>
         </Modal>
-      )}
+     
       <Dialog
         open={openChangeDescripcionDialog}
         onClose={() => setOpenChangeDescripcionDialog(false)}

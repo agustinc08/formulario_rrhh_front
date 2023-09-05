@@ -20,7 +20,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import useStyles from "../../styles/navBarStyle";
 
-const ModalTipoRespuesta = (props) => {
+const ModalTipoRespuesta = ({ open, handleClose }) => {
   const classes = useStyles();
   const [pregunta, setPregunta] = useState("");
   const [tipoRespuesta, setTipoRespuesta] = useState([]);
@@ -30,7 +30,6 @@ const ModalTipoRespuesta = (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [open, setOpen] = useState(false);
   const [selectedList, setSelectedList] = useState("");
   const [openChangeTipoPreguntaDialog, setOpenChangeTipoPreguntaDialog] =
     useState(false);
@@ -65,10 +64,6 @@ const ModalTipoRespuesta = (props) => {
       fetchTipoRespuesta();
       fetchTipoPregunta();
     }, []);
-
-    const handleClose = () => {
-      props.handleClose(); // Llama a handleClose sin argumentos
-    };
 
   // Función para manejar el cambio en el buscador
   const handleSearchChange = (event) => {
@@ -146,7 +141,7 @@ const ModalTipoRespuesta = (props) => {
 
   return (
     <>
-      {open && selectedList === "tipoRespuesta" && (
+  
         <Modal open={open} onClose={handleClose} className="modal">
           <Paper className="modalContent smallModal">
             <TableContainer>
@@ -283,7 +278,7 @@ const ModalTipoRespuesta = (props) => {
             </TableContainer>
           </Paper>
         </Modal>
-      )}
+   
     </>
   );
 };

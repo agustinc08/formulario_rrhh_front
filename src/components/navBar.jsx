@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  Menu,
-  MenuItem,
-} from "@material-ui/core";
+import { Menu, MenuItem } from "@material-ui/core";
 import "../css/navbar.css";
 import "../css/global.css";
 import ModalFormularios from "../components/navBar/modalFormularios";
@@ -11,7 +8,7 @@ import ModalPreguntas from "../components/navBar/modalPreguntas";
 import ModalSecciones from "../components/navBar/modalSecciones";
 import ModalClaves from "../components/navBar/modalClaves";
 import ModalTipoRespuestas from "../components/navBar/modalTipoRespuestas";
-import ModalDependencias from "../components/navBar/modalClaves"
+import ModalDependencias from "../components/navBar/modalClaves";
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -49,11 +46,12 @@ const Navbar = () => {
       // Actualiza el estado correspondiente al modal
       const updatedStates = { ...modalStates };
       updatedStates[modalName] = true;
-  
+
       // Actualiza los estados de los modales
       setOpenFormularios(updatedStates.formularios);
       setOpenClaves(updatedStates.claves);
       setOpenPreguntas(updatedStates.preguntas);
+      setOpenSecciones(updatedStates.secciones);
       setOpenTipoRespuesta(updatedStates.tipoRespuesta);
     }
   };
@@ -121,11 +119,23 @@ const Navbar = () => {
           </li>
         </ul>
       </nav>
-      <ModalFormularios open={openFormularios} handleClose={() => setOpenFormularios(false)} />
+      <ModalFormularios
+        open={openFormularios}
+        handleClose={() => setOpenFormularios(false)}
+      />
       <ModalClaves open={openClaves} handleClose={() => setOpenClaves(false)} />
-      <ModalPreguntas open={openPreguntas} handleClose={() => setOpenPreguntas(false)} />
-      <ModalSecciones open={openSecciones} handleClose={() => setOpenSecciones(false)} />
-      <ModalTipoRespuestas open={openTipoRespuesta} handleClose={() => setOpenTipoRespuesta(false)} />
+      <ModalPreguntas
+        open={openPreguntas}
+        handleClose={() => setOpenPreguntas(false)}
+      />
+      <ModalSecciones
+        open={openSecciones}
+        handleClose={() => setOpenSecciones(false)}
+      />
+      <ModalTipoRespuestas
+        open={openTipoRespuesta}
+        handleClose={() => setOpenTipoRespuesta(false)}
+      />
     </>
   );
 };
