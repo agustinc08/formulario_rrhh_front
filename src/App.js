@@ -19,9 +19,9 @@ import { setLoginData } from "./auth";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(
-    sessionStorage.getItem("isLoggedIn") === "true"
+    localStorage.getItem("isLoggedIn") === "true"
   );
-  const rol = sessionStorage.getItem("rol");
+  const rol = localStorage.getItem("rol");
 
   function handleLogin(username, password, rol) {
     setLoginData(username, password, rol);
@@ -46,7 +46,7 @@ function App() {
         <Route exact path="/inicio">
           {isLoggedIn ? (
             <React.Fragment>
-              {rol === "admin" && <Navbar />}
+              {rol === "admin"  && <Navbar />}
               <Inicio />
               <Footer />
             </React.Fragment>

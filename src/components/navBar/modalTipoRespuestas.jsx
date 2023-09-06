@@ -23,6 +23,7 @@ import useStyles from "../../styles/navBarStyle";
 const ModalTipoRespuesta = ({ open, handleClose }) => {
   const classes = useStyles();
   const [tipoRespuesta, setTipoRespuesta] = useState([]);
+  const [tiposRespuesta, setTiposRespuesta] = useState([]);
   const [tipoPregunta, setTipoPregunta] = useState([]);
   const [tiposPregunta, setTiposPregunta] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -51,7 +52,7 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
         .then((response) => response.json())
         .then((data) => {
           const tipoRespuestaOrdenadas = data.sort((a, b) => a.id - b.id);
-          setTipoRespuesta(tipoRespuestaOrdenadas);
+          setTiposRespuesta(tipoRespuestaOrdenadas);
         })
         .catch((error) => console.log(error));
     };
@@ -66,7 +67,7 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
     setSearchValue(event.target.value);
   };
 
-  const filteredTipoRespuesta = tipoRespuesta.filter(
+  const filteredTipoRespuesta = tiposRespuesta.filter(
     (tipoRespuesta) =>
       tipoRespuesta.descripcion &&
       tipoRespuesta.descripcion
@@ -114,12 +115,12 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
       .then((response) => response.json())
       .then((updatedTipoRespuesta) => {
         // Actualiza el estado local con la descripción actualizada
-        const updatedTipoRespuestas = tipoRespuesta.map((tipo) =>
+        const updatedTipoRespuestas = tiposRespuesta.map((tipo) =>
           tipo.id === tipoRespuestaId
             ? { ...tipo, descripcion: updatedTipoRespuesta.descripcion }
             : tipo
         );
-        setTipoRespuesta(updatedTipoRespuestas);
+        setTiposRespuesta(updatedTipoRespuestas);
         setOpenChangeTipoRespuestaDialog(false);
       })
       .catch((error) => console.log(error));

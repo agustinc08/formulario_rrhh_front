@@ -24,24 +24,13 @@ const ModalSecciones = ({ open, handleClose }) => {
   const classes = useStyles();
   const [secciones, setSecciones] = useState([]);
   const [seccion, setSeccion] = useState("");
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [selectedList, setSelectedList] = useState("");
   const [formularios, setFormularios] = useState([]);
   const [isFormularioActivo, setIsFormularioActivo] = useState(false);
-  const [openChangeDescripcionDialog, setOpenChangeDescripcionDialog] =
-    useState(false);
-    const [openChangeTipoPreguntaDialog, setOpenChangeTipoPreguntaDialog] =
-    useState(false);
-    const [openChangeTipoRespuestaDialog, setOpenChangeTipoRespuestaDialog] =
-    useState(false);
   const [
     openChangeDescripcionSeccionDialog,
     setOpenChangeDescripcionSeccionDialog,
   ] = useState(false);
-  const [clave, setClave] = useState("");
-  const [nuevaDescripcion, setNuevaDescripcion] = useState("");
   const [nuevaDescripcionSeccion, setNuevaDescripcionSeccion] = useState("");
 
   const fetchFormulario = () => {

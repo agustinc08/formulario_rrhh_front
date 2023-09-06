@@ -26,14 +26,10 @@ const ModalPreguntas = ({ open, handleClose }) => {
   const [pregunta, setPregunta] = useState("");
   const [formularios, setFormularios] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-  const [selectedList, setSelectedList] = useState("");
   const [openChangeDescripcionDialog, setOpenChangeDescripcionDialog] =
     useState(false);
-  const [
-    openChangeDescripcionSeccionDialog,
-    setOpenChangeDescripcionSeccionDialog,
-  ] = useState(false);
   const [nuevaDescripcion, setNuevaDescripcion] = useState("");
+  const [isFormularioActivo, setIsFormularioActivo] = useState(false);
 
   const fetchPreguntas = () => {
     fetch("http://localhost:4000/preguntas")
@@ -45,7 +41,28 @@ const ModalPreguntas = ({ open, handleClose }) => {
       .catch((error) => console.log(error));
   };
 
+  const fetchFormulario = () => {
+    fetch("http://localhost:4000/formulario")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error fetching formularios");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setFormularios(data);
+        const hasActiveFormulario = data.some(
+          (formulario) => formulario.estaActivo
+        );
+        setIsFormularioActivo(hasActiveFormulario);
+      })
+      .catch((error) => {
+        console.log("Error fetching formularios:", error);
+      });
+  };
+
   useEffect(() => {
+    fetchFormulario();
     fetchPreguntas();
   }, []);
 
@@ -92,7 +109,7 @@ const ModalPreguntas = ({ open, handleClose }) => {
 
       if (response.ok) {
         fetchPreguntas(); // Llama a tu función para actualizar la lista de preguntas
-        setOpenChangeDescripcionSeccionDialog(false); // Cierra el diálogo si es necesario
+        setOpenChangeDescripcionDialog(false); // Cierra el diálogo si es necesario
       } else {
         console.error("Error al cambiar la descripción de la pregunta");
       }

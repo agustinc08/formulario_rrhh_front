@@ -10,12 +10,12 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
   // titulos a cada circulo de estadisticas.(Listo)
   //tipo pregunta y tipo respuesta dentro del creador abajo de todo(listo).
   //agregar lineas en el buscador para dividir mejor el buscador(listo , quedo visualmente muy bonito).
+  //si hay respuestas asociadas no dejar eliminar las preguntas.(listo)
 
   //si el formulario no esta activo o no tiene nada adentro que no se pueda eliminar , sino , dejar eliminar.
   //agrupacion de secciones - ademas de graficos por seccion (), agrupado o separado.
   //dividir tipo de tareas.(se ve)
 
-  //si hay respuestas asociadas no dejar eliminar las preguntas.
   //solamente crear pregunta para formulario.estaActivo.(se ve)
 
 In the project directory, you can run:

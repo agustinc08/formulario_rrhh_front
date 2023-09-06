@@ -1,8 +1,10 @@
-const PrivateRoute = ({ component: Component, ...rest }) => {
-  const isLoggedIn = sessionStorage.getItem(AUTH_TOKEN_KEY) === 'true';
-  const rol = sessionStorage.getItem("rol");
+const AUTH_TOKEN_KEY = 'isLoggedIn';
 
-  const hasAccess = rol === "dependencia" || rol === "admin";
+export const PrivateRoute = ({ component: Component, ...rest }) => {
+  const isLoggedIn = localStorage.getItem(AUTH_TOKEN_KEY) === 'true';
+  const rol = localStorage.getItem("rol");
+
+  const hasAccess = rol === "dependencia" || rol === "admin" || rol === "usuario";
 
   return (
     <Route

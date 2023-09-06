@@ -55,7 +55,6 @@ function Inicio() {
       }
     };
     
-
     fetchActiveInicio(); 
     fetchSecciones();
   }, []);
