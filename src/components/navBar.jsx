@@ -8,7 +8,6 @@ import ModalPreguntas from "../components/navBar/modalPreguntas";
 import ModalSecciones from "../components/navBar/modalSecciones";
 import ModalClaves from "../components/navBar/modalClaves";
 import ModalTipoRespuestas from "../components/navBar/modalTipoRespuestas";
-import ModalDependencias from "../components/navBar/modalClaves";
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);

@@ -22,15 +22,10 @@ import useStyles from "../../styles/navBarStyle";
 
 const ModalTipoRespuesta = ({ open, handleClose }) => {
   const classes = useStyles();
-  const [pregunta, setPregunta] = useState("");
   const [tipoRespuesta, setTipoRespuesta] = useState([]);
-  const [tiposRespuesta, setTiposRespuesta] = useState([]);
   const [tipoPregunta, setTipoPregunta] = useState([]);
   const [tiposPregunta, setTiposPregunta] = useState([]);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [selectedList, setSelectedList] = useState("");
   const [openChangeTipoPreguntaDialog, setOpenChangeTipoPreguntaDialog] =
     useState(false);
   const [openChangeTipoRespuestaDialog, setOpenChangeTipoRespuestaDialog] =
@@ -46,6 +41,7 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
         .then((data) => {
           const tipoPreguntaOrdenadas = data.sort((a, b) => a.id - b.id);
           setTiposPregunta(tipoPreguntaOrdenadas);
+         
         })
         .catch((error) => console.log(error));
     };
@@ -55,7 +51,7 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
         .then((response) => response.json())
         .then((data) => {
           const tipoRespuestaOrdenadas = data.sort((a, b) => a.id - b.id);
-          setTiposRespuesta(tipoRespuestaOrdenadas);
+          setTipoRespuesta(tipoRespuestaOrdenadas);
         })
         .catch((error) => console.log(error));
     };
@@ -78,12 +74,6 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
         .includes(searchValue.toLowerCase())
   );
 
-  const filteredTipoPregunta = tipoPregunta.filter(
-    (tipoPregunta) =>
-      tipoPregunta.descripcion &&
-      tipoPregunta.descripcion.toLowerCase().includes(searchValue.toLowerCase())
-  );
-
   const getTipoPreguntaDescripcion = (tipoPreguntaId) => {
     const tipoPregunta = tiposPregunta.find(
       (tipoPregunta) => tipoPregunta.id === tipoPreguntaId
@@ -91,37 +81,35 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
     return tipoPregunta ? tipoPregunta.descripcion : "";
   };
 
-  const handleChangeDescripcionTipoPregunta = (tipoPreguntaId, nuevaDescripcion) => {
-    // Realiza una solicitud PATCH al servidor para actualizar la descripción del tipo de pregunta
+  const handleChangeDescripcionTipoPregunta = (tipoPreguntaId, nuevaDescripcionTipoPregunta) => {
     fetch(`http://localhost:4000/tipoPregunta/${tipoPreguntaId}`, {
-      method: 'PATCH', // Utiliza PATCH en lugar de PUT
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ descripcion: nuevaDescripcion }),
+      body: JSON.stringify({ descripcion: nuevaDescripcionTipoPregunta }),
     })
       .then((response) => response.json())
       .then((updatedTipoPregunta) => {
-        // Actualiza el estado local con la descripción actualizada
+
         const updatedTiposPregunta = tiposPregunta.map((tipoPregunta) =>
           tipoPregunta.id === tipoPreguntaId
             ? { ...tipoPregunta, descripcion: updatedTipoPregunta.descripcion }
             : tipoPregunta
         );
         setTiposPregunta(updatedTiposPregunta);
-        setOpenChangeTipoPreguntaDialog(false); // Cierra el diálogo después de la actualización
+        setOpenChangeTipoPreguntaDialog(false);
       })
       .catch((error) => console.log(error));
   };
 
-  const handleChangeDescripcionTipoRespuesta = (tipoRespuestaId, nuevaDescripcion) => {
-    // Realiza una solicitud PATCH al servidor para actualizar la descripción del tipo de respuesta
+  const handleChangeDescripcionTipoRespuesta = (tipoRespuestaId, nuevaDescripcionTipoRespuesta) => {
     fetch(`http://localhost:4000/tipoRespuesta/${tipoRespuestaId}`, {
-      method: 'PATCH', // Utiliza PATCH en lugar de PUT
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ descripcion: nuevaDescripcion }),
+      body: JSON.stringify({ descripcion: nuevaDescripcionTipoRespuesta }),
     })
       .then((response) => response.json())
       .then((updatedTipoRespuesta) => {
@@ -132,13 +120,11 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
             : tipo
         );
         setTipoRespuesta(updatedTipoRespuestas);
-        setOpenChangeTipoRespuestaDialog(false); // Cierra el diálogo después de la actualización
+        setOpenChangeTipoRespuestaDialog(false);
       })
       .catch((error) => console.log(error));
   };
   
-  
-
   return (
     <>
   
@@ -190,7 +176,7 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
                             className="icon"
                             onClick={() => {
                               setOpenChangeTipoPreguntaDialog(true);
-                              setPregunta(tipoPregunta.id);
+                              setTipoPregunta(tipoRespuesta.tipoPreguntaId);
                             }}
                           />
                         </TableCell>
@@ -200,7 +186,7 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
                             className="icon"
                             onClick={() => {
                               setOpenChangeTipoRespuestaDialog(true);
-                              setPregunta(tipoRespuesta.id);
+                              setTipoRespuesta(tipoRespuesta.id);
                             }}
                           />
                         </TableCell>
@@ -263,7 +249,7 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
                       <Button
                         onClick={() =>
                           handleChangeDescripcionTipoPregunta(
-                            pregunta,
+                            tipoPregunta,
                             nuevaDescripcionTipoPregunta
                           )
                         }
@@ -278,7 +264,6 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
             </TableContainer>
           </Paper>
         </Modal>
-   
     </>
   );
 };

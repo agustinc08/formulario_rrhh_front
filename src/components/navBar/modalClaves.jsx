@@ -22,13 +22,9 @@ import useStyles from "../../styles/navBarStyle";
 
 const ModalClaves = ({ open, handleClose }) => {
   const classes = useStyles();
-  const [dependencias, setDependencias] = useState([]);
   const [claves, setClaves] = useState([]);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [dependenciaId, setDependenciaId] = useState("");
   const [searchValue, setSearchValue] = useState("");
-  const [selectedList, setSelectedList] = useState("");
   const [openChangePasswordDialog, setOpenChangePasswordDialog] =
     useState(false);
   const [clave, setClave] = useState("");
