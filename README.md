@@ -5,8 +5,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Available Scripts
 
 
-  //agregar usuarios internos.(listo(falta igual hacer pruebas y ver que se le permite hacer a cada uno.))
-  //agrupar por edificios(direccion y polo.) y o polo.(Listo , falta testear.)
+  //agrupar por edificios(direccion y polo.) y o polo.(Listo)
   // titulos a cada circulo de estadisticas.(Listo)
   //tipo pregunta y tipo respuesta dentro del creador abajo de todo(listo).
   //agregar lineas en el buscador para dividir mejor el buscador(listo , quedo visualmente muy bonito).
@@ -14,9 +13,13 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
   //si el formulario no esta activo o no tiene nada adentro que no se pueda eliminar , sino , dejar eliminar.
   //agrupacion de secciones - ademas de graficos por seccion (), agrupado o separado.
-  //dividir tipo de tareas.(se ve)
 
-  //solamente crear pregunta para formulario.estaActivo.(se ve)
+  //agregar usuarios internos.(listo(falta igual hacer pruebas y ver que se le permite hacer a cada uno.))
+  //dividir tipo de tareas.(se ve)
+  //dejar que puedan abrir muchas pestañas ? queda siempre logeado el usuario? 
+
+  //Arreglar el error que si en tipoPregunta no contiene nada , no me la muestra ! 
+  //sacar en la parte de dependencias que no me muestre ''admin'' o los usuarios con cuil ! 
 
 In the project directory, you can run:
 

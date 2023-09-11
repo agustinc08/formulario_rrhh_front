@@ -12,40 +12,32 @@ import {
   Divider,
   Input,
   Chip,
+  Table,
 } from "@material-ui/core";
 import CheckIcon from "@material-ui/icons/Check";
-import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableSortLabel,
-} from "@material-ui/core";
-import "../css/global.css";
-import useStyles from "../styles/buscadorStyle";
-//import { makeStyles } from "@material-ui/core/styles";
+import RespuestasTable from '../components/buscador/respuestasTable'; // Asegúrate de tener la ruta correcta a tu componente RespuestasTable
+import useStyles from '../styles/buscadorStyle';
+import BuscadorFormularios from '../components/buscador/buscadorFormulario'
+import BuscadorPreguntas from '../components/buscador/buscadorPreguntas'
+import BuscadorDependencias from '../components/buscador/buscadorDependencias'
 
 const Buscador = () => {
   const [preguntas, setPreguntas] = useState([]);
   const [dependencias, setDependencias] = useState([]);
   const [respuestas, setRespuestas] = useState([]);
+  const [dependenciaNombres, setDependenciaNombres] = useState([]);
+  const [preguntaDescripciones, setPreguntaDescripciones] = useState([]);
+  const [tipoRespuestaDescripciones, setTipoRespuestaDescripciones] = useState([]);
   const [formularios, setFormularios] = useState([]);
-  const [tipoRespuestaDescripciones, setTipoRespuestaDescripciones] = useState(
-    {}
-  );
-  const [preguntaDescripciones, setPreguntaDescripciones] = useState({});
-  const [dependenciaNombres, setDependenciaNombres] = useState({});
   const [selectedPregunta, setSelectedPregunta] = useState([]);
   const [selectedDependencias, setSelectedDependencias] = useState([]);
   const [selectedFormulario, setSelectedFormulario] = useState("");
+  const classes = useStyles();
+  const [preguntasDelFormulario, setPreguntasDelFormulario] = useState([]);
   const [sortConfig, setSortConfig] = useState({
     field: null,
     direction: "asc",
   });
-  const classes = useStyles();
-  const [preguntasDelFormulario, setPreguntasDelFormulario] = useState([]);
-
 
   useEffect(() => {
     const obtenerFormularios = async () => {
@@ -63,10 +55,10 @@ const Buscador = () => {
         console.error("Error al obtener los Formularios:", error);
       }
     };
-  
+
     obtenerFormularios();
   }, []);
-  
+
   useEffect(() => {
     const obtenerDependencias = async () => {
       try {
@@ -82,19 +74,19 @@ const Buscador = () => {
         console.error("Error al obtener las dependencias:", error);
       }
     };
-  
+
     const obtenerPreguntas = async () => {
       try {
         const response = await fetch("http://localhost:4000/preguntas");
         const data = await response.json();
         setPreguntas(data);
-  
+
         const descripciones = {};
         data.forEach((pregunta) => {
           descripciones[pregunta.id] = pregunta.descripcion;
         });
         setPreguntaDescripciones(descripciones);
-  
+
         const firstActiveFormulario = formularios.find((f) => f.estaActivo);
         if (firstActiveFormulario) {
           const preguntasDelFormulario = data.filter(
@@ -106,7 +98,7 @@ const Buscador = () => {
         console.error("Error al obtener las preguntas:", error);
       }
     };
-  
+
     const obtenerTipoRespuesta = async () => {
       try {
         const response = await fetch("http://localhost:4000/tipoRespuesta");
@@ -120,7 +112,7 @@ const Buscador = () => {
         console.error("Error al obtener los tipos de respuesta:", error);
       }
     };
-  
+
     obtenerDependencias();
     obtenerTipoRespuesta();
     obtenerPreguntas();
@@ -130,7 +122,7 @@ const Buscador = () => {
     const selectedFormularioId = formularios.find(
       (f) => f.nombre === event.target.value
     )?.id;
-  
+
     if (selectedFormularioId) {
       const preguntasDelFormulario = preguntas.filter(
         (pregunta) => pregunta.formularioId === selectedFormularioId
@@ -149,7 +141,8 @@ const Buscador = () => {
   };
 
   const handlePreguntaChange = (event) => {
-    setSelectedPregunta(event.target.value);
+    const selectedPregunta = event.target.value;
+    setSelectedPregunta(selectedPregunta);
   };
 
   const handleBuscarRespuestas = async () => {
@@ -249,266 +242,62 @@ const Buscador = () => {
         })
       : [];
 
-  return (
-    <div className="divMain mb80px">
-      <Container>
-        <Box sx={{ paddingTop: 20 }}>
-          <Typography variant="h4" align="center" gutterBottom>
-            Buscador de Respuestas
-          </Typography>
-        </Box>
-        <Divider></Divider>
-        <Grid container spacing={4} className={classes.centrar}>
-          <Grid item xs={12} sm={4} lg={3}>
-            <FormControl variant="standard" fullWidth size="small">
-              <InputLabel>Formulario</InputLabel>
-              <Select
-                value={selectedFormulario}
-                onChange={handleFormularioChange}
-                variant="standard"
-                className={classes.select}
-                fullWidth
-              >
-                <MenuItem value="">Todos los formularios</MenuItem>
-                {formularios.map((formulario) => (
-                  <MenuItem key={formulario.id} value={formulario.nombre}>
-                    {formulario.nombre}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={4} lg={3}>
-            <FormControl variant="standard" fullWidth size="small">
-              <InputLabel id="dependencias-label">Dependencias</InputLabel>
-              <Select
-                variant="standard"
-                className={classes.select}
-                fullWidth
-                labelId="dependencias-label"
-                multiple
-                value={selectedDependencias || []}
-                onChange={handleDependenciaChange}
-                input={<Input />}
-                renderValue={(selected) => (
-                  <div>
-                    {selected.map((value) => (
-                      <Chip key={value} label={value} />
-                    ))}
-                  </div>
-                )}
-              >
-                {dependencias.map((dependencia) => (
-                  <MenuItem
-                    key={dependencia.id}
-                    value={dependencia.nombreDependencia}
-                  >
-                    <Chip
-                      icon={
-                        selectedDependencias.includes(
-                          dependencia.nombreDependencia
-                        ) ? (
-                          <CheckIcon />
-                        ) : null
-                      }
-                      label={dependencia.nombreDependencia}
-                      className={classes.chip}
-                      clickable
-                    />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={4} lg={3}>
-            <FormControl variant="standard" fullWidth size="small">
-              <InputLabel>Preguntas</InputLabel>
-              <Select
-                value={selectedPregunta || []}
-                onChange={handlePreguntaChange}
-                variant="standard"
-                className={classes.select}
-                fullWidth
-                multiple
-                renderValue={(selected) => (
-                  <div className={classes.chips}>
-                    {selected.map((value) => (
-                      <Chip
-                        key={value}
-                        label={preguntaDescripciones[value]}
-                        className={classes.chip}
-                      />
-                    ))}
-                  </div>
-                )}
-              >
-                {selectedFormulario === "" && (
-                  <MenuItem key="todas" value="">
-                    Todas las preguntas
-                  </MenuItem>
-                )}
-                {preguntasDelFormulario.map((pregunta) => (
-                  <MenuItem key={pregunta.id} value={pregunta.id}>
-                    <Chip
-                      icon={
-                        selectedPregunta.includes(pregunta.id) ? (
-                          <CheckIcon />
-                        ) : null
-                      }
-                      label={pregunta.descripcion}
-                      className={classes.chip}
-                      clickable
-                    />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={3} lg={2} className={classes.centrar}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleBuscarRespuestas}
-              fullWidth
-              size="small"
-            >
-              Buscar
-            </Button>
-          </Grid>
-        </Grid>
-      </Container>
+      return (
+        <div className="divMain mb80px">
+          <Container>
+            <Box sx={{ paddingTop: 20 }}>
+              <Typography variant="h4" align="center" gutterBottom>
+                Buscador de Respuestas
+              </Typography>
+            </Box>
+            <Divider></Divider>
+            <Grid container spacing={4} className={classes.centrar}>
+              <Grid item xs={12} sm={4} lg={3}>
+                <BuscadorFormularios
+                  formularios={formularios}
+                  selectedFormulario={selectedFormulario}
+                  handleFormularioChange={handleFormularioChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4} lg={3}>
+                <BuscadorDependencias
+                  dependencias={dependencias}
+                  selectedDependencias={selectedDependencias}
+                  handleDependenciaChange={handleDependenciaChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4} lg={3}>
+                <BuscadorPreguntas
+                  preguntasDelFormulario={preguntasDelFormulario}
+                  selectedPregunta={selectedPregunta}
+                  handlePreguntaChange={handlePreguntaChange}
+                  selectedFormulario={selectedFormulario}
+                />
+              </Grid>
+              <Grid item xs={12} sm={3} lg={2} className={classes.centrar}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleBuscarRespuestas}
+                  fullWidth
+                  size="small"
+                >
+                  Buscar
+                </Button>
+              </Grid>
+            </Grid>
+          </Container>
 
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell className={classes.cellWithBorder}>
-              <TableSortLabel
-                active={sortConfig.field === "id"}
-                direction={
-                  sortConfig.field === "id" ? sortConfig.direction : "asc"
-                }
-                onClick={() => handleSort("id")}
-              >
-                ID
-              </TableSortLabel>
-            </TableCell>
-            <TableCell  className={classes.cellWithBorder}>
-              <TableSortLabel
-                active={sortConfig.field === "createdAt"}
-                direction={
-                  sortConfig.field === "createdAt"
-                    ? sortConfig.direction
-                    : "asc"
-                }
-                onClick={() => handleSort("createdAt")}
-              >
-                Fecha
-              </TableSortLabel>
-            </TableCell>
-            <TableCell className={classes.cellWithBorder}>
-              <TableSortLabel
-                active={sortConfig.field === "dependenciaId"}
-                direction={
-                  sortConfig.field === "dependenciaId"
-                    ? sortConfig.direction
-                    : "asc"
-                }
-                onClick={() => handleSort("dependenciaId")}
-              >
-                Dependencia
-              </TableSortLabel>
-            </TableCell>
-            <TableCell  className={classes.cellWithBorder}>
-              <TableSortLabel
-                active={sortConfig.field === "edad"}
-                direction={
-                  sortConfig.field === "edad" ? sortConfig.direction : "asc"
-                }
-                onClick={() => handleSort("edad")}
-              >
-                Edad
-              </TableSortLabel>
-            </TableCell>
-            <TableCell  className={classes.cellWithBorder}>
-              <TableSortLabel
-                active={sortConfig.field === "genero"}
-                direction={
-                  sortConfig.field === "genero" ? sortConfig.direction : "asc"
-                }
-                onClick={() => handleSort("genero")}
-              >
-                Género
-              </TableSortLabel>
-            </TableCell>
-            <TableCell  className={classes.cellWithBorder}>
-              <TableSortLabel
-                active={sortConfig.field === "tipoRespuesta"}
-                direction={
-                  sortConfig.field === "tipoRespuesta"
-                    ? sortConfig.direction
-                    : "asc"
-                }
-                onClick={() => handleSort("tipoRespuesta.descripcion")}
-              >
-                Respuestas
-              </TableSortLabel>
-            </TableCell>
-            <TableCell  className={classes.cellWithBorder}>
-              <TableSortLabel
-                active={sortConfig.field === "preguntaId"}
-                direction={
-                  sortConfig.field === "preguntaId"
-                    ? sortConfig.direction
-                    : "asc"
-                }
-                onClick={() => handleSort("preguntaId")}
-              >
-                Pregunta
-              </TableSortLabel>
-            </TableCell>
-            <TableCell  className={classes.cellWithBorder}>
-              <TableSortLabel
-                active={sortConfig.field === "comentarios"}
-                direction={
-                  sortConfig.field === "comentarios"
-                    ? sortConfig.direction
-                    : "asc"
-                }
-                onClick={() => handleSort("comentarios")}
-              >
-                Comentarios
-              </TableSortLabel>
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {sortedRespuestas.map((respuesta) => (
-            <TableRow key={respuesta.id}>
-              <TableCell  className={classes.cellWithBorder}>{respuesta.id}</TableCell>
-              <TableCell  className={classes.cellWithBorder}>
-                {new Date(respuesta.createdAt).toLocaleDateString()}
-              </TableCell>
-              <TableCell  className={classes.cellWithBorder}>
-                {dependenciaNombres[respuesta.dependenciaId]}
-              </TableCell>
-              <TableCell className={classes.cellWithBorder}>{respuesta.edad}</TableCell>
-              <TableCell  className={classes.cellWithBorder}>{respuesta.genero}</TableCell>
-              <TableCell  className={classes.cellWithBorder}>
-                {tipoRespuestaDescripciones[respuesta.tipoRespuestaId]}
-              </TableCell>
-              <TableCell  className={classes.cellWithBorder}>
-                {preguntaDescripciones[respuesta.preguntaId]}
-              </TableCell>
-              <TableCell  className={classes.cellWithBorder}>
-                {respuesta.comentario &&
-                  respuesta.comentario.respuestaComentario}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
-};
-
-export default Buscador;
+          <RespuestasTable
+            sortedRespuestas={sortedRespuestas}
+            sortConfig={sortConfig}
+            handleSort={handleSort}
+            preguntas={preguntas}
+            dependencias={dependencias}
+            tipoRespuestaDescripciones={tipoRespuestaDescripciones} // Cambia "tiposRespuesta" a "tipoRespuestaDescripciones"
+          />
+        </div>
+      );
+    };
+    
+    export default Buscador;  

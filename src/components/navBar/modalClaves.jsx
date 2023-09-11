@@ -17,8 +17,10 @@ import {
   DialogActions,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import VpnKeyIcon from "@material-ui/icons/VpnKey";
+import EditIcon from '@mui/icons-material/Edit';
 import useStyles from "../../styles/navBarStyle";
+import Alert from "@material-ui/lab/Alert";
+
 
 const ModalClaves = ({ open, handleClose }) => {
   const classes = useStyles();
@@ -28,6 +30,8 @@ const ModalClaves = ({ open, handleClose }) => {
   const [openChangePasswordDialog, setOpenChangePasswordDialog] =
     useState(false);
   const [clave, setClave] = useState("");
+  const [alertaCreacionFallida, setAlertaCreacionFallida] = useState(false);
+  const [alertaCreacionExitosa, setAlertaCreacionExitosa] = useState(false);
 
   const fetchClaves = () => {
     fetch("http://localhost:4000/claves")
@@ -85,10 +89,14 @@ const ModalClaves = ({ open, handleClose }) => {
   
         if (response.ok) {
           fetchClaves();
-          setOpenChangePasswordDialog(false);
           setClave("");
+          setAlertaCreacionExitosa(true);
+          setTimeout(() => {
+            setOpenChangePasswordDialog(false);
+          }, 2000);
         } else {
           console.error("Error al cambiar la clave");
+          setAlertaCreacionFallida(true);
         }
       } catch (error) {
         console.error("Error en la solicitud:", error);
@@ -143,7 +151,7 @@ const ModalClaves = ({ open, handleClose }) => {
                             </TableCell>
                             <TableCell className={classes.cellWithBorder}>
                               {clave.clave}
-                              <VpnKeyIcon
+                              <EditIcon
                                 className="icon"
                                 onClick={() => {
                                   setOpenChangePasswordDialog(true);
@@ -183,6 +191,22 @@ const ModalClaves = ({ open, handleClose }) => {
               <Button onClick={handleChangePassword} color="primary">
                 Cambiar Clave
               </Button>
+              {alertaCreacionExitosa && (
+                <Alert
+                  severity="success"
+                  onClose={() => setAlertaCreacionExitosa(false)}
+                >
+                  Clave de Dependencia modificada exitosamente.
+                </Alert>
+              )}
+              {alertaCreacionFallida && (
+                <Alert
+                  severity="error"
+                  onClose={() => setAlertaCreacionFallida(false)}
+                >
+                  Error al editar la Clave de Dependencia.
+                </Alert>
+              )}
             </DialogActions>
           </Dialog>
         </>)

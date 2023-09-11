@@ -15,7 +15,6 @@ const CrearFormulario = () => {
   const [dependenciasSeleccionadas, setDependenciasSeleccionadas] = useState(
     []
   );
-  const [formularioId, setFormularioId] = useState("");
 
   const handleFormularioSubmit = (event) => {
     event.preventDefault();

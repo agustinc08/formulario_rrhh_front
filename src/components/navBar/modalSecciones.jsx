@@ -17,8 +17,9 @@ import {
   DialogActions,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import VpnKeyIcon from "@material-ui/icons/VpnKey";
+import EditIcon from '@mui/icons-material/Edit';
 import useStyles from "../../styles/navBarStyle";
+import Alert from "@material-ui/lab/Alert";
 
 const ModalSecciones = ({ open, handleClose }) => {
   const classes = useStyles();
@@ -32,6 +33,9 @@ const ModalSecciones = ({ open, handleClose }) => {
     setOpenChangeDescripcionSeccionDialog,
   ] = useState(false);
   const [nuevaDescripcionSeccion, setNuevaDescripcionSeccion] = useState("");
+  const [alertaCreacionFallida, setAlertaCreacionFallida] = useState(false);
+  const [alertaCreacionExitosa, setAlertaCreacionExitosa] = useState(false);
+
 
   const fetchFormulario = () => {
     fetch("http://localhost:4000/formulario")
@@ -57,7 +61,9 @@ const ModalSecciones = ({ open, handleClose }) => {
     fetch("http://localhost:4000/secciones")
       .then((response) => response.json())
       .then((data) => {
-        const seccionesOrdenadas = data.sort((a, b) => a.id - b.id);
+        const seccionesOrdenadas = data.sort(
+          (a, b) => a.formularioId - b.formularioId
+        );
         setSecciones(seccionesOrdenadas);
       })
       .catch((error) => console.log(error));
@@ -92,29 +98,33 @@ const ModalSecciones = ({ open, handleClose }) => {
   ) => {
     try {
       if (!seccionId || !nuevaDescripcionSeccion) {
-        console.error(
-          "Debe proporcionar un ID de Seccion y una nueva descripción."
-        );
+        console.error("Debe proporcionar un ID de Seccion y una nueva descripción.");
         return;
       }
-
-      const response = await fetch(
-        `http://localhost:4000/secciones/${seccionId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ descripcion: nuevaDescripcionSeccion }),
-        }
-      );
-
+  
+      const response = await fetch(`http://localhost:4000/secciones/${seccionId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ descripcion: nuevaDescripcionSeccion }),
+      });
+  
       if (response.ok) {
         fetchSecciones();
-        setOpenChangeDescripcionSeccionDialog(false);
+        setNuevaDescripcionSeccion("");
+        setAlertaCreacionExitosa(true);
+
+        setTimeout(() => {
+          setAlertaCreacionExitosa(false);
+        }, 2000);
+        // Retrasa el cierre del diálogo por 2 segundos
+        setTimeout(() => {
+          setOpenChangeDescripcionSeccionDialog(false);
+        }, 2000);
       } else {
         console.error("Error al cambiar la descripción de la seccion");
-        
+        setAlertaCreacionFallida(true);
       }
     } catch (error) {
       console.error("Error en la solicitud:", error);
@@ -165,7 +175,7 @@ const ModalSecciones = ({ open, handleClose }) => {
                             </TableCell>
                             <TableCell className={classes.cellWithBorder}>
                               {seccion.descripcion}
-                              <VpnKeyIcon
+                              <EditIcon 
                                 className="icon"
                                 onClick={() => {
                                   setOpenChangeDescripcionSeccionDialog(true);
@@ -207,6 +217,22 @@ const ModalSecciones = ({ open, handleClose }) => {
               >
                 Cambiar Descripcion de la Seccion
               </Button>
+              {alertaCreacionExitosa && (
+                <Alert
+                  severity="success"
+                  onClose={() => setAlertaCreacionExitosa(false)}
+                >
+                  Descripcion de seccion modificada exitosamente.
+                </Alert>
+              )}
+              {alertaCreacionFallida && (
+                <Alert
+                  severity="error"
+                  onClose={() => setAlertaCreacionFallida(false)}
+                >
+                  Error al editar la seccion, ya contiene preguntas respondidas.
+                </Alert>
+              )}
             </DialogActions>
           </Dialog>
         </>

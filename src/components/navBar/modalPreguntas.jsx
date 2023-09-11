@@ -17,8 +17,10 @@ import {
   DialogActions,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import VpnKeyIcon from "@material-ui/icons/VpnKey";
+import EditIcon from '@mui/icons-material/Edit';
 import useStyles from "../../styles/navBarStyle";
+import Alert from "@material-ui/lab/Alert";
+
 
 const ModalPreguntas = ({ open, handleClose }) => {
   const classes = useStyles();
@@ -30,12 +32,14 @@ const ModalPreguntas = ({ open, handleClose }) => {
     useState(false);
   const [nuevaDescripcion, setNuevaDescripcion] = useState("");
   const [isFormularioActivo, setIsFormularioActivo] = useState(false);
+  const [alertaCreacionFallida, setAlertaCreacionFallida] = useState(false);
+  const [alertaCreacionExitosa, setAlertaCreacionExitosa] = useState(false);
 
   const fetchPreguntas = () => {
     fetch("http://localhost:4000/preguntas")
       .then((response) => response.json())
       .then((data) => {
-        const preguntasOrdenadas = data.sort((a, b) => a.id - b.id);
+        const preguntasOrdenadas = data.sort((a, b) => a.formularioId - b.formularioId);
         setPreguntas(preguntasOrdenadas);
       })
       .catch((error) => console.log(error));
@@ -108,10 +112,15 @@ const ModalPreguntas = ({ open, handleClose }) => {
       );
 
       if (response.ok) {
-        fetchPreguntas(); // Llama a tu función para actualizar la lista de preguntas
-        setOpenChangeDescripcionDialog(false); // Cierra el diálogo si es necesario
+        fetchPreguntas();
+        setNuevaDescripcion("");
+        setAlertaCreacionExitosa(true);
+        setTimeout(() => {
+          setOpenChangeDescripcionDialog(false);
+        }, 2000);
       } else {
         console.error("Error al cambiar la descripción de la pregunta");
+        setAlertaCreacionFallida(true);
       }
     } catch (error) {
       console.error("Error en la solicitud:", error);
@@ -161,7 +170,7 @@ const ModalPreguntas = ({ open, handleClose }) => {
                       </TableCell>
                       <TableCell className={classes.cellWithBorder}>
                         {pregunta.descripcion}
-                        <VpnKeyIcon
+                        <EditIcon
                           className="icon"
                           onClick={() => {
                             setOpenChangeDescripcionDialog(true);
@@ -203,6 +212,22 @@ const ModalPreguntas = ({ open, handleClose }) => {
           >
             Cambiar Descripcion de la pregunta
           </Button>
+          {alertaCreacionExitosa && (
+                <Alert
+                  severity="success"
+                  onClose={() => setAlertaCreacionExitosa(false)}
+                >
+                  Descripcion de la pregunta modificada exitosamente.
+                </Alert>
+              )}
+              {alertaCreacionFallida && (
+                <Alert
+                  severity="error"
+                  onClose={() => setAlertaCreacionFallida(false)}
+                >
+                  Error al editar la pregunta, ya contiene respuestas.
+                </Alert>
+              )}
         </DialogActions>
       </Dialog>
     </>
