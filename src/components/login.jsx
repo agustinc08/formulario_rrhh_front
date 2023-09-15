@@ -53,14 +53,17 @@ function Login({ onLogin }) {
         sessionStorage.setItem("isLoggedIn", "true");
         sessionStorage.setItem("dependencia", dependencia.nombreDependencia);
         sessionStorage.setItem("dependenciaId", dependencia.id);
-        const rol = dependencia.rol === "dependencia" ? "dependencia" : "admin";
+        
+        // Aquí establece el rol según la propiedad "rol" de la dependencia
+        const rol = dependencia.rol;
         sessionStorage.setItem("rol", rol);
+        
         // Llama a la función onLogin pasada como prop desde App.js
         // para actualizar el estado isLoggedIn
         onLogin(
           dependencia.nombreDependencia,
           clave.clave,
-          dependencia.rol === "dependencia" ? "dependencia" : "admin",
+          rol,
           dependencia.id,
         );
         history.push(rol === "admin" ? "/creacion" : "/inicio");

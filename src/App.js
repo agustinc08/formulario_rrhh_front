@@ -19,13 +19,15 @@ import { setLoginData } from "./auth";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(
-    localStorage.getItem("isLoggedIn") === "true"
+    sessionStorage.getItem("isLoggedIn") === "true"
   );
-  const rol = localStorage.getItem("rol");
+  
+  const rol = sessionStorage.getItem("rol");
 
   function handleLogin(username, password, rol) {
-    setLoginData(username, password, rol);
+    setLoginData(rol);
     setIsLoggedIn(true);
+    sessionStorage.setItem('rol', rol); // Actualiza el valor del rol en sessionStorage
   }
 
   let redirectPath = "/inicio";
@@ -34,6 +36,8 @@ function App() {
       redirectPath = "/creacion";
     } else if (rol === "dependencia") {
       redirectPath = "/inicio";
+    } else if (rol === "usuario") {
+      redirectPath = "/buscador";
     }
   }
 
@@ -46,7 +50,7 @@ function App() {
         <Route exact path="/inicio">
           {isLoggedIn ? (
             <React.Fragment>
-              {rol === "admin"  && <Navbar />}
+              {(rol === "admin" || rol === "usuario") && <Navbar />}
               <Inicio />
               <Footer />
             </React.Fragment>
@@ -57,7 +61,7 @@ function App() {
         <Route exact path="/formulario">
           {isLoggedIn ? (
             <React.Fragment>
-              {rol === "admin" && <Navbar />}
+              {(rol === "admin" || rol === "usuario") && <Navbar />}
               <Preguntas />
               <Footer />
             </React.Fragment>
@@ -68,7 +72,7 @@ function App() {
         <Route exact path="/formulario/:formularioId/inicio">
           {isLoggedIn ? (
             <React.Fragment>
-              {rol === "admin" && <Navbar />}
+              {(rol === "admin" || rol === "usuario") && <Navbar />}
               <Inicio />
               <Footer />
             </React.Fragment>
@@ -84,13 +88,13 @@ function App() {
               <Footer />
             </React.Fragment>
           ) : isLoggedIn ? (
-            <Redirect to="/inicio" />
+            <Redirect to="/inicio" /> // Redirige a la página de inicio para usuarios con rol "usuario"
           ) : (
             <Redirect to="/login" />
           )}
         </Route>
         <Route exact path="/buscador">
-          {isLoggedIn && rol === "admin" ? (
+          {isLoggedIn && (rol === "admin" || rol === "usuario") ? (
             <React.Fragment>
               <Navbar />
               <Buscador />
@@ -103,7 +107,7 @@ function App() {
           )}
         </Route>
         <Route exact path="/estadisticas">
-          {isLoggedIn && rol === "admin" ? (
+          {isLoggedIn && (rol === "admin" || rol === "usuario") ? (
             <React.Fragment>
               <Navbar />
               <Estadisticas />

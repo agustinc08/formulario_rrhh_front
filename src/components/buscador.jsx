@@ -3,19 +3,11 @@ import {
   Container,
   Typography,
   Grid,
-  Select,
-  MenuItem,
   Button,
-  FormControl,
-  InputLabel,
   Box,
   Divider,
-  Input,
-  Chip,
-  Table,
 } from "@material-ui/core";
-import CheckIcon from "@material-ui/icons/Check";
-import RespuestasTable from '../components/buscador/respuestasTable'; // Asegúrate de tener la ruta correcta a tu componente RespuestasTable
+import RespuestasTable from '../components/buscador/respuestasTable';
 import useStyles from '../styles/buscadorStyle';
 import BuscadorFormularios from '../components/buscador/buscadorFormulario'
 import BuscadorPreguntas from '../components/buscador/buscadorPreguntas'
@@ -272,6 +264,7 @@ const Buscador = () => {
                   selectedPregunta={selectedPregunta}
                   handlePreguntaChange={handlePreguntaChange}
                   selectedFormulario={selectedFormulario}
+                  preguntaDescripciones={preguntaDescripciones}
                 />
               </Grid>
               <Grid item xs={12} sm={3} lg={2} className={classes.centrar}>
@@ -294,7 +287,7 @@ const Buscador = () => {
             handleSort={handleSort}
             preguntas={preguntas}
             dependencias={dependencias}
-            tipoRespuestaDescripciones={tipoRespuestaDescripciones} // Cambia "tiposRespuesta" a "tipoRespuestaDescripciones"
+            tipoRespuestaDescripciones={tipoRespuestaDescripciones}
           />
         </div>
       );

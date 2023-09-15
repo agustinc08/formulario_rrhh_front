@@ -1,56 +1,39 @@
 import React, { useState, useEffect } from "react";
 import {
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Grid,
-  Box,
-  Button,
-  Chip,
-  Input,
   Container,
+  Box,
+  Typography,
   Divider,
+  Button,
 } from "@material-ui/core";
-import CheckIcon from "@material-ui/icons/Check";
-import { Doughnut, Pie, Bar } from "react-chartjs-2";
-import useStyles from "../styles/estadisticasStyle";
+import useStyles from '../styles/estadisticasStyle'
+import BuscadorDependencias from '../components/estadisticas/buscadorDependencias'
+import BuscadorPreguntas from '../components/estadisticas/buscadorPreguntas'
+import BuscadorFormularios from '../components/estadisticas/buscadorFormulario'
+import Graficos from '../components/estadisticas/graficos'
 
 const Estadisticas = () => {
   const classes = useStyles();
+  const [selectedFormulario, setSelectedFormulario] = useState("");
+  const [selectedDependencias, setSelectedDependencias] = useState([]);
+  const [selectedPregunta, setSelectedPregunta] = useState([]);
+  const [reloadCharts, setReloadCharts] = useState(false);
+  const [preguntaDescripciones, setPreguntaDescripciones] = useState([]);
+  const [preguntasDelFormulario, setPreguntasDelFormulario] = useState([]);
+  const [tipoRespuestaDescripciones, setTipoRespuestaDescripciones] = useState([]);
+  const [formularios, setFormularios] = useState([]);
+  const [dependenciaNombres, setDependenciaNombres] = useState([]);
   const [preguntas, setPreguntas] = useState([]);
   const [dependencias, setDependencias] = useState([]);
   const [respuestas, setRespuestas] = useState([]);
-  const [formularios, setFormularios] = useState([]);
-  const [tipoRespuestaDescripciones, setTipoRespuestaDescripciones] = useState(
-    {}
-  );
-  const [preguntaDescripciones, setPreguntaDescripciones] = useState({});
-  const [dependenciaNombres, setDependenciaNombres] = useState({});
-  const [selectedPregunta, setSelectedPregunta] = useState([]);
-  const [selectedDependencias, setSelectedDependencias] = useState([]);
-  const [selectedFormulario, setSelectedFormulario] = useState("");
-  const [preguntasDelFormulario, setPreguntasDelFormulario] = useState([]);
-  const [respuestasPorTipo, setRespuestasPorTipo] = useState({});
-  const [estadisticasEdad, setEstadisticasEdad] = useState([]);
   const [estadisticasGenero, setEstadisticasGenero] = useState([]);
   const [estadisticasTipoRespuesta, setEstadisticasTipoRespuesta] = useState(
     []
   );
   const [respuestasData, setRespuestasData] = useState([]);
-  const [reloadCharts, setReloadCharts] = useState(false);
-
-  const getRandomColor = () => {
-    const letters = "0123456789ABCDEF";
-    let color = "#";
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  };
-
-  //Agregar porcentajes a los graficos.
+  const [respuestasPorTipo, setRespuestasPorTipo] = useState({});
+  const [estadisticasEdad, setEstadisticasEdad] = useState([]);
 
   useEffect(() => {
     const obtenerFormularios = async () => {
@@ -78,7 +61,6 @@ const Estadisticas = () => {
         const response = await fetch("http://localhost:4000/dependencias");
         const data = await response.json();
         setDependencias(data);
-
         const nombres = {};
         data.forEach((dependencia) => {
           nombres[dependencia.id] = dependencia.nombreDependencia;
@@ -94,6 +76,7 @@ const Estadisticas = () => {
         const response = await fetch("http://localhost:4000/preguntas");
         const data = await response.json();
         setPreguntas(data);
+
         const descripciones = {};
         data.forEach((pregunta) => {
           descripciones[pregunta.id] = pregunta.descripcion;
@@ -117,7 +100,6 @@ const Estadisticas = () => {
         const response = await fetch("http://localhost:4000/tipoRespuesta");
         const data = await response.json();
         const descripciones = {};
-        
         data.forEach((tipoRespuesta) => {
           descripciones[tipoRespuesta.id] = tipoRespuesta.descripcion;
         });
@@ -147,21 +129,19 @@ const Estadisticas = () => {
       // Si no hay formulario seleccionado, mostrar todas las preguntas
       setPreguntasDelFormulario(preguntas);
       setSelectedFormulario("");
-      setReloadCharts(false);
     }
   };
-
   const handleDependenciaChange = (event) => {
     const selectedDependencies = event.target.value;
     setSelectedDependencias(selectedDependencies);
-    setReloadCharts(false);
   };
 
   const handlePreguntaChange = (event) => {
-    setSelectedPregunta(event.target.value);
-    setReloadCharts(false);
+    const selectedPregunta = event.target.value;
+    setSelectedPregunta(selectedPregunta);
   };
 
+  // Handler para la búsqueda de respuestas
   const handleBuscarRespuestas = async () => {
     try {
       const selectedDependenciaIds = selectedDependencias.map(
@@ -296,217 +276,64 @@ const Estadisticas = () => {
       }
     };
 
-  return (
-    <Container>
-      <Box sx={{ paddingTop: 20 }}>
-        <Typography variant="h4" align="center" gutterBottom>
-          Estadisticas
-        </Typography>
-      </Box>
-      <Divider></Divider>
-      <Grid container spacing={4} className={classes.centrar}>
-        <Grid item xs={12} sm={4} lg={3}>
-          <FormControl variant="standard" fullWidth size="small">
-            <InputLabel>Formulario</InputLabel>
-            <Select
-              value={selectedFormulario}
-              onChange={handleFormularioChange}
-              variant="standard"
-              className={classes.select}
-              fullWidth
-            >
-              {formularios.map((formulario) => (
-                <MenuItem key={formulario.id} value={formulario.nombre}>
-                  {formulario.nombre}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={4} lg={3}>
-          <FormControl variant="standard" fullWidth size="small">
-            <InputLabel id="dependencias-label">Dependencias</InputLabel>
-            <Select
-              variant="standard"
-              className={classes.select}
-              fullWidth
-              labelId="dependencias-label"
-              multiple
-              value={selectedDependencias || []}
-              onChange={handleDependenciaChange}
-              input={<Input />}
-              renderValue={(selected) => (
-                <div>
-                  {selected.map((value) => (
-                    <Chip key={value} label={value} />
-                  ))}
-                </div>
-              )}
-            >
-              {dependencias.map((dependencia) => (
-                <MenuItem
-                  key={dependencia.id}
-                  value={dependencia.nombreDependencia}
-                >
-                  <Chip
-                    icon={
-                      selectedDependencias.includes(
-                        dependencia.nombreDependencia
-                      ) ? (
-                        <CheckIcon />
-                      ) : null
-                    }
-                    label={dependencia.nombreDependencia}
-                    className={classes.chip}
-                    clickable
-                  />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={4} lg={3}>
-          <FormControl variant="standard" fullWidth size="small">
-            <InputLabel>Preguntas</InputLabel>
-            <Select
-              value={selectedPregunta || []}
-              onChange={handlePreguntaChange}
-              variant="standard"
-              className={classes.select}
-              fullWidth
-              multiple
-              renderValue={(selected) => (
-                <div className={classes.chips}>
-                  {selected.map((value) => (
-                    <Chip
-                      key={value}
-                      label={preguntaDescripciones[value]}
-                      className={classes.chip}
-                    />
-                  ))}
-                </div>
-              )}
-            >
-              {selectedFormulario === "" && (
-                <MenuItem key="todas" value="">
-                  Todas las preguntas
-                </MenuItem>
-              )}
-              {preguntasDelFormulario.map((pregunta) => (
-                <MenuItem key={pregunta.id} value={pregunta.id}>
-                  <Chip
-                    icon={
-                      selectedPregunta.includes(pregunta.id) ? (
-                        <CheckIcon />
-                      ) : null
-                    }
-                    label={pregunta.descripcion}
-                    className={classes.chip}
-                    clickable
-                  />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={3} lg={2} className={classes.centrar}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleBuscarRespuestas}
-            fullWidth
-            size="small"
-          >
-            Buscar
-          </Button>
-        </Grid>
-        <Grid item xs={12} md={6}>
-        {reloadCharts && (
-          <Box mx={4} className={classes.chartContainer}>
-             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
-              <Typography variant="body1">
-                Edad
-              </Typography>
-            </Box>
-            <Doughnut
-              data={{
-                labels: Object.keys(estadisticasEdad),
-                datasets: [
-                  {
-                    label: "Edad",
-                    data: Object.values(estadisticasEdad),
-                    backgroundColor: Object.keys(estadisticasEdad).map(() =>
-                      getRandomColor()
-                    ),
-                  },
-                ],
-              }}
-              options={{ maintainAspectRatio: false }}
-            />
+    return (
+      <div className="divMain mb80px">
+        <Container>
+          <Box sx={{ paddingTop: 20 }}>
+            <Typography variant="h4" align="center" gutterBottom>
+             Estadisticas
+            </Typography>
           </Box>
-          )}
-        </Grid>
-        <Grid item xs={12} md={6}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
-              <Typography variant="body1">
-                Genero
-              </Typography>
-            </Box>
-        {reloadCharts && (
-          <Box mx={4} className={classes.chartContainer}>
-            <Doughnut
-              data={{
-                labels: Object.keys(estadisticasGenero),
-                datasets: [
-                  {
-                    label: "Género",
-                    data: Object.values(estadisticasGenero),
-                    backgroundColor: Object.keys(estadisticasGenero).map(() =>
-                      getRandomColor()
-                    ),
-                  },
-                ],
-              }}
-              options={{ maintainAspectRatio: false }}
+          <Divider></Divider>
+          <Grid container spacing={4} className={classes.centrar}>
+            <Grid item xs={12} sm={4} lg={3}>
+              <BuscadorFormularios
+                formularios={formularios}
+                selectedFormulario={selectedFormulario}
+                handleFormularioChange={handleFormularioChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} lg={3}>
+              <BuscadorDependencias
+                dependencias={dependencias}
+                selectedDependencias={selectedDependencias}
+                handleDependenciaChange={handleDependenciaChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} lg={3}>
+              <BuscadorPreguntas
+                preguntasDelFormulario={preguntasDelFormulario}
+                selectedPregunta={selectedPregunta}
+                handlePreguntaChange={handlePreguntaChange}
+                selectedFormulario={selectedFormulario}
+                preguntaDescripciones={preguntaDescripciones}
+              />
+            </Grid>
+            <Grid item xs={12} sm={3} lg={2} className={classes.centrar}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleBuscarRespuestas}
+                fullWidth
+                size="small"
+              >
+                Buscar
+              </Button>
+            </Grid>
+          </Grid>
+        </Container>
+          <Grid item xs={12} sm={4}>
+            <Graficos
+              estadisticasEdad={estadisticasEdad}
+              estadisticasGenero={estadisticasGenero}
+              estadisticasTipoRespuesta={estadisticasTipoRespuesta}
+              tipoRespuestaDescripciones={tipoRespuestaDescripciones}
+              reloadCharts={reloadCharts}
             />
-          </Box>
-           )}
-        </Grid>
-        <Grid item xs={12}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
-              <Typography variant="body1">
-               Tipo de Respuesta
-              </Typography>
-            </Box>
-        {reloadCharts && (
-          <Box mx={4} className={classes.chartContainerIndividual}>
-            <Pie
-              data={{
-                labels: Object.keys(estadisticasTipoRespuesta),
-                datasets: [
-                  {
-                    label: "Tipo de Respuesta",
-                    data: Object.values(estadisticasTipoRespuesta),
-                    backgroundColor: Object.keys(estadisticasTipoRespuesta).map(
-                      () => getRandomColor()
-                    ),
-                  },
-                ],
-              }}
-              options={{ maintainAspectRatio: false }}
-            />
-          </Box>
-           )}
-        </Grid>
-        {Object.keys(respuestasPorTipo).map((tipoRespuesta) => (
-          <div key={tipoRespuesta}>
-            Descripción de Tipo de Respuesta {tipoRespuesta}:{" "}
-            {tipoRespuestaDescripciones[tipoRespuesta]}
-          </div>
-        ))}
-      </Grid>
-    </Container>
-  );
-};
+          </Grid>
+      </div>
+    );
+  };
+
 
 export default Estadisticas;
