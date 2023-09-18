@@ -16,8 +16,10 @@ import BuscadorDependencias from '../components/buscador/buscadorDependencias'
 const Buscador = () => {
   const [preguntas, setPreguntas] = useState([]);
   const [dependencias, setDependencias] = useState([]);
+  const [secciones, setSecciones] = useState([]);
   const [respuestas, setRespuestas] = useState([]);
   const [dependenciaNombres, setDependenciaNombres] = useState([]);
+  const [seccionesDescripcion, setSeccionesDescripcion] = useState([]);
   const [preguntaDescripciones, setPreguntaDescripciones] = useState([]);
   const [tipoRespuestaDescripciones, setTipoRespuestaDescripciones] = useState([]);
   const [formularios, setFormularios] = useState([]);
@@ -67,6 +69,21 @@ const Buscador = () => {
       }
     };
 
+    const obtenerSecciones = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/secciones");
+        const data = await response.json();
+        setSecciones(data);
+        const descripcion = {};
+        data.forEach((secciones) => {
+          descripcion[secciones.id] = secciones.descripcion;
+        });
+        setSeccionesDescripcion(descripcion);
+      } catch (error) {
+        console.error("Error al obtener las Secciones:", error);
+      }
+    };
+
     const obtenerPreguntas = async () => {
       try {
         const response = await fetch("http://localhost:4000/preguntas");
@@ -108,6 +125,7 @@ const Buscador = () => {
     obtenerDependencias();
     obtenerTipoRespuesta();
     obtenerPreguntas();
+    obtenerSecciones();
   }, [formularios]);
 
   const handleFormularioChange = (event) => {
@@ -265,6 +283,7 @@ const Buscador = () => {
                   handlePreguntaChange={handlePreguntaChange}
                   selectedFormulario={selectedFormulario}
                   preguntaDescripciones={preguntaDescripciones}
+                  seccionesDescripcion={seccionesDescripcion}
                 />
               </Grid>
               <Grid item xs={12} sm={3} lg={2} className={classes.centrar}>
