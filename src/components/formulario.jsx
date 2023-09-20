@@ -291,6 +291,9 @@ function Preguntas() {
     }
   }  
 
+   // Filtra las dependencias para mostrar solo las que tienen rol "dependencia"
+   const dependenciasFiltradas = dependencias.filter(dependencia => dependencia.rol === "dependencia");
+
   return (
     <Container className="mb80px">
       <Typography variant="h4" className={classes.tituloPregunta}>
@@ -352,7 +355,7 @@ function Preguntas() {
                     label="Dependencia"
                     required
                   >
-                    {dependencias.map((dependencia) => (
+                   {dependenciasFiltradas.map((dependencia) => (
                       <MenuItem key={dependencia.id} value={dependencia.id}>
                         {dependencia.nombreDependencia}
                       </MenuItem>

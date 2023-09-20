@@ -6,6 +6,9 @@ import useStyles from '../../styles/buscadorStyle';
 const BuscadorDependencias = ({ dependencias, selectedDependencias, handleDependenciaChange }) => {
   const classes = useStyles();
 
+  // Filtra las dependencias para mostrar solo las que tienen rol "dependencia"
+  const dependenciasFiltradas = dependencias.filter(dependencia => dependencia.rol === "dependencia");
+
   return (
     <FormControl variant="standard" fullWidth size="small">
       <InputLabel id="dependencias-label">Dependencias</InputLabel>
@@ -34,7 +37,7 @@ const BuscadorDependencias = ({ dependencias, selectedDependencias, handleDepend
           </div>
         )}
       >
-        {dependencias.map((dependencia) => (
+        {dependenciasFiltradas.map((dependencia) => (
           <MenuItem
             key={dependencia.id}
             value={dependencia.nombreDependencia}
