@@ -128,6 +128,7 @@ const CrearPregunta = () => {
       descripcion: pregunta,
       seccionId: seccionId,
       tieneComentario: tieneComentario,
+      tieneTipoPregunta: tieneTipoPregunta,
       descripcionComentario: descripcionComentario,
       tipoPreguntaId: tipoPreguntaId ?? null,
       tipoRespuestaId: tipoRespuestaId ?? null
@@ -142,24 +143,36 @@ const CrearPregunta = () => {
     descripcion,
     seccionId,
     tieneComentario,
+    tieneTipoPregunta,
     descripcionComentario,
     tipoPreguntaId, // No conviertas esto a una cadena vacía ('') si es nulo
     tipoRespuestaId,
   }) => {
+    const requestData = {
+      formularioId: formularioId,
+      descripcion: descripcion,
+      seccionId: seccionId,
+      tieneComentario: tieneComentario,
+      tieneTipoPregunta: tieneTipoPregunta,
+      descripcionComentario: descripcionComentario,
+    };
+  
+    // Solo incluir tipoPreguntaId si está definido
+    if (tipoPreguntaId !== null) {
+      requestData.tipoPreguntaId = tipoPreguntaId;
+    }
+  
+    // Solo incluir tipoRespuestaId si está definido
+    if (tipoRespuestaId !== null) {
+      requestData.tipoRespuestaId = tipoRespuestaId;
+    }
+  
     fetch("http://localhost:4000/preguntas", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        formularioId: formularioId,
-        descripcion: descripcion,
-        seccionId: seccionId,
-        tieneComentario: tieneComentario,
-        descripcionComentario: descripcionComentario,
-        tipoPreguntaId: tipoPreguntaId, // Mantén esto como null si es nulo
-        tipoRespuestaId: tipoRespuestaId ?? null,
-      }),
+      body: JSON.stringify(requestData),
     })
       .then((response) => {
         if (response.ok) {

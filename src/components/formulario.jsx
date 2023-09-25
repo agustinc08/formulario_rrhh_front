@@ -48,23 +48,9 @@ function Preguntas() {
   const [seccionesCompletas, setSeccionesCompletas] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
 
-  const validarSeccionCompleta = useCallback((seccionId) => {
-    const preguntas = preguntasPorSeccion[seccionId];
-    if (!preguntas) return false;
-  
-    for (const pregunta of preguntas) {
-      const respuesta = respuestas[pregunta.id];
-      if (!respuesta || !respuesta.tipoRespuesta || (pregunta.tieneComentario && !userComments[pregunta.id])) {
-        return false;
-      }
-    }
-  
-    return true;
-  }, [preguntasPorSeccion, respuestas, userComments]);
-  
   const cargarPreguntasPorSeccion = useCallback(async () => {
     if (!seccionId) return;
-  
+
     try {
       const response = await axios.get(
         `http://localhost:4000/preguntas/${seccionId}`
@@ -75,17 +61,11 @@ function Preguntas() {
       }));
       setCurrentPage(1);
       setPreguntaActual(response.data[0]?.id);
-  
-      const seccionCompleta = validarSeccionCompleta(seccionId);
-      setSeccionesCompletas((prevSeccionesCompletas) => ({
-        ...prevSeccionesCompletas,
-        [seccionId]: seccionCompleta,
-      }));
     } catch (error) {
       console.error(error);
     }
-  }, [seccionId, validarSeccionCompleta]);
-  
+  }, [seccionId]);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -102,12 +82,12 @@ function Preguntas() {
     if (formSubmitted) {
       const timer = setTimeout(() => {
         window.location.href = "/inicio";
-      }, 2000); 
-  
+      }, 2000);
+
       return () => clearTimeout(timer);
     }
   }, [formSubmitted]);
-  
+
   useEffect(() => {
     async function fetchTipoRespuesta() {
       try {
@@ -128,7 +108,7 @@ function Preguntas() {
     }
     fetchTipoRespuesta();
   }, []);
-  
+
   useEffect(() => {
     async function cargarSecciones() {
       try {
@@ -138,7 +118,7 @@ function Preguntas() {
           console.log("No hay formulario activo.");
           return;
         }
-  
+
         const { data } = await axios.get(
           `http://localhost:4000/formulario/${formularioActivoId}/secciones`
         );
@@ -148,14 +128,14 @@ function Preguntas() {
         console.error(error);
       }
     }
-  
+
     cargarSecciones();
   }, []); // Se ejecutará solo una vez al montar el componente
-  
+
   useEffect(() => {
     cargarPreguntasPorSeccion();
   }, [seccionId, cargarPreguntasPorSeccion]);
-  
+
   useEffect(() => {
     if (preguntasPorSeccion[seccionId]) {
       const startIndex = (currentPage - 1) * 5;
@@ -164,7 +144,7 @@ function Preguntas() {
         startIndex,
         endIndex
       );
-  
+
       const preguntasSinRespuesta = {};
       for (const pregunta of slicedPreguntas) {
         if (!respuestas[pregunta.id]?.tipoRespuesta) {
@@ -174,7 +154,6 @@ function Preguntas() {
       setPreguntasSinResponder(preguntasSinRespuesta);
     }
   }, [currentPage, preguntasPorSeccion, respuestas, seccionId]);
-  
 
   function handleEdadChange(event) {
     setEdad(event.target.value);
@@ -215,7 +194,7 @@ function Preguntas() {
       const seccionesIncompletas = Object.values(seccionesCompletas).some(
         (completa) => completa === false
       );
-  
+
       if (!edad || !genero || !dependencia) {
         setSnackbarMessage(
           "Completa todos los campos antes de enviar el formulario."
@@ -224,7 +203,7 @@ function Preguntas() {
         setOpenSnackbar(true);
         return;
       }
-  
+
       if (seccionesIncompletas) {
         setSnackbarMessage(
           "Completa todas las preguntas antes de enviar el formulario"
@@ -233,23 +212,27 @@ function Preguntas() {
         setOpenSnackbar(true);
         return;
       }
-  
+
       const formularioId = await getFormularioActivo();
       if (!formularioId) {
         throw new Error("No hay formulario activo");
       }
-  
+
       const preguntasSinRespuesta = {};
-  
+
       for (const pregunta of preguntas) {
         const respuesta = respuestas[pregunta.id];
-        if (!respuesta || !respuesta.tipoRespuesta || (pregunta.tieneComentario && !userComments[pregunta.id])) {
+        if (
+          !respuesta ||
+          !respuesta.tipoRespuesta ||
+          (pregunta.tieneComentario && !userComments[pregunta.id])
+        ) {
           preguntasSinRespuesta[pregunta.id] = true;
         }
       }
-  
+
       setPreguntasSinResponder(preguntasSinRespuesta);
-  
+
       if (Object.keys(preguntasSinRespuesta).length > 0) {
         setSnackbarMessage(
           "Completa todas las preguntas antes de enviar el formulario"
@@ -258,7 +241,7 @@ function Preguntas() {
         setOpenSnackbar(true);
         return;
       }
-  
+
       const preguntasRespuestas = Object.entries(respuestas).map(
         ([preguntaId, respuesta]) => ({
           preguntaId: parseInt(preguntaId),
@@ -289,10 +272,12 @@ function Preguntas() {
     } finally {
       setOpenSnackbar(true);
     }
-  }  
+  }
 
-   // Filtra las dependencias para mostrar solo las que tienen rol "dependencia"
-   const dependenciasFiltradas = dependencias.filter(dependencia => dependencia.rol === "dependencia");
+  // Filtra las dependencias para mostrar solo las que tienen rol "dependencia"
+  const dependenciasFiltradas = dependencias.filter(
+    (dependencia) => dependencia.rol === "dependencia"
+  );
 
   return (
     <Container className="mb80px">
@@ -355,7 +340,7 @@ function Preguntas() {
                     label="Dependencia"
                     required
                   >
-                   {dependenciasFiltradas.map((dependencia) => (
+                    {dependenciasFiltradas.map((dependencia) => (
                       <MenuItem key={dependencia.id} value={dependencia.id}>
                         {dependencia.nombreDependencia}
                       </MenuItem>
@@ -368,7 +353,7 @@ function Preguntas() {
         )}
         <Grid container spacing={2}>
           {preguntasPorSeccion[seccionId]?.map((pregunta) => (
-            <Grid item xs={12} md={6}  key={pregunta.id}>
+            <Grid item xs={12} md={6} key={pregunta.id}>
               <ListItem style={{ height: "100%" }}>
                 <Box
                   className={`${classes.pregunta} ${
@@ -388,6 +373,24 @@ function Preguntas() {
                   <div className="mb20px">
                     <Typography variant="h6">{pregunta.descripcion}</Typography>
                   </div>
+                  {pregunta.tieneComentario && (
+                    <Grid item xs={12}>
+                      <Typography variant="body2" className="mb20px">
+                        {pregunta.descripcionComentario}
+                      </Typography>
+                      <TextField
+                        label="Comentario"
+                        value={userComments[pregunta.id] || ""}
+                        onChange={(event) =>
+                          handleComentarioChange(event, pregunta.id)
+                        }
+                        fullWidth
+                        multiline
+                        minRows={4}
+                        variant="outlined"
+                      />
+                    </Grid>
+                  )}
                   <Grid container spacing={2}>
                     {pregunta.tipoRespuesta &&
                       tipoRespuesta[pregunta.tipoPreguntaId] && (
@@ -423,24 +426,6 @@ function Preguntas() {
                                 )
                               )}
                             </Select>
-                            {pregunta.tieneComentario && (
-                              <Grid item xs={12}>
-                                <Typography variant="body2" className="mb20px">
-                                  {pregunta.descripcionComentario}
-                                </Typography>
-                                <TextField
-                                  label="Comentario"
-                                  value={userComments[pregunta.id] || ""}
-                                  onChange={(event) =>
-                                    handleComentarioChange(event, pregunta.id)
-                                  }
-                                  fullWidth
-                                  multiline
-                                  minRows={4}
-                                  variant="outlined"
-                                />
-                              </Grid>
-                            )}
                           </FormControl>
                         </Grid>
                       )}
