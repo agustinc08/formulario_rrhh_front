@@ -108,7 +108,8 @@ const CrearPregunta = () => {
   };
 
   const handleTipoPreguntaChange = (event) => {
-    setTipoPreguntaId(event.target.value);
+    const selectedTipoPreguntaId = event.target.value;
+    setTipoPreguntaId(selectedTipoPreguntaId !== null ? selectedTipoPreguntaId : null);
   };
 
   const handlePreguntaSubmit = (event) => {
@@ -142,7 +143,7 @@ const CrearPregunta = () => {
     seccionId,
     tieneComentario,
     descripcionComentario,
-    tipoPreguntaId,
+    tipoPreguntaId, // No conviertas esto a una cadena vacía ('') si es nulo
     tipoRespuestaId,
   }) => {
     fetch("http://localhost:4000/preguntas", {
@@ -156,7 +157,7 @@ const CrearPregunta = () => {
         seccionId: seccionId,
         tieneComentario: tieneComentario,
         descripcionComentario: descripcionComentario,
-        tipoPreguntaId: tipoPreguntaId ?? null,
+        tipoPreguntaId: tipoPreguntaId, // Mantén esto como null si es nulo
         tipoRespuestaId: tipoRespuestaId ?? null,
       }),
     })

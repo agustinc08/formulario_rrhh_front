@@ -46,8 +46,11 @@ const CrearSeccion = () => {
   };
 
   const handleCloseAlert = () => {
-    setAlertaSeccion(false);
-    setAlertaSeccionExistente(false);
+    // Cerrar la alerta después de 1 segundo
+    setTimeout(() => {
+      setAlertaSeccion(false);
+      setAlertaSeccionExistente(false);
+    }, 1000); // 1000 milisegundos = 1 segundo
   };
 
   const handleFormularioChange = (event) => {
@@ -80,7 +83,7 @@ const CrearSeccion = () => {
     setSeccionDescripcion("");
   };
 
-   const crearSeccion = (descripcion, formularioId) => {
+  const crearSeccion = (descripcion, formularioId) => {
     fetch("http://localhost:4000/secciones", {
       method: "POST",
       headers: {
@@ -165,7 +168,7 @@ const CrearSeccion = () => {
           <Alert severity="error">
             Ya existe una Seccion con el mismo nombre en este formulario,
             intentelo denuevo.
-            <CloseIcon fontSize="inherit" onClick={handleCloseAlert}/>
+            <CloseIcon fontSize="inherit" onClick={handleCloseAlert} />
           </Alert>
         )}
       </form>
