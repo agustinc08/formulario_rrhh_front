@@ -32,9 +32,9 @@ const RespuestasTable = ({
     if (typeof tipoRespuestaDescripciones === 'object' && tipoRespuestaDescripciones !== null) {
       return tipoRespuestaDescripciones.hasOwnProperty(tipoRespuestaId)
         ? tipoRespuestaDescripciones[tipoRespuestaId]
-        : "Tipo de respuesta no encontrado";
+        : "-";
     } else {
-      return "Tipo de respuesta no encontrado";
+      return "-";
     }
   };
   
