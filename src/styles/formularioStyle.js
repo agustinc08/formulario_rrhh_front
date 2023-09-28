@@ -32,6 +32,18 @@ const useStyles = makeStyles((theme) => ({
     enviarButton: {
       marginTop: theme.spacing(2),
     },
+    select: {
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderWidth: '2px',
+          borderColor: theme.palette.primary.main, // Cambia al color primario de MUI
+        },
+        '&:hover fieldset': {
+          borderWidth: '2px',
+          borderColor: theme.palette.primary.dark, // Cambia el color al hacer hover
+        },
+      },
+    },
   }));
 
   export default useStyles;

@@ -21,8 +21,8 @@ const Graficos = ({
       };
 
   return (
-    <div>
-      <Grid item xs={12} md={6}>
+    <Grid container>
+      <Grid item xs={12} md={4}>
         {reloadCharts && (
           <Box mx={4} className={classes.chartContainer}>
             <Box
@@ -52,7 +52,7 @@ const Graficos = ({
           </Box>
         )}
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid item xs={12} md={4}>
         <Box
           sx={{
             display: "flex",
@@ -82,7 +82,7 @@ const Graficos = ({
           </Box>
         )}
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} md={4}>
         <Box
           sx={{
             display: "flex",
@@ -93,7 +93,7 @@ const Graficos = ({
           <Typography variant="body1">Tipo de Respuesta</Typography>
         </Box>
         {reloadCharts && (
-          <Box mx={4} className={classes.chartContainerIndividual}>
+          <Box mx={4} className={classes.chartContainer}>
             <Pie
               data={{
                 labels: Object.keys(estadisticasTipoRespuesta),
@@ -112,7 +112,7 @@ const Graficos = ({
           </Box>
         )}
       </Grid>
-    </div>
+    </Grid>
   );
 };
 

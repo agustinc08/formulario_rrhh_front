@@ -5,10 +5,7 @@ const useStyles = makeStyles((theme) => ({
       marginTop: 20,
     },
     chartContainer: {
-      height: "250px",
-      marginBottom: "3em",
-    },chartContainerIndividual: {
-      height: "550px",
+      height: "350px",
       marginBottom: "3em",
     },
   }));
