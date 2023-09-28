@@ -101,6 +101,9 @@ const CrearSeccion = () => {
           setSeccionDescripcion("");
           setErrorSeccion(false);
           setAlertaSeccionExistente(false);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
         } else {
           setErrorSeccion(true);
           setAlertaSeccion(false);

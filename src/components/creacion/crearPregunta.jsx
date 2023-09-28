@@ -200,7 +200,9 @@ const CrearPregunta = () => {
           setPregunta("");
           setSeccionId("");
           setErrorPregunta(false);
-          //window.location.reload();
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
         } else {
           throw new Error("Error al crear la pregunta.");
         }

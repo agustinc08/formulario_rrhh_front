@@ -68,6 +68,9 @@ const CrearTipoRespuesta = () => {
           console.log("Tipo Respuesta creada:", descripcion);
           setAlertaTipoRespuesta(true);
           setTipoPreguntaId("")
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
         } else {
           throw new Error("Error al crear el Tipo de Respuesta.");
         }

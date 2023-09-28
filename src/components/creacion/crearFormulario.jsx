@@ -54,8 +54,14 @@ const CrearFormulario = () => {
       .then((response) => {
         if (response.ok) {
           setAlertaCreacionExitosa(true);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
         } else {
           setAlertaFormulario(true);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
         }
       })
       .catch((error) => {

@@ -43,6 +43,9 @@ const CrearTipoPregunta = () => {
           console.log("Tipo Pregunta creada:", descripcion);
           setAlertaPregunta(true)
           setTipoPreguntaDescripcion("");
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
         } else {
           throw new Error("Error al crear el Tipo de Pregunta.");
         }

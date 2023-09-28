@@ -117,6 +117,9 @@ const CrearInicio = () => {
         setIntroduccionDescripcion("");
         setObjetivoDescripcion("");
         setParrafo("");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       }
     } catch (error) {
       console.error("Error al crear el inicio:", error);
