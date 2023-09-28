@@ -29,12 +29,24 @@ const CrearPregunta = () => {
   const [tipoRespuestaId, setTipoRespuestaId] = useState("");
   const [tipoPreguntas, setTipoPreguntas] = useState([]);
   const [formularioId, setFormularioId] = useState("");
+  const [errorCreacion, setErrorCreacion] = useState(false);
 
   useEffect(() => {
     fetchFormulario();
     fetchTipoPreguntas();
     fetchSecciones();
   }, []);
+
+  useEffect(() => {
+    if (errorCreacion) {
+      const timeoutId = setTimeout(() => {
+        setErrorCreacion(false);
+      }, 2000); // 2000 milisegundos (2 segundos)
+  
+      // Limpia el temporizador cuando el componente se desmonta o el estado cambia
+      return () => clearTimeout(timeoutId);
+    }
+  }, [errorCreacion]);
 
   const fetchSecciones = () => {
     fetch("http://localhost:4000/secciones")
@@ -121,6 +133,13 @@ const CrearPregunta = () => {
     if (!seccionId) {
       setErrorPregunta(true);
       setErrorSeccion(true);
+      return;
+    }
+
+    if (!tieneTipoPregunta && !tieneComentario) {
+      // Mostrar un mensaje de error o tomar alguna otra acción aquí si es necesario
+      console.error("Debe seleccionar al menos uno: tieneTipoPregunta o tieneComentario");
+      setErrorCreacion(true);
       return;
     }
 
@@ -295,6 +314,20 @@ const CrearPregunta = () => {
                {alertaPregunta && (
                  <Alert severity="success">
                    ¡La pregunta se creó correctamente!
+                   <IconButton
+                     aria-label="close"
+                     color="inherit"
+                     size="small"
+                     onClick={handleCloseAlert}
+                     className={classes.closeButton}
+                   >
+                     <CloseIcon fontSize="inherit" />
+                   </IconButton>
+                 </Alert>
+               )}
+               {errorCreacion && (
+                 <Alert severity="error">
+                   ¡La pregunta debe contener un comentario o un tipo de pregunta!
                    <IconButton
                      aria-label="close"
                      color="inherit"

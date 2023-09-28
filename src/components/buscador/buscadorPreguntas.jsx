@@ -52,7 +52,7 @@ const BuscadorPreguntas = ({
         )}
       >
         {selectedFormulario === "" && (
-          <MenuItem key="xd" value="">
+          <MenuItem key="" value="">
             Todas las preguntas
           </MenuItem>
         )}
