@@ -298,6 +298,7 @@ function Preguntas() {
                   variant="outlined"
                   fullWidth
                   size="small"
+                  className={classes.select} 
                 >
                   <InputLabel>Edad</InputLabel>
                   <Select
@@ -315,7 +316,7 @@ function Preguntas() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={4}>
-                <FormControl variant="outlined" fullWidth size="small">
+                <FormControl variant="outlined" fullWidth size="small" className={classes.select} >
                   <InputLabel>Género</InputLabel>
                   <Select
                     name="genero"
@@ -331,7 +332,7 @@ function Preguntas() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={4}>
-                <FormControl variant="outlined" fullWidth size="small">
+                <FormControl variant="outlined" fullWidth size="small" className={classes.select} >
                   <InputLabel>Dependencia</InputLabel>
                   <Select
                     key={dependencia.id}
@@ -458,7 +459,7 @@ function Preguntas() {
             {snackbarMessage}
           </Alert>
         </Snackbar>
-        <Box display="flex" justifyContent="center">
+        <Box display="flex" justifyContent="center" style={{marginTop: "40px"}}>
           {isLastPage && (
             <Button
               variant="contained"

@@ -285,7 +285,7 @@ const Estadisticas = () => {
             </Typography>
           </Box>
           <Divider></Divider>
-          <Grid container spacing={4} className={classes.centrar}>
+          <Grid container justifyContent="center" spacing={4} className={classes.centrar}>
             <Grid item xs={12} sm={4} lg={3}>
               <BuscadorFormularios
                 formularios={formularios}
@@ -309,20 +309,19 @@ const Estadisticas = () => {
                 preguntaDescripciones={preguntaDescripciones}
               />
             </Grid>
-            <Grid item xs={12} sm={3} lg={2} className={classes.centrar}>
+            <Grid item xs={12} sm={3} lg={2} px={3} className={classes.centrar}>
               <Button
                 variant="contained"
                 color="primary"
                 onClick={handleBuscarRespuestas}
-                fullWidth
                 size="small"
+                style={{ paddingLeft: '15px',  paddingRight: '15px'}}
               >
                 Buscar
               </Button>
             </Grid>
           </Grid>
         </Container>
-          <Grid item xs={12} sm={4}>
             <Graficos
               estadisticasEdad={estadisticasEdad}
               estadisticasGenero={estadisticasGenero}
@@ -330,7 +329,6 @@ const Estadisticas = () => {
               tipoRespuestaDescripciones={tipoRespuestaDescripciones}
               reloadCharts={reloadCharts}
             />
-          </Grid>
       </div>
     );
   };
