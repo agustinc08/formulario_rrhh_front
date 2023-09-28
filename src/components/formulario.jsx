@@ -162,12 +162,12 @@ function Preguntas() {
   function handleComentarioChange(event, preguntaId) {
     const value = event.target.value;
     console.log(`Comentario cambiado para pregunta ${preguntaId}:`, value);
-  
+
     setUserComments((prevUserComments) => ({
       ...prevUserComments,
       [preguntaId]: value,
     }));
-  
+
     // También actualiza respuestas para incluir el tipo de respuesta (puedes elegir un valor por defecto)
     setRespuestas((prevRespuestas) => ({
       ...prevRespuestas,
@@ -204,15 +204,6 @@ function Preguntas() {
         return;
       }
 
-      if (seccionesIncompletas) {
-        setSnackbarMessage(
-          "Completa todas las preguntas antes de enviar el formulario"
-        );
-        setSnackbarSeverity("error");
-        setOpenSnackbar(true);
-        return;
-      }
-
       const formularioId = await getFormularioActivo();
       if (!formularioId) {
         throw new Error("No hay formulario activo");
@@ -225,7 +216,7 @@ function Preguntas() {
         if (
           !respuesta ||
           !respuesta.tipoRespuesta ||
-          (pregunta.tieneComentario)
+          pregunta.tieneComentario
         ) {
           preguntasSinRespuesta[pregunta.id] = true;
         }
@@ -246,27 +237,33 @@ function Preguntas() {
         ([preguntaId, respuesta]) => ({
           preguntaId: parseInt(preguntaId),
           formularioId,
-          tipoRespuestaId: respuesta.tipoRespuesta !== undefined ? respuesta.tipoRespuesta : null,
+          tipoRespuestaId:
+            respuesta.tipoRespuesta !== undefined
+              ? respuesta.tipoRespuesta
+              : null,
           dependenciaId: dependencia,
           edad,
           genero,
           comentario: {
             respuestaComentario: userComments[preguntaId],
             preguntaId: parseInt(preguntaId),
-            respuestaId: respuesta.tipoRespuesta !== undefined ? respuesta.tipoRespuesta : null,
+            respuestaId:
+              respuesta.tipoRespuesta !== undefined
+                ? respuesta.tipoRespuesta
+                : null,
             formularioId,
             dependenciaId: dependencia,
           },
         })
       );
-      
+
       await axios.post("http://localhost:4000/respuestas", {
         preguntasRespuestas,
       });
 
-      console.log(preguntasRespuestas)
+      console.log(preguntasRespuestas);
 
-
+      setFormSubmitted(true);
       setSnackbarMessage("Respuestas enviadas correctamente");
       setSnackbarSeverity("success");
     } catch (error) {
