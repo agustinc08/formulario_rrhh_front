@@ -38,10 +38,6 @@ td{
 } 
 
 @media screen and (max-width: 600px) {
-    ::-webkit-scrollbar {
-      height: 10px;
-    }
-
     ::-webkit-scrollbar-thumb {
       background: #889eff;
     }  
