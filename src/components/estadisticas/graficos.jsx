@@ -53,63 +53,60 @@ const Graficos = ({
         )}
       </Grid>
       <Grid item xs={12} md={4}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "50px",
-          }}
-        >
-          <Typography variant="body1">Genero</Typography>
-        </Box>
-        {reloadCharts && (
-          <Box mx={4} className={classes.chartContainer}>
-            <Doughnut
-              data={{
-                labels: Object.keys(estadisticasGenero),
-                datasets: [
-                  {
-                    label: "Género",
-                    data: Object.values(estadisticasGenero),
-                    backgroundColor: Object.keys(estadisticasGenero).map(() =>
-                      getRandomColor()
-                    ),
-                  },
-                ],
-              }}
-              options={{ maintainAspectRatio: false }}
-            />
+      {reloadCharts && (
+        <><Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "50px",
+            }}
+          >
+            <Typography variant="body1">Genero</Typography>
           </Box>
+          <Box mx={4} className={classes.chartContainer}>
+              <Doughnut
+                data={{
+                  labels: Object.keys(estadisticasGenero),
+                  datasets: [
+                    {
+                      label: "Género",
+                      data: Object.values(estadisticasGenero),
+                      backgroundColor: Object.keys(estadisticasGenero).map(() => getRandomColor()
+                      ),
+                    },
+                  ],
+                }}
+                options={{ maintainAspectRatio: false }} />
+            </Box></>
         )}
       </Grid>
       <Grid item xs={12} md={4}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "50px",
-          }}
-        >
-          <Typography variant="body1">Tipo de Respuesta</Typography>
-        </Box>
-        {reloadCharts && (
-          <Box mx={4} className={classes.chartContainer}>
-            <Pie
-              data={{
-                labels: Object.keys(estadisticasTipoRespuesta),
-                datasets: [
-                  {
-                    label: "Tipo de Respuesta",
-                    data: Object.values(estadisticasTipoRespuesta),
-                    backgroundColor: Object.keys(estadisticasTipoRespuesta).map(
-                      () => getRandomColor()
-                    ),
-                  },
-                ],
-              }}
-              options={{ maintainAspectRatio: false }}
-            />
+      {reloadCharts && (
+        <><Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "50px",
+            }}
+          >
+            <Typography variant="body1">Tipo de Respuesta</Typography>
           </Box>
+          <Box mx={4} className={classes.chartContainer}>
+              <Pie
+                data={{
+                  labels: Object.keys(estadisticasTipoRespuesta),
+                  datasets: [
+                    {
+                      label: "Tipo de Respuesta",
+                      data: Object.values(estadisticasTipoRespuesta),
+                      backgroundColor: Object.keys(estadisticasTipoRespuesta).map(
+                        () => getRandomColor()
+                      ),
+                    },
+                  ],
+                }}
+                options={{ maintainAspectRatio: false }} />
+            </Box></>
         )}
       </Grid>
     </Grid>

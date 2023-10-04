@@ -26,6 +26,7 @@ const ModalClaves = ({ open, handleClose }) => {
   const classes = useStyles();
   const [claves, setClaves] = useState([]);
   const [dependenciaId, setDependenciaId] = useState("");
+  const [claveId, setClaveId] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [openChangePasswordDialog, setOpenChangePasswordDialog] =
     useState(false);
@@ -65,6 +66,7 @@ const ModalClaves = ({ open, handleClose }) => {
     const handleChangePassword = async () => {
       try {
         console.log("dependenciaId:", dependenciaId);
+        console.log("claveId:", claveId);
   
         // Verifica si dependenciaId está vacía antes de enviar la solicitud
         if (!dependenciaId) {
@@ -75,7 +77,7 @@ const ModalClaves = ({ open, handleClose }) => {
         }
   
         const response = await fetch(
-          `http://localhost:4000/claves/${dependenciaId}`,
+          `http://localhost:4000/claves/${claveId}/${dependenciaId}`,
           {
             method: "PATCH",
             headers: {
@@ -156,6 +158,7 @@ const ModalClaves = ({ open, handleClose }) => {
                                 onClick={() => {
                                   setOpenChangePasswordDialog(true);
                                   setDependenciaId(clave.dependencia.id); // Establecer la dependenciaId al hacer clic
+                                  setClaveId(clave.id);
                                 }}
                               />
                             </TableCell>
