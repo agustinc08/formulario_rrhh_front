@@ -19,7 +19,6 @@ const RespuestasTable = ({
   
 }) => {
   const classes = useStyles();
-  console.log(sortedRespuestas);
 
   const getDependenciaNombre = (dependenciaId) => {
     // Buscar la dependencia por su ID y devolver su nombre

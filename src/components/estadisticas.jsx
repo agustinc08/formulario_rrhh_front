@@ -28,6 +28,7 @@ const Estadisticas = () => {
   const [dependencias, setDependencias] = useState([]);
   const [respuestas, setRespuestas] = useState([]);
   const [estadisticasGenero, setEstadisticasGenero] = useState([]);
+  const [isSearchButtonDisabled, setIsSearchButtonDisabled] = useState([]);
   const [estadisticasTipoRespuesta, setEstadisticasTipoRespuesta] = useState(
     []
   );
@@ -128,17 +129,20 @@ const Estadisticas = () => {
     } else {
       // Si no hay formulario seleccionado, mostrar todas las preguntas
       setPreguntasDelFormulario(preguntas);
+      setIsSearchButtonDisabled(false);
       setSelectedFormulario("");
     }
   };
   const handleDependenciaChange = (event) => {
     const selectedDependencies = event.target.value;
     setSelectedDependencias(selectedDependencies);
+    setIsSearchButtonDisabled(selectedDependencias.length === 0);
   };
 
   const handlePreguntaChange = (event) => {
     const selectedPregunta = event.target.value;
     setSelectedPregunta(selectedPregunta);
+    setIsSearchButtonDisabled(selectedPregunta.length === 0);
   };
 
   // Handler para la búsqueda de respuestas
@@ -298,6 +302,7 @@ const Estadisticas = () => {
                 dependencias={dependencias}
                 selectedDependencias={selectedDependencias}
                 handleDependenciaChange={handleDependenciaChange}
+                disabled={!selectedFormulario}
               />
             </Grid>
             <Grid item xs={12} sm={4} lg={3}>
@@ -307,6 +312,7 @@ const Estadisticas = () => {
                 handlePreguntaChange={handlePreguntaChange}
                 selectedFormulario={selectedFormulario}
                 preguntaDescripciones={preguntaDescripciones}
+                disabled={!selectedDependencias.length}
               />
             </Grid>
             <Grid item xs={12} sm={3} lg={2} px={3} className={classes.centrar}>
@@ -316,6 +322,7 @@ const Estadisticas = () => {
                 onClick={handleBuscarRespuestas}
                 size="small"
                 style={{ paddingLeft: '15px',  paddingRight: '15px'}}
+                disabled={isSearchButtonDisabled}
               >
                 Buscar
               </Button>

@@ -59,7 +59,6 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
       .then((data) => {
         const tipoPreguntaOrdenadas = data.sort((a, b) => a.id - b.id);
         setTiposPregunta(tipoPreguntaOrdenadas);
-        console.log(tipoPregunta);
       })
       .catch((error) => console.log(error));
   };
