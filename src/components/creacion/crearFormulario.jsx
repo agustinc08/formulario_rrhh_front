@@ -5,6 +5,7 @@ import Alert from "@material-ui/lab/Alert";
 import Grid from "@material-ui/core/Grid";
 import { Box } from "@material-ui/core";
 import useStyles from "../../styles/creacionStyle";
+import API_BASE_URL from "../../config"
 
 const CrearFormulario = () => {
   const classes = useStyles();
@@ -44,7 +45,7 @@ const CrearFormulario = () => {
       },
     };
 
-    fetch("http://localhost:4000/formulario", {
+    fetch(`${API_BASE_URL}/formulario`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

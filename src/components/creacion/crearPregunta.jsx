@@ -12,6 +12,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Checkbox from "@material-ui/core/Checkbox";
 import { Box } from "@material-ui/core";
 import useStyles from "../../styles/creacionStyle";
+import API_BASE_URL from "../../config"
 
 const CrearPregunta = () => {
   const classes = useStyles();
@@ -49,7 +50,7 @@ const CrearPregunta = () => {
   }, [errorCreacion]);
 
   const fetchSecciones = () => {
-    fetch("http://localhost:4000/secciones")
+    fetch(`${API_BASE_URL}/secciones`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -67,7 +68,7 @@ const CrearPregunta = () => {
   };
 
   const fetchTipoPreguntas = () => {
-    fetch("http://localhost:4000/tipoPregunta")
+    fetch(`${API_BASE_URL}/tipoPregunta`)
       .then((response) => response.json())
       .then((data) => {
         setTipoPreguntas(data);
@@ -78,7 +79,7 @@ const CrearPregunta = () => {
   };
 
   const fetchFormulario = () => {
-    fetch("http://localhost:4000/formulario")
+    fetch(`${API_BASE_URL}/formulario`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error fetching formularios");
@@ -186,7 +187,7 @@ const CrearPregunta = () => {
       requestData.tipoRespuestaId = tipoRespuestaId;
     }
   
-    fetch("http://localhost:4000/preguntas", {
+    fetch(`${API_BASE_URL}/preguntas`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -12,6 +12,7 @@ import BuscadorDependencias from '../components/estadisticas/buscadorDependencia
 import BuscadorPreguntas from '../components/estadisticas/buscadorPreguntas'
 import BuscadorFormularios from '../components/estadisticas/buscadorFormulario'
 import Graficos from '../components/estadisticas/graficos'
+import API_BASE_URL from "../config"
 
 const Estadisticas = () => {
   const classes = useStyles();
@@ -39,7 +40,7 @@ const Estadisticas = () => {
   useEffect(() => {
     const obtenerFormularios = async () => {
       try {
-        const response = await fetch("http://localhost:4000/formulario");
+        const response = await fetch(`${API_BASE_URL}/formulario`);
         const data = await response.json();
         setFormularios(data);
         const firstActiveFormulario = data.find(
@@ -59,7 +60,7 @@ const Estadisticas = () => {
   useEffect(() => {
     const obtenerDependencias = async () => {
       try {
-        const response = await fetch("http://localhost:4000/dependencias");
+        const response = await fetch(`${API_BASE_URL}/dependencias`);
         const data = await response.json();
         setDependencias(data);
         const nombres = {};
@@ -74,7 +75,7 @@ const Estadisticas = () => {
 
     const obtenerPreguntas = async () => {
       try {
-        const response = await fetch("http://localhost:4000/preguntas");
+        const response = await fetch(`${API_BASE_URL}/preguntas`);
         const data = await response.json();
         setPreguntas(data);
 
@@ -98,7 +99,7 @@ const Estadisticas = () => {
 
     const obtenerTipoRespuesta = async () => {
       try {
-        const response = await fetch("http://localhost:4000/tipoRespuesta");
+        const response = await fetch(`${API_BASE_URL}/tipoRespuesta`);
         const data = await response.json();
         const descripciones = {};
         data.forEach((tipoRespuesta) => {
@@ -163,7 +164,7 @@ const Estadisticas = () => {
         selectedFormulario
       ) {
         // Buscar por pregunta, dependencia y formulario
-        const url = `http://localhost:4000/respuestas/buscar/${preguntaIds}/${dependenciaIds}/${formularioId}`;
+        const url = `${API_BASE_URL}/respuestas/buscar/${preguntaIds}/${dependenciaIds}/${formularioId}`;
         const response = await fetch(url);
         const data = await response.json();
         setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
@@ -173,42 +174,42 @@ const Estadisticas = () => {
         selectedDependencias.length > 0
       ) {
         // Buscar por pregunta y dependencia
-        const url = `http://localhost:4000/respuestas/buscarpd/${preguntaIds}/${dependenciaIds}`;
+        const url = `${API_BASE_URL}/respuestas/buscarpd/${preguntaIds}/${dependenciaIds}`;
         const response = await fetch(url);
         const data = await response.json();
         setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
         setRespuestas(data);
       } else if (selectedPregunta.length > 0 && selectedFormulario !== "") {
         // Buscar por pregunta y formulario
-        const url = `http://localhost:4000/respuestas/buscarpf/${preguntaIds}/${formularioId}`;
+        const url = `${API_BASE_URL}/respuestas/buscarpf/${preguntaIds}/${formularioId}`;
         const response = await fetch(url);
         const data = await response.json();
         setRespuestas(data);
         setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
       } else if (selectedDependencias.length > 0 && selectedFormulario !== "") {
         // Buscar por dependencia y formulario
-        const url = `http://localhost:4000/respuestas/buscardf/${dependenciaIds}/${formularioId}`;
+        const url = `${API_BASE_URL}/respuestas/buscardf/${dependenciaIds}/${formularioId}`;
         const response = await fetch(url);
         const data = await response.json();
         setRespuestas(data);
         setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
       } else if (selectedPregunta.length > 0) {
         // Buscar por pregunta
-        const url = `http://localhost:4000/respuestas/pregunta?ids=${preguntaIds}`;
+        const url = `${API_BASE_URL}/respuestas/pregunta?ids=${preguntaIds}`;
         const response = await fetch(url);
         const data = await response.json();
         setRespuestas(data);
         setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
       } else if (selectedDependencias.length > 0) {
         // Buscar por dependencia
-        const url = `http://localhost:4000/respuestas/dependencia?ids=${dependenciaIds}`;
+        const url = `${API_BASE_URL}/respuestas/dependencia?ids=${dependenciaIds}`;
         const response = await fetch(url);
         const data = await response.json();
         setRespuestas(data);
         setRespuestasData(data); // Agregar esta línea para actualizar respuestasData
       } else if (selectedFormulario !== "") {
         // Buscar por formulario
-        const url = `http://localhost:4000/respuestas/formulario?ids=${formularioId}`;
+        const url = `${API_BASE_URL}/respuestas/formulario?ids=${formularioId}`;
         const response = await fetch(url);
         const data = await response.json();
         setRespuestas(data);
@@ -219,7 +220,7 @@ const Estadisticas = () => {
         selectedFormulario === ""
       ) {
         // Si ninguno de los selects está seleccionado, obtener todas las respuestas
-        const response = await fetch("http://localhost:4000/respuestas");
+        const response = await fetch(`${API_BASE_URL}/respuestas`);
         const data = await response.json();
         setRespuestas(data);
         setRespuestasData(data); 

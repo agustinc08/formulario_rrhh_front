@@ -16,6 +16,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import useStyles from "../../styles/navBarStyle";
 import "../../css/navbar.css"
 import "../../css/global.css";
+import API_BASE_URL from "../../config"
 
 const ModalFormularios = ({ open, handleClose }) => {
   const classes = useStyles();
@@ -25,7 +26,7 @@ const ModalFormularios = ({ open, handleClose }) => {
   const [isFormularioActivo, setIsFormularioActivo] = useState(false);
 
   const fetchFormulario = () => {
-    fetch("http://localhost:4000/formulario")
+    fetch(`${API_BASE_URL}/formulario`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error fetching formularios");
@@ -51,7 +52,7 @@ const ModalFormularios = ({ open, handleClose }) => {
         estaActivo: !formularioToToggle.estaActivo,
       };
 
-      await fetch(`http://localhost:4000/formulario/${formularioToToggle.id}`, {
+      await fetch(`${API_BASE_URL}/formulario/${formularioToToggle.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

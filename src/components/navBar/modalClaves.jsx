@@ -20,6 +20,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import EditIcon from '@mui/icons-material/Edit';
 import useStyles from "../../styles/navBarStyle";
 import Alert from "@material-ui/lab/Alert";
+import API_BASE_URL from "../../config"
 
 
 const ModalClaves = ({ open, handleClose }) => {
@@ -35,7 +36,7 @@ const ModalClaves = ({ open, handleClose }) => {
   const [alertaCreacionExitosa, setAlertaCreacionExitosa] = useState(false);
 
   const fetchClaves = () => {
-    fetch("http://localhost:4000/claves")
+    fetch(`${API_BASE_URL}/claves`)
       .then((response) => response.json())
       .then((data) => {
         setClaves(data);
@@ -77,7 +78,7 @@ const ModalClaves = ({ open, handleClose }) => {
         }
   
         const response = await fetch(
-          `http://localhost:4000/claves/${claveId}/${dependenciaId}`,
+          `${API_BASE_URL}/claves/${claveId}/${dependenciaId}`,
           {
             method: "PATCH",
             headers: {

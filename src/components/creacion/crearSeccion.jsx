@@ -10,6 +10,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import { Box } from "@material-ui/core";
 import useStyles from "../../styles/creacionStyle";
+import API_BASE_URL from "../../config"
 
 const CrearSeccion = () => {
   const classes = useStyles();
@@ -26,7 +27,7 @@ const CrearSeccion = () => {
   }, []);
 
   const fetchFormulario = () => {
-    fetch("http://localhost:4000/formulario")
+    fetch(`${API_BASE_URL}/formulario`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error fetching formularios");
@@ -84,7 +85,7 @@ const CrearSeccion = () => {
   };
 
   const crearSeccion = (descripcion, formularioId) => {
-    fetch("http://localhost:4000/secciones", {
+    fetch(`${API_BASE_URL}/secciones`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

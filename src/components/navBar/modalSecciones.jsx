@@ -20,6 +20,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import EditIcon from '@mui/icons-material/Edit';
 import useStyles from "../../styles/navBarStyle";
 import Alert from "@material-ui/lab/Alert";
+import API_BASE_URL from "../../config"
 
 const ModalSecciones = ({ open, handleClose }) => {
   const classes = useStyles();
@@ -38,7 +39,7 @@ const ModalSecciones = ({ open, handleClose }) => {
 
 
   const fetchFormulario = () => {
-    fetch("http://localhost:4000/formulario")
+    fetch(`${API_BASE_URL}/formulario`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error fetching formularios");
@@ -58,7 +59,7 @@ const ModalSecciones = ({ open, handleClose }) => {
   };
 
   const fetchSecciones = () => {
-    fetch("http://localhost:4000/secciones")
+    fetch(`${API_BASE_URL}/secciones`)
       .then((response) => response.json())
       .then((data) => {
         const seccionesOrdenadas = data.sort(
@@ -102,7 +103,7 @@ const ModalSecciones = ({ open, handleClose }) => {
         return;
       }
   
-      const response = await fetch(`http://localhost:4000/secciones/${seccionId}`, {
+      const response = await fetch(`${API_BASE_URL}/secciones/${seccionId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

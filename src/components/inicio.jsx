@@ -17,6 +17,7 @@ import { isLoggedIn } from "../auth";
 import Login from "./login";
 import { useHistory } from "react-router-dom";
 import useStyles from "../styles/inicioStyle";
+import API_BASE_URL from "../config"
 
 function Inicio() {
   const classes = useStyles();
@@ -27,7 +28,7 @@ function Inicio() {
   useEffect(() => {
     const fetchActiveInicio = async () => {
       try {
-        const response = await fetch("http://localhost:4000/inicio/active"); // Use a new route to fetch the active inicio
+        const response = await fetch(`${API_BASE_URL}/inicio/active`); // Use a new route to fetch the active inicio
         const data = await response.json();
         setInicioData(data);
       } catch (error) {
@@ -37,7 +38,7 @@ function Inicio() {
 
     const fetchSecciones = async () => {
       try {
-        const response = await fetch("http://localhost:4000/secciones/conFormularioActivo"); // Use a new route to fetch secciones with active formulario
+        const response = await fetch(`${API_BASE_URL}/secciones/conFormularioActivo`); // Use a new route to fetch secciones with active formulario
         if (!response.ok) {
           throw new Error('Failed to fetch secciones with active formulario');
         }

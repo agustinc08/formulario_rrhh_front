@@ -8,6 +8,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import "../css/global.css";
 import useStyles from "../styles/loginStyle";
+import API_BASE_URL from "../config"
 
 function Login({ onLogin }) {
   const classes = useStyles();
@@ -81,13 +82,13 @@ function Login({ onLogin }) {
   
 
   const fetchDependencias = async () => {
-    const response = await fetch("http://localhost:4000/dependencias");
+    const response = await fetch(`${API_BASE_URL}/dependencias`);
     const data = await response.json();
     setDependencias(data);
   };
 
   const fetchClaves = async () => {
-    const response = await fetch("http://localhost:4000/claves");
+    const response = await fetch(`${API_BASE_URL}/claves`);
     const data = await response.json();
     setClaves(data);
   };

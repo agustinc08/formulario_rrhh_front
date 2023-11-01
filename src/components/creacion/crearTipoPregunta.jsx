@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 import Alert from "@material-ui/lab/Alert";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import { Box } from "@material-ui/core";
 import useStyles from "../../styles/creacionStyle";
+import API_BASE_URL from "../../config"
 
 const CrearTipoPregunta = () => {
   const classes = useStyles();
@@ -28,7 +27,7 @@ const CrearTipoPregunta = () => {
   };
 
   const crearTipoPregunta = (descripcion, formularioId) => {
-    fetch("http://localhost:4000/tipoPregunta", {
+    fetch(`${API_BASE_URL}/tipoPregunta`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

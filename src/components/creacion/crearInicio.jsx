@@ -8,6 +8,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Alert from "@material-ui/lab/Alert";
 import { Box } from "@material-ui/core";
 import useStyles from "../../styles/creacionStyle";
+import API_BASE_URL from "../../config"
 
 const CrearInicio = () => {
   const classes = useStyles();
@@ -27,12 +28,13 @@ const CrearInicio = () => {
   const [inicioExistente, setInicioExistente] = useState(false);
   const [inicioCreado, setInicioCreado] = useState(false);
 
+
   useEffect(() => {
     fetchFormulario();
   }, []);
 
   const fetchFormulario = () => {
-    fetch("http://localhost:4000/formulario")
+    fetch(`${API_BASE_URL}/formulario`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error fetching formularios");
@@ -60,7 +62,7 @@ const CrearInicio = () => {
     // Define la función para verificar si ya existe un inicio para el formulario
     const verificarInicioPorFormulario = async (formularioId) => {
       try {
-        const response = await fetch(`http://localhost:4000/inicio/verificar/${formularioId}`);
+        const response = await fetch(`${API_BASE_URL}/inicio/verificar/${formularioId}`);
         if (response.ok) {
           const data = await response.json();
           return data; // Puedes ajustar esto según la estructura de respuesta de tu servidor
@@ -94,7 +96,7 @@ const CrearInicio = () => {
       }
   
       // Llamada a la API para crear el inicio
-      const response = await fetch("http://localhost:4000/inicio", {
+      const response = await fetch(`${API_BASE_URL}/inicio`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

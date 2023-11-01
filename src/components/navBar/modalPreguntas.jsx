@@ -20,6 +20,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import EditIcon from '@mui/icons-material/Edit';
 import useStyles from "../../styles/navBarStyle";
 import Alert from "@material-ui/lab/Alert";
+import API_BASE_URL from "../../config"
 
 
 const ModalPreguntas = ({ open, handleClose }) => {
@@ -36,7 +37,7 @@ const ModalPreguntas = ({ open, handleClose }) => {
   const [alertaCreacionExitosa, setAlertaCreacionExitosa] = useState(false);
 
   const fetchPreguntas = () => {
-    fetch("http://localhost:4000/preguntas")
+    fetch(`${API_BASE_URL}/preguntas`)
       .then((response) => response.json())
       .then((data) => {
         const preguntasOrdenadas = data.sort((a, b) => a.formularioId - b.formularioId);
@@ -46,7 +47,7 @@ const ModalPreguntas = ({ open, handleClose }) => {
   };
 
   const fetchFormulario = () => {
-    fetch("http://localhost:4000/formulario")
+    fetch(`${API_BASE_URL}/formulario`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error fetching formularios");
@@ -101,7 +102,7 @@ const ModalPreguntas = ({ open, handleClose }) => {
       }
 
       const response = await fetch(
-        `http://localhost:4000/preguntas/${preguntaId}`, // Utiliza el ID de la pregunta en la URL
+        `${API_BASE_URL}/preguntas/${preguntaId}`, // Utiliza el ID de la pregunta en la URL
         {
           method: "PATCH",
           headers: {

@@ -10,6 +10,7 @@ import useStyles from "../../styles/creacionStyle";
 import Alert from "@material-ui/lab/Alert";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
+import API_BASE_URL from "../../config"
 
 const CrearTipoRespuesta = () => {
   const classes = useStyles();
@@ -26,7 +27,7 @@ const CrearTipoRespuesta = () => {
   }, []);
 
   const fetchTipoPreguntas = () => {
-    fetch("http://localhost:4000/tipoPregunta")
+    fetch(`${API_BASE_URL}/tipoPregunta`)
       .then((response) => response.json())
       .then((data) => {
         setTipoPreguntas(data);
@@ -52,7 +53,7 @@ const CrearTipoRespuesta = () => {
   };
 
   const crearTipoRespuesta = (descripcion, tipoPreguntaId, formularioId) => {
-    fetch("http://localhost:4000/tipoRespuesta", {
+    fetch(`${API_BASE_URL}/tipoRespuesta`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

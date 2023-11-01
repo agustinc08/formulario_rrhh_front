@@ -20,6 +20,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import EditIcon from '@mui/icons-material/Edit';
 import useStyles from "../../styles/navBarStyle";
 import Alert from "@material-ui/lab/Alert";
+import API_BASE_URL from "../../config"
 
 const ModalTipoRespuesta = ({ open, handleClose }) => {
   const classes = useStyles();
@@ -54,7 +55,7 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
   ] = useState(false);
 
   const fetchTipoPregunta = () => {
-    fetch("http://localhost:4000/tipoPregunta")
+    fetch(`${API_BASE_URL}/tipoPregunta`)
       .then((response) => response.json())
       .then((data) => {
         const tipoPreguntaOrdenadas = data.sort((a, b) => a.id - b.id);
@@ -64,7 +65,7 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
   };
 
   const fetchTipoRespuesta = () => {
-    fetch("http://localhost:4000/tipoRespuesta")
+    fetch(`${API_BASE_URL}/tipoRespuesta`)
       .then((response) => response.json())
       .then((data) => {
         const tipoRespuestaOrdenadas = data.sort(
@@ -107,7 +108,7 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
     tipoPreguntaId,
     nuevaDescripcionTipoPregunta
   ) => {
-    fetch(`http://localhost:4000/tipoPregunta/${tipoPreguntaId}`, {
+    fetch(`${API_BASE_URL}/tipoPregunta/${tipoPreguntaId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -138,7 +139,7 @@ const ModalTipoRespuesta = ({ open, handleClose }) => {
     tipoRespuestaId,
     nuevaDescripcionTipoRespuesta
   ) => {
-    fetch(`http://localhost:4000/tipoRespuesta/${tipoRespuestaId}`, {
+    fetch(`${API_BASE_URL}/tipoRespuesta/${tipoRespuestaId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

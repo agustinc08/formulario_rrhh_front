@@ -22,6 +22,7 @@ import Pagination from "@material-ui/lab/Pagination";
 import "../css/global.css";
 import "../css/formulario.css";
 import useStyles from "../styles/formularioStyle";
+import API_BASE_URL from "../config"
 
 function Preguntas() {
   const classes = useStyles();
@@ -53,7 +54,7 @@ function Preguntas() {
 
     try {
       const response = await axios.get(
-        `http://localhost:4000/preguntas/${seccionId}`
+        `${API_BASE_URL}/preguntas/${seccionId}`
       );
       setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
         ...prevPreguntasPorSeccion,
@@ -69,7 +70,7 @@ function Preguntas() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const { data } = await axios.get("http://localhost:4000/dependencias");
+        const { data } = await axios.get(`${API_BASE_URL}/dependencias`);
         setDependencias(data);
       } catch (error) {
         console.error(error);
@@ -91,7 +92,7 @@ function Preguntas() {
   useEffect(() => {
     async function fetchTipoRespuesta() {
       try {
-        const { data } = await axios.get("http://localhost:4000/tipoRespuesta");
+        const { data } = await axios.get(`${API_BASE_URL}/tipoRespuesta`);
         // Agrupar los tipos de respuesta por tipoPreguntaId
         const tipoRespuestaGrouped = data.reduce((grouped, tipo) => {
           if (grouped[tipo.tipoPreguntaId]) {
@@ -120,7 +121,7 @@ function Preguntas() {
         }
 
         const { data } = await axios.get(
-          `http://localhost:4000/formulario/${formularioActivoId}/secciones`
+          `${API_BASE_URL}/formulario/${formularioActivoId}/secciones`
         );
         setSecciones(data);
         setSeccionId(data[0]?.id); // Establecer la primera sección activa como sección actual
@@ -179,7 +180,7 @@ function Preguntas() {
 
   async function getFormularioActivo() {
     try {
-      const { data } = await axios.get("http://localhost:4000/formulario");
+      const { data } = await axios.get(`${API_BASE_URL}/formulario`);
       const formularioActivo = data.find((formulario) => formulario.estaActivo);
       return formularioActivo ? formularioActivo.id : null;
     } catch (error) {
@@ -257,7 +258,7 @@ function Preguntas() {
         })
       );
 
-      await axios.post("http://localhost:4000/respuestas", {
+      await axios.post(`${API_BASE_URL}/respuestas`, {
         preguntasRespuestas,
       });
 
