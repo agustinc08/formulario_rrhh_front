@@ -68,9 +68,9 @@ function Inicio() {
     history.push("/formulario"); // directs the user to the form page
   };
 
-  const handleLogout = () => {
-    logout(); // Llama a la función logout para limpiar la sesión del usuario
-    history.push("/login"); // Redirige al usuario a la página de inicio de sesión (o a la página que desees después del logout)
+  const handleLogout = async () => {
+    logout(); // Espera a que la función logout termine
+   window.location.reload();
   };
 
   return (
@@ -79,6 +79,18 @@ function Inicio() {
         <>
           {inicioData ? ( // Check if inicioData exists
             <>
+              <Box 
+                sx={{
+                  display: "flex",
+                  justifyContent: "end",
+                  marginTop: "20px",
+                }}
+              >
+                <Button className="boton-logout" variant="outlined" color="secondary" onClick={handleLogout}>
+                  Cerrar sesión
+                </Button>
+              </Box>
+              
               <Typography variant="h1" className={classes.tituloPrincipal}>
                 {inicioData.tituloPrincipal}
                 <Divider></Divider>
@@ -152,10 +164,9 @@ function Inicio() {
           right: "20px",
         }}
       >
-        <Button variant="outlined" color="secondary" onClick={handleLogout}>
-          Logout
-        </Button>
+        
       </Box>
+
     </Container>
   );
 }

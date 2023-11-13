@@ -169,11 +169,10 @@ function Preguntas() {
       [preguntaId]: value,
     }));
 
-    // También actualiza respuestas para incluir el tipo de respuesta (puedes elegir un valor por defecto)
     setRespuestas((prevRespuestas) => ({
       ...prevRespuestas,
       [preguntaId]: {
-        tipoRespuesta: tipoRespuesta.id, // Reemplaza con el valor correcto o el valor por defecto
+        tipoRespuesta: tipoRespuesta.id,
       },
     }));
   }
@@ -224,15 +223,6 @@ function Preguntas() {
       }
 
       setPreguntasSinResponder(preguntasSinRespuesta);
-
-      if (Object.keys(preguntasSinRespuesta).length > 0) {
-        setSnackbarMessage(
-          "Completa todas las preguntas antes de enviar el formulario"
-        );
-        setSnackbarSeverity("error");
-        setOpenSnackbar(true);
-        return;
-      }
 
       const preguntasRespuestas = Object.entries(respuestas).map(
         ([preguntaId, respuesta]) => ({

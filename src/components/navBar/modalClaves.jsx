@@ -22,7 +22,6 @@ import useStyles from "../../styles/navBarStyle";
 import Alert from "@material-ui/lab/Alert";
 import API_BASE_URL from "../../config"
 
-
 const ModalClaves = ({ open, handleClose }) => {
   const classes = useStyles();
   const [claves, setClaves] = useState([]);
