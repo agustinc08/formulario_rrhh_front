@@ -14,6 +14,7 @@ const CrearTipoPregunta = () => {
   const [errorTipoPregunta, setErrorTipoPregunta] = useState(false);
   const [alertaTipoPregunta, setAlertaPregunta] = useState(false);
   const [formularioId, setFormularioId] = useState("");
+  const [isInputEmpty, setIsInputEmpty] = useState(true); 
 
   const handleCloseAlert = () => {
     setAlertaPregunta(false);
@@ -24,6 +25,12 @@ const CrearTipoPregunta = () => {
     event.preventDefault();
     crearTipoPregunta(tipoPreguntaDescripcion, formularioId);
     setTipoPreguntaDescripcion("");
+  };
+
+  const handleInputChange = (event) => {
+    const inputValue = event.target.value;
+    setTipoPreguntaDescripcion(inputValue);
+    setIsInputEmpty(inputValue.trim() === ""); // Actualiza isInputEmpty
   };
 
   const crearTipoPregunta = (descripcion, formularioId) => {
@@ -67,9 +74,7 @@ const CrearTipoPregunta = () => {
             className={classes.textField}
             label="Descripción"
             value={tipoPreguntaDescripcion}
-            onChange={(event) =>
-              setTipoPreguntaDescripcion(event.target.value)
-            }
+            onChange={handleInputChange}
             error={errorTipoPregunta && !tipoPreguntaDescripcion.trim()}
           />
                <Button
@@ -77,6 +82,7 @@ const CrearTipoPregunta = () => {
                  variant="contained"
                  color="primary"
                  type="submit"
+                 disabled={isInputEmpty}
                >
                  {" "}
                  Crear Tipo de Pregunta{" "}

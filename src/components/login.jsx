@@ -42,9 +42,9 @@ function Login({ onLogin }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const dependencia = dependencias.find(
-      (d) => d.nombreDependencia === username
-    );
+   const dependencia = dependencias.find(
+  (d) => d.nombreDependencia.toLowerCase() === username.toLowerCase()
+);
     if (dependencia) {
       const clave = claves.find(
         (c) => c.clave === password && c.dependencia.id === dependencia.id

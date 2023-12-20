@@ -60,6 +60,11 @@ function Preguntas() {
         ...prevPreguntasPorSeccion,
         [seccionId]: response.data,
       }));
+      const preguntasOrdenadas = response.data.sort((a, b) => a.id - b.id);
+      setPreguntasPorSeccion((prevPreguntasPorSeccion) => ({
+        ...prevPreguntasPorSeccion,
+        [seccionId]: preguntasOrdenadas,
+      }));
       setCurrentPage(1);
       setPreguntaActual(response.data[0]?.id);
     } catch (error) {
@@ -71,11 +76,16 @@ function Preguntas() {
     async function fetchData() {
       try {
         const { data } = await axios.get(`${API_BASE_URL}/dependencias`);
-        setDependencias(data);
+  
+        // Ordenar las dependencias por ID de forma ascendente
+        const dependenciasOrdenadas = data.sort((a, b) => a.id - b.id);
+  
+        setDependencias(dependenciasOrdenadas);
       } catch (error) {
         console.error(error);
       }
     }
+  
     fetchData();
   }, []);
 
