@@ -376,24 +376,6 @@ function Preguntas() {
                   <div className="mb20px">
                     <Typography variant="h6">{pregunta.descripcion}</Typography>
                   </div>
-                  {pregunta.tieneComentario && (
-                    <Grid item xs={12}>
-                      <Typography variant="body2" className="mb20px">
-                        {pregunta.descripcionComentario}
-                      </Typography>
-                      <TextField
-                        label="Comentario"
-                        value={userComments[pregunta.id] || ""}
-                        onChange={(event) =>
-                          handleComentarioChange(event, pregunta.id)
-                        }
-                        fullWidth
-                        multiline
-                        minRows={4}
-                        variant="outlined"
-                      />
-                    </Grid>
-                  )}
                   <Grid container spacing={2}>
                     {pregunta.tipoRespuesta &&
                       tipoRespuesta[pregunta.tipoPreguntaId] && (
@@ -433,6 +415,25 @@ function Preguntas() {
                         </Grid>
                       )}
                   </Grid>
+                  {pregunta.tieneComentario && (
+                    <Grid item xs={12}>
+                      <Typography variant="body2" className="mb20px">
+                        {pregunta.descripcionComentario}
+                      </Typography>
+                      <TextField
+                        label="Comentario"
+                        value={userComments[pregunta.id] || ""}
+                        onChange={(event) =>
+                          handleComentarioChange(event, pregunta.id)
+                        }
+                        fullWidth
+                        multiline
+                        minRows={4}
+                        variant="outlined"
+                      />
+                    </Grid>
+                  )}
+                  
                 </Box>
               </ListItem>
             </Grid>
